@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "name": "afterimage",
+  "repo": "Afterimage",
+  "has_ui": true,
+  "ui_kind": "web",
+  "palette": [
+    "#06060b",
+    "#1a1030",
+    "#a78bfa",
+    "#f472b6"
+  ],
+  "motif": "eye",
+  "layout": "center",
+  "assets": {
+    "logo": {
+      "path": "assets/logo.svg",
+      "status": "approved",
+      "commit": "",
+      "generated_at": "2026-10-31T14:13:24",
+      "review": {
+        "status": "approved",
+        "reviewer": "human:owner",
+        "method": "structural",
+        "notes": "Clean geometric perception logo matching afterimage palette",
+        "score": 92,
+        "reviewed_at": "2026-10-31T14:13:46"
+      }
+    },
+    "social_preview": {
+      "path": "assets/social-preview.svg",
+      "status": "approved",
+      "commit": "",
+      "generated_at": "2026-10-31T14:13:24",
+      "review": {
+        "status": "approved",
+        "reviewer": "human:owner",
+        "method": "structural",
+        "notes": "High contrast perception challenge social card",
+        "score": 94,
+        "reviewed_at": "2026-10-31T14:13:53"
+      }
+    }
+  },
+  "screenshots": []
+}

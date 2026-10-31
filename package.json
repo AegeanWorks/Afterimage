@@ -1,0 +1,13 @@
+{
+  "name": "afterimage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A visual perception gauntlet with a daily challenge: one tile in every grid is a shade, a size, or an angle off. Installable, offline-capable PWA.",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "test": "node --test tests"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

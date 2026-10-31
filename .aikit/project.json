@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "name": "afterimage",
+  "test_command": "node --test tests",
+  "topics": [
+    "aikit",
+    "aikit-integrated",
+    "source-available",
+    "aegean-game-license",
+    "drm-free",
+    "commercial-license",
+    "game",
+    "browser-game",
+    "javascript",
+    "perception",
+    "puzzle",
+    "pwa"
+  ],
+  "gates": {},
+  "mechanics": {
+    "core": [
+      "game.js"
+    ],
+    "test": "node --test tests"
+  },
+  "ui_required": false,
+  "mechanics_required": true,
+  "created": "2026-10-31",
+  "has_ui": true,
+  "ui_kind": "web",
+  "ui_evidence": [
+    "index.html"
+  ],
+  "ui_checked_at": "2026-10-31",
+  "ui_source": "detected"
+}

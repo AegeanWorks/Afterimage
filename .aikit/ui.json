@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "surfaces": {
+    "app": {
+      "paths": [
+        "index.html",
+        "game.js"
+      ]
+    }
+  },
+  "protected": [
+    "tests/**"
+  ],
+  "commands": {
+    "fast": "node --test tests",
+    "snapshot": ""
+  },
+  "style": {
+    "theme_paths": []
+  },
+  "limits": {
+    "max_files": 12,
+    "max_lines": 300
+  }
+}

@@ -1,8 +1,27 @@
 # Afterimage
 
-**A visual perception gauntlet with a daily challenge — installable and offline.** One tile in every grid is a shade, a size, or an angle off. Take today's seeded set, or pick a mode and set your own pressure.
+<!-- aegean:media:start -->
+<p align="center"><img src="assets/social-preview.svg" alt="Afterimage social preview" width="100%"></p>
+<p align="center"><a href="LICENSE"><img src="https://img.shields.io/badge/license-AGL--1.1-7048e8" alt="License"></a> <a href="https://github.com/AegeanWorks/AIKit"><img src="https://img.shields.io/badge/AIKit-integrated-6f42c1" alt="AIKit Integrated"></a></p>
+<!-- aegean:media:end -->
 
-![Afterimage menu](assets/menu.png)
+A visual perception gauntlet with a daily challenge: one tile in every grid is a shade, a size, or an angle off. Installable, offline-capable PWA.
+
+## ⚡ 30-Second Cold-Start Quick Reference
+
+- **Runtime Prerequisites**: Node.js 20 or newer for test runner and tools; modern browser with HTML5 Canvas and WebAudio for playing.
+- **Canonical Regression Shield Gate**:
+  ```bash
+  node --test tests
+  ```
+
+### 🛠️ AIKit Commands (run from the AIKit folder)
+| Role | Command |
+|---|---|
+| Status, task and gates | `python aikit.py status afterimage` |
+| Phase 4: every gate | `python aikit.py check afterimage` |
+| Repair memory and map, then check | `python aikit.py fix afterimage` |
+| Resume an interrupted task | `python aikit.py resume afterimage` |
 
 ## Play
 
@@ -91,20 +110,48 @@ The run caught two real bugs that the screenshots made obvious: burst particles 
 - A run token (`runId`) guards late `setTimeout` callbacks after quitting; particles are cleared between boards.
 - Respects `prefers-reduced-motion`; storage and audio failures are non-fatal.
 
-## Files
+## 📦 What's Inside
 
-| File | Role |
-| --- | --- |
-| `index.html` | shell, HUD, menu and result cards |
-| `styles.css` | layout, glass panels, responsive rules |
-| `game.js` | the game, score-card renderer and share text |
-| `manifest.json` | PWA name, icons, shortcuts and standalone display |
-| `sw.js` | offline shell and cache policy |
-| `icons/` | 192/512/maskable/touch icons |
-| `tools/make_icons.py` | regenerate the PNG icons (Pillow, dev only) |
-| `PLAY.bat` | Windows launcher |
-| `assets/` | screenshots and score card |
+```text
+afterimage/
+├── .gitignore                <- transient AIKit state excluded
+├── ASSETS.md                 <- Asset/data manifest: what the license covers
+├── COMMERCIAL.md             <- Commercial licensing terms
+├── LICENSE                   <- Aegean Game License 1.1 (AGL-1.1): DRM-free personal play
+├── LICENSES/                 <- REUSE license texts
+├── package.json              <- project metadata and test runner scripts
+├── PLAY.bat                  <- Windows launcher
+├── README.md
+├── REUSE.toml                <- Machine-readable SPDX metadata
+├── assets/                   <- screenshots, icons, and media artwork
+├── favicon.svg               <- vector browser tab favicon
+├── game.js                   <- game engine, PRNG, renderer and mechanics
+├── icons/                    <- PWA application icons
+├── index.html                <- game markup, HUD and modal templates
+├── manifest.json             <- Web App Manifest for PWA installation
+├── styles.css                <- responsive styling and layout
+├── sw.js                     <- service worker for offline shell caching
+├── tests/                    <- automated behavioral and regression tests
+├── tools/                    <- icon generation scripts
+└── .aikit/                   <- this project's memory: record, ledger, decisions
+```
 
----
+## 🧪 Tests
 
-A `portable_agent_kit` playground project. Not published.
+```bash
+node --test tests
+```
+
+`tests/harness.js` stubs the browser environment (DOM elements, canvas, ResizeObserver, localStorage) and loads `game.js` inside `node:vm` without opening network ports. `tests/game.test.js` covers PRNG determinism, daily date hashing, scripts and modes configuration, board round generation with odd-tile verification, score calculation, performance ratings, and share card formatting.
+
+<!-- aegean:brand-assets:start -->
+## 🎨 Brand Assets
+
+> **AI-Generated Brand Artwork.** The banner and logo are **AI-generated brand assets**. They are illustrative and may not literally depict every feature or the full project scope.
+<!-- aegean:brand-assets:end -->
+
+## 📜 License
+
+<!-- aegean:license:start -->
+Free for personal play under the Aegean Game License 1.1 (AGL-1.1); see [LICENSE](LICENSE). It is DRM-free: Licensor ships no DRM and a distributor may not add it. Streaming, modding and free mods are allowed. Commercial use, paid mods and AI training need the Aegean Commercial License 1.0 (ACL-1.0); see [COMMERCIAL.md](COMMERCIAL.md).
+<!-- aegean:license:end -->
