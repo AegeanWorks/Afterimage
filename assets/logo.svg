@@ -3,11 +3,8 @@
   <desc id="desc">Project-specific eye mark for Afterimage; AegeanWorks identity.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#06060b"/><stop offset="1" stop-color="#1a1030"/></linearGradient>
-    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/></linearGradient>
   </defs>
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <circle cx="256" cy="238" r="170" fill="none" stroke="#a78bfa" stroke-opacity="0.22" stroke-width="2"/><circle cx="256" cy="238" r="136" fill="none" stroke="#f472b6" stroke-opacity="0.20" stroke-width="2"/>
-  <g transform="translate(256 232) scale(1.62)" opacity="1.0"><path d="M-64 0Q0 -48 64 0Q0 48 -64 0Z" fill="none" stroke="#a78bfa" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="0" cy="0" r="20" fill="#f472b6" fill-opacity="0.85"/><circle cx="0" cy="0" r="7" fill="#F8FAFC"/></g>
-  <text x="256" y="404" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="62" font-weight="700" fill="url(#mark)" letter-spacing="3">AF</text>
-  <text x="256" y="458" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="17" letter-spacing="6" fill="#F8FAFC" fill-opacity="0.55">AEGEANWORKS</text>
+  <g transform="translate(256 210) scale(1.45)" opacity="1.0"><path d="M-64 0Q0 -48 64 0Q0 48 -64 0Z" fill="none" stroke="#a78bfa" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="0" cy="0" r="20" fill="#f472b6" fill-opacity="0.85"/><circle cx="0" cy="0" r="7" fill="#F8FAFC"/></g>
+  <text x="256" y="400" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="64" font-weight="700" fill="#F8FAFC" letter-spacing="2">AF</text><text x="256" y="438" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="16" letter-spacing="5" fill="#F8FAFC" fill-opacity="0.62">AEGEANWORKS</text>
 </svg>
