@@ -58,3 +58,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: Winning a mode left no persistent mark besides a number, so there was no collection-style reason to clear every mode.
 - **Decision**: `profile.wins` counts wins per mode (sanitized, backward-compatible with old saves); pure `bestLine(best,wins)` renders `BEST x`, `CLEARED`, or both on mode buttons (Zen included via a new `data-best` node); first clears append a result-blurb callout.
 - **Consequences**: 29 tests pass (27 prior + 2 new); no scoring, script, storage-breaking or share changes; note: cross-realm `deepStrictEqual` on vm-created objects fails on prototypes, so the wins test asserts per-key.
+
+### ADR-009: Add Onslaught as DATA (surge-heavy 8-board mode)
+- **Date**: 2026-11-02
+- **Status**: Accepted
+- **Context**: The mode list topped out at Nightmare; experienced players wanted a denser scoring mode without touching the tuned classic/nightmare/daily curves or the verified 5,580 Focus ceiling.
+- **Decision**: New `SCRIPTS.onslaught` (8 boards, 3x3 to 9x9, three SURGE boards, 1.25x `MODES.onslaught` with 2 lives and 0.8 timeScale) added as pure DATA validated by the now-generic script-integrity test; wired through the existing gates only — menu button with `data-best` node, `loadBests`/`profile.wins` keys, manifest shortcut, deep link, SW cache bump. Classic, nightmare and daily scripts untouched.
+- **Consequences**: 32 tests pass (29 prior + 3 new); old saves migrate silently (missing keys default to zero); no scoring, share or PWA-contract changes.

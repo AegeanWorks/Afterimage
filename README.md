@@ -33,7 +33,7 @@ python -m http.server 8139
 
 Open <http://127.0.0.1:8139/>. On Windows, double-click `PLAY.bat`.
 
-Deep links: `/?mode=daily`, `/?mode=focus`, `/?mode=blitz`, `/?mode=zen`, `/?mode=nightmare`.
+Deep links: `/?mode=daily`, `/?mode=focus`, `/?mode=blitz`, `/?mode=zen`, `/?mode=nightmare`, `/?mode=onslaught`.
 
 ## Install & offline
 
@@ -55,6 +55,7 @@ The card at the top is seeded by your local date: **the same ten boards all day*
 | Blitz | 10 | half clock, two lives, 1.5× score |
 | Zen | 10 | no clock, no fail |
 | Nightmare | 8 | up to 10×10, one life, 2× score |
+| Onslaught | 8 | surge-heavy, 2 lives, 1.25× score |
 
 Every board hides one tile that differs by **hue, lightness, saturation, size or angle**. Focus, Blitz and Nightmare keep a personal best in `localStorage`; Zen has no clock, so it keeps none. A perfect run earns **EAGLE EYE**, **QUICK EYE** or **NIGHT VISION** depending on the mode.
 

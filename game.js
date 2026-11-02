@@ -30,6 +30,16 @@ const SCRIPTS = {
     { type: "hue",    n: 10, delta: 13, time: 30 },
     { type: "light",  n: 10, delta: 6,  time: 30 },
     { type: "rotate", n: 10, delta: 12, time: 32 }
+  ],
+  onslaught: [
+    { type: "hue",    n: 3, delta: 26, time: 12 },
+    { type: "sat",    n: 4, delta: 22, time: 12, surge: true },
+    { type: "rotate", n: 5, delta: 22, time: 14 },
+    { type: "light",  n: 6, delta: 8,  time: 14 },
+    { type: "size",   n: 7, delta: 12, time: 16, surge: true },
+    { type: "hue",    n: 8, delta: 12, time: 18 },
+    { type: "rotate", n: 8, delta: 13, time: 20, surge: true },
+    { type: "light",  n: 9, delta: 6,  time: 22 }
   ]
 };
 
@@ -94,6 +104,17 @@ const MODES = {
     multiplier: 2,
     best: true
   },
+  onslaught: {
+    label: "Onslaught",
+    short: "Onslaught",
+    timed: true,
+    lives: 2,
+    script: "onslaught",
+    timeScale: 0.8,
+    minTime: 5,
+    multiplier: 1.25,
+    best: true
+  },
   daily: {
     label: "Daily",
     short: "Daily",
@@ -149,7 +170,7 @@ function loadBests() {
     saved = {};
   }
 
-  const bests = { focus: 0, blitz: 0, nightmare: 0 };
+  const bests = { focus: 0, blitz: 0, nightmare: 0, onslaught: 0 };
   Object.keys(bests).forEach((mode) => {
     const value = Number(saved[mode]);
     if (Number.isFinite(value) && value > 0) bests[mode] = value;
@@ -236,7 +257,7 @@ function loadProfile() {
   }
   const num = (value) => (Number.isFinite(Number(value)) && Number(value) > 0 ? Math.floor(Number(value)) : 0);
   const wins = {};
-  for (const mode of ["focus", "blitz", "zen", "nightmare", "daily"]) {
+  for (const mode of ["focus", "blitz", "zen", "nightmare", "daily", "onslaught"]) {
     wins[mode] = num(saved.wins && saved.wins[mode]);
   }
   return {

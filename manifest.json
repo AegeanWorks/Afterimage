@@ -40,6 +40,11 @@
       "name": "Nightmare",
       "short_name": "Nightmare",
       "url": "./?mode=nightmare"
+    },
+    {
+      "name": "Onslaught",
+      "short_name": "Onslaught",
+      "url": "./?mode=onslaught"
     }
   ]
 }

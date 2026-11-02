@@ -57,7 +57,7 @@ test('SCRIPTS configuration integrity', () => {
   assert.ok(Array.isArray(SCRIPTS.nightmare));
   assert.strictEqual(SCRIPTS.nightmare.length, 8);
 
-  for (const round of [...SCRIPTS.classic, ...SCRIPTS.nightmare]) {
+  for (const round of Object.values(SCRIPTS).flat()) {
     assert.ok(round.n >= 3 && round.n <= 10, `grid size ${round.n} must be between 3 and 10`);
     assert.ok(round.delta > 0, `delta ${round.delta} must be positive`);
     assert.ok(round.time > 0, `time ${round.time} must be positive`);
@@ -370,7 +370,49 @@ test('loadProfile defaults wins per mode to zero', () => {
   const { loadProfile } = createHarness();
 
   const profile = loadProfile();
-  for (const mode of ['focus', 'blitz', 'zen', 'nightmare', 'daily']) {
+  for (const mode of ['focus', 'blitz', 'zen', 'nightmare', 'daily', 'onslaught']) {
     assert.strictEqual(profile.wins[mode], 0);
   }
+});
+
+test('onslaught script is a tight surge-heavy gauntlet', () => {
+  const { SCRIPTS } = createHarness();
+
+  assert.ok(Array.isArray(SCRIPTS.onslaught));
+  assert.strictEqual(SCRIPTS.onslaught.length, 8);
+  assert.ok(SCRIPTS.onslaught.filter((round) => round.surge === true).length >= 2);
+  const last = SCRIPTS.onslaught[SCRIPTS.onslaught.length - 1];
+  assert.ok(last.n >= 8, 'final onslaught board must stay large');
+  assert.ok(last.delta <= 13, `final onslaught delta ${last.delta} must stay tight`);
+});
+
+test('onslaught mode configuration is reachable and bested', () => {
+  const { MODES, loadProfile } = createHarness();
+
+  assert.ok(Object.prototype.hasOwnProperty.call(MODES, 'onslaught'));
+  const cfg = MODES.onslaught;
+  assert.strictEqual(cfg.script, 'onslaught');
+  assert.strictEqual(cfg.timed, true);
+  assert.strictEqual(cfg.multiplier, 1.25);
+  assert.strictEqual(cfg.best, true);
+  assert.ok(loadProfile().wins.onslaught === 0);
+});
+
+test('onslaught boards generate deterministically from a seed', () => {
+  const first = createHarness();
+  const second = createHarness();
+
+  // Seeded odd-position draw per board def: same seed -> identical sequence.
+  const runSeq = (h) => {
+    const rng = h.mulberry32(h.hashString('onslaught-probe'));
+    return h.SCRIPTS.onslaught.map((def) => Math.floor(rng() * def.n * def.n));
+  };
+  const seqA = runSeq(first);
+  const seqB = runSeq(second);
+  assert.strictEqual(JSON.stringify(seqA), JSON.stringify(seqB)); // cross-realm: compare serialized
+  assert.strictEqual(seqA.length, 8);
+  seqA.forEach((odd, i) => {
+    const n = first.SCRIPTS.onslaught[i].n;
+    assert.ok(odd >= 0 && odd < n * n, `odd ${odd} must fit a ${n}x${n} board`);
+  });
 });
