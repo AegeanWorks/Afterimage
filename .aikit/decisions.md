@@ -65,3 +65,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: The mode list topped out at Nightmare; experienced players wanted a denser scoring mode without touching the tuned classic/nightmare/daily curves or the verified 5,580 Focus ceiling.
 - **Decision**: New `SCRIPTS.onslaught` (8 boards, 3x3 to 9x9, three SURGE boards, 1.25x `MODES.onslaught` with 2 lives and 0.8 timeScale) added as pure DATA validated by the now-generic script-integrity test; wired through the existing gates only — menu button with `data-best` node, `loadBests`/`profile.wins` keys, manifest shortcut, deep link, SW cache bump. Classic, nightmare and daily scripts untouched.
 - **Consequences**: 32 tests pass (29 prior + 3 new); old saves migrate silently (missing keys default to zero); no scoring, share or PWA-contract changes.
+
+### ADR-010: Register current screenshots; legacy captures stay as unregistered art
+- **Date**: 2026-11-03
+- **Status**: Accepted
+- **Context**: `assets/menu.png`, `nightmare.png` and `card.png` predate the media pipeline (no `media.json` entries, no README block, no commit record) and `menu.png` is stale content (four modes, daily #304; the game now ships five modes with Onslaught).
+- **Decision**: Keep the three legacy files untouched in `assets/` (ASSETS.md already covers `assets/*.png`); capture `2026-11-03-menu.png` (clean-storage first run, daily #307, DAY ONE) and `2026-11-03-daily.png` (Daily 01/10 hue board after PLAY) from `python -m http.server 8139` at viewport 1440x900, commit `5be4c63`, and register only the two new keepers in `.aikit/media.json` and the README `aegean:screenshots` block.
+- **Consequences**: README proves the current five-mode build; legacy files remain history, not proof. Reproduce with: serve 8139, clear storage, open the URL, screenshot, click PLAY on Today's board, screenshot.

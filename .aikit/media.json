@@ -42,5 +42,44 @@
       }
     }
   },
-  "screenshots": []
+  "screenshots": [
+    {
+      "path": "assets/screenshots/2026-11-03-menu.png",
+      "alt": "Afterimage menu at 2026-11-03",
+      "caption": "First-run menu from python -m http.server 8139 (http://127.0.0.1:8139): daily #307 plus Focus, Blitz, Zen, Nightmare and Onslaught; DAY ONE with zero runs. Supersedes assets/menu.png (four modes, daily #304).",
+      "commit": "5be4c63d5e03f4908e05eb1f4f9982660533e311",
+      "taken_at": "2026-11-03",
+      "viewport": "1440x900",
+      "width": 1440,
+      "height": 900,
+      "status": "approved",
+      "review": {
+        "status": "approved",
+        "reviewer": "agent:kilo",
+        "method": "vision",
+        "notes": "Real 1440x900 viewport capture after clearing storage: five mode buttons, current daily card, DAY ONE footer. Honest first-run state; proves the Onslaught addition the old capture predates.",
+        "score": 92,
+        "reviewed_at": "2026-11-03"
+      }
+    },
+    {
+      "path": "assets/screenshots/2026-11-03-daily.png",
+      "alt": "Afterimage daily level 1 at 2026-11-03",
+      "caption": "Same build after PLAY on Today's board: Daily 01/10 hue board, one red tile among gold, score 0, focus 3, streak 0.",
+      "commit": "5be4c63d5e03f4908e05eb1f4f9982660533e311",
+      "taken_at": "2026-11-03",
+      "viewport": "1440x900",
+      "width": 1440,
+      "height": 900,
+      "status": "approved",
+      "review": {
+        "status": "approved",
+        "reviewer": "agent:kilo",
+        "method": "vision",
+        "notes": "Real gameplay capture one click from the fresh-user path: HUD (mode/level/score/focus/streak/sound), 3x3 board with an unambiguous odd tile, level hint line. No cherry-pick.",
+        "score": 93,
+        "reviewed_at": "2026-11-03"
+      }
+    }
+  ]
 }

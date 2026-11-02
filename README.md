@@ -177,3 +177,13 @@ node --test tests
 <!-- aegean:license:start -->
 Free for personal play under the Aegean Game License 1.1 (AGL-1.1); see [LICENSE](LICENSE). It is DRM-free: Licensor ships no DRM and a distributor may not add it. Streaming, modding and free mods are allowed. Commercial use, paid mods and AI training need the Aegean Commercial License 1.0 (ACL-1.0); see [COMMERCIAL.md](COMMERCIAL.md).
 <!-- aegean:license:end -->
+
+<!-- aegean:screenshots:start -->
+## Screenshots
+
+<a href="https://github.com/AegeanWorks/Afterimage/commit/5be4c63"><img src="assets/screenshots/2026-11-03-menu.png" alt="Afterimage menu at 2026-11-03"></a>
+
+<a href="https://github.com/AegeanWorks/Afterimage/commit/5be4c63"><img src="assets/screenshots/2026-11-03-daily.png" alt="Afterimage daily level 1 at 2026-11-03"></a>
+
+*commit `5be4c63` · 2026-11-03 · viewport 1440x900 · legacy `assets/menu.png` (four modes, daily #304) superseded after Onslaught*
+<!-- aegean:screenshots:end -->
