@@ -551,7 +551,14 @@ function computeLayout() {
 /* --------------------------------------------------------------- painting */
 
 function paintTile(tile, color) {
+  const gradient = ctx.createLinearGradient(tile.x, tile.y, tile.x, tile.y + tile.h);
+  gradient.addColorStop(0, "rgba(255,255,255,0.10)");
+  gradient.addColorStop(0.45, "rgba(255,255,255,0)");
   ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(tile.x, tile.y, tile.w, tile.h, tile.w * 0.22);
+  ctx.fill();
+  ctx.fillStyle = gradient;
   ctx.beginPath();
   ctx.roundRect(tile.x, tile.y, tile.w, tile.h, tile.w * 0.22);
   ctx.fill();
@@ -1253,7 +1260,10 @@ function finish(won) {
     rating: info.rating,
     daily: isDaily,
     dailyNumber: isDaily ? state.dailyNumber : 0,
-    dailyLabel: isDaily ? state.dailyDateLabel : ""
+    dailyLabel: isDaily ? state.dailyDateLabel : "",
+    board: state.data
+      ? { base: state.data.base, oddColor: state.data.oddColor, n: state.data.n, odd: state.data.odd }
+      : null
   };
 
   ui.resultKicker.textContent = isDaily
@@ -1381,11 +1391,15 @@ function drawTrackedCentered(g, text, cx, y, spacing) {
   drawTracked(g, text, cx - trackedWidth(g, text, spacing) / 2, y, spacing);
 }
 
-function drawCardBoard(g, x, y) {
+function drawCardBoard(g, x, y, board) {
   const n = 5;
   const cell = 62;
   const gap = 12;
   const span = n * cell + (n - 1) * gap;
+  const base = (board && board.base) || "#6a59dd";
+  const oddColor = (board && board.oddColor) || "#4fd1c5";
+  const oddRow = board && board.n ? Math.min(n - 1, Math.floor(Math.floor(board.odd / board.n) * n / board.n)) : 1;
+  const oddCol = board && board.n ? Math.min(n - 1, Math.floor((board.odd % board.n) * n / board.n)) : 3;
 
   const glow = g.createRadialGradient(
     x + span / 2, y + span / 2, 20,
@@ -1408,8 +1422,8 @@ function drawCardBoard(g, x, y) {
     for (let col = 0; col < n; col += 1) {
       const tx = x + col * (cell + gap);
       const ty = y + row * (cell + gap);
-      const odd = row === 1 && col === 3;
-      g.fillStyle = odd ? "#4fd1c5" : "#6a59dd";
+      const odd = row === oddRow && col === oddCol;
+      g.fillStyle = odd ? oddColor : base;
       g.beginPath();
       g.roundRect(tx, ty, cell, cell, 16);
       g.fill();
@@ -1535,7 +1549,7 @@ function renderScoreCard(result) {
   g.font = '600 12px "Segoe UI", system-ui, sans-serif';
   drawTracked(g, footer, 72, 592, 2);
 
-  drawCardBoard(g, 780, 126);
+  drawCardBoard(g, 780, 126, result.board);
   return card.toDataURL("image/png");
 }
 
