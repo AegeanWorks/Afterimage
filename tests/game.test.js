@@ -416,3 +416,14 @@ test('onslaught boards generate deterministically from a seed', () => {
     assert.ok(odd >= 0 && odd < n * n, `odd ${odd} must fit a ${n}x${n} board`);
   });
 });
+
+test('WIN_TITLES covers every playable mode (no undefined result title)', () => {
+  const { MODES, WIN_TITLES } = createHarness();
+
+  for (const mode of Object.keys(MODES)) {
+    assert.ok(
+      typeof WIN_TITLES[mode] === 'string' && WIN_TITLES[mode].length > 0,
+      `WIN_TITLES missing ${mode} — clean win would render undefined`
+    );
+  }
+});

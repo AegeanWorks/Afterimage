@@ -122,7 +122,7 @@ The run caught two real bugs that the screenshots made obvious: burst particles 
 ## Under the hood
 
 - Vanilla HTML, CSS and JavaScript. One render canvas, one favicon, no game assets.
-- Four mode configs plus the daily challenge drive two level scripts; Nightmare's script runs from 8×8 to 10×10.
+- Five mode configs plus the daily challenge drive three level scripts; Nightmare's script runs from 8×8 to 10×10.
 - `game.js` holds the palette generator, seeded PRNG, DPR-aware renderer, hit-testing, scoring and WebAudio blips.
 - Daily puzzles use mulberry32 seeded from the local date; the daily result and streak live under `afterimage.daily`.
 - Each board logs green/gold/red/skip/dark for the result strip and copied text; the clipboard uses the async API with a textarea fallback.

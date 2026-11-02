@@ -82,7 +82,7 @@ function createHarness(options = {}) {
   vm.createContext(sandbox);
 
   const exported = vm.runInContext(
-    code + '\n;({ SCRIPTS, MODES, TYPE_LABEL, BOARD_CLASS, localDateKey, previousDateKey, dailyNumber, dailyDateLabel, hashString, mulberry32, makeRound, scoreFor, rateRun, buildShareText, comboTier, assistEase, easedDelta, loadProfile, eyeLevel, isAdjacent, firstRunTip, progressBeat, weakestType, bonusHints, onBestPace, freezeRepair, earnFreeze, bestLine })',
+    code + '\n;({ SCRIPTS, MODES, WIN_TITLES, TYPE_LABEL, BOARD_CLASS, localDateKey, previousDateKey, dailyNumber, dailyDateLabel, hashString, mulberry32, makeRound, scoreFor, rateRun, buildShareText, comboTier, assistEase, easedDelta, loadProfile, eyeLevel, isAdjacent, firstRunTip, progressBeat, weakestType, bonusHints, onBestPace, freezeRepair, earnFreeze, bestLine })',
     sandbox
   );
 

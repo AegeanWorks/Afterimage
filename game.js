@@ -134,6 +134,7 @@ const WIN_TITLES = {
   blitz: "Fast eyes.",
   zen: "Zen complete.",
   nightmare: "Nightmare cleared.",
+  onslaught: "Onslaught cleared.",
   daily: "Daily cleared."
 };
 
