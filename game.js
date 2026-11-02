@@ -353,6 +353,7 @@ const state = {
   wrongFlash: -1,
   reveal: false,
   hintActive: 0,
+  enterAt: 0,
   lastTickSec: 0,
   typeMisses: {},
   hints: 1,
@@ -635,7 +636,10 @@ function paint() {
 
   const round = state.data;
   const now = performance.now();
+  const enterT = REDUCED ? 1 : Math.min(1, Math.max(0, (now - state.enterAt) / 140));
 
+  ctx.save();
+  ctx.globalAlpha = enterT;
   state.rects.forEach((tile, index) => {
     const isOdd = index === round.odd;
     const color = isOdd ? round.oddColor : round.base;
@@ -651,6 +655,7 @@ function paint() {
     if (state.hover === index && state.phase === "play") paintHover(tile);
     if (state.wrongFlash === index) paintWrong(tile);
   });
+  ctx.restore();
 
   if (state.reveal) {
     ctx.fillStyle = "rgba(5,5,9,0.62)";
@@ -857,6 +862,7 @@ function nextLevel() {
   state.levelMistakes = 0;
   state.lastTickSec = 0;
   state.particles = [];
+  state.enterAt = performance.now();
 
   computeLayout();
   renderHud();
