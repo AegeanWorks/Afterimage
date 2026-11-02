@@ -66,6 +66,25 @@ Every board hides one tile that differs by **hue, lightness, saturation, size or
 
 Every result can be saved as a **1200 × 630 PNG**, drawn on a second canvas: score, rating, stats and a mini board. Daily cards add the date and their daily number.
 
+## Addictivity systems
+
+- **Combo tiers**: streaks pay escalating multipliers — COMBO (2+, 1.1×), FEVER (4+, 1.25×), BLAZE (6+, 1.5×) — with a rising correct-answer pitch and a hot streak badge.
+- **Perfect bonus**: clearing a board at first glance without a hint adds +50 before multipliers.
+- **SURGE boards**: scripted bonus boards (two per classic run) pay 1.5× and are announced up front.
+- **Hints**: press `H` or the Hint button — 1 per timed run, 3 in Zen. A pulsing ring marks the odd tile for ~2s at the cost of a streak reset.
+- **Comeback assist**: after two straight non-green boards the next difference is eased ~30%, keeping struggling runs in the flow channel instead of rage-quitting.
+- **Eye Levels**: total clears feed a local profile (`afterimage.profile`) — every 10 clears raises your EYE LV, shown in the menu.
+- **Rebalanced curve**: the final classic boards now tighten monotonically (6×6/15 → 6×6/15° → 7×7/13) instead of loosening at the end.
+- **Shareable proof**: copied results and score cards carry the best combo (`BLAZE ×10`) and perfect-board count, so skilled runs advertise themselves.
+- **Near-miss feedback**: a wrong pick orthogonally next to the odd tile says so ("So close — it was next door") instead of a flat rejection, keeping unlucky runs warm.
+- **First-run coach**: the very first board of a new player's first run names the `H` hint; the last three clock seconds tick audibly.
+- **Goal-gradient beats**: level callouts mark "halfway", "two left" and "final board" so the end pulls players forward.
+- **Weakest-link debrief**: misses are tracked per puzzle type and the result blurb names the costliest one ("Angle boards cost you most — Zen is a good place to study them"), turning failure into a practice plan. The menu also shows lifetime runs next to EYE LV.
+- **Best-pace chase**: timed runs compare your live score against your personal (or daily) best pro-rata and call out "best pace!" once when you cross it — a rabbit to chase every board.
+- **Streak-earned hints**: a daily streak of 3+ days grants a bonus hint in the daily run, and streaks of 3/7+ days earn ROLLING/UNSTOPPABLE labels — consistency pays visibly.
+- **Streak freeze**: a perfect daily win (cleared, 100% accuracy) earns one freeze — miss exactly one day and the streak survives, consuming the freeze. The menu shows "freeze armed" while one is held.
+- **Mode mastery**: per-mode win counts persist locally; cleared modes wear a CLEARED badge next to their best, and a first clear of any mode gets its own result callout.
+
 ![Score card](assets/card.png)
 
 ## Share the result
@@ -78,14 +97,16 @@ The result screen logs every board and shows the pattern as colored squares:
 - ⬜ skipped in Zen
 - ⬛ untouched
 
-**Copy result** writes the same pattern as text, ready to paste. A perfect daily would copy as:
+**Copy result** writes the same pattern as text, ready to paste. A perfect daily cleared with full clock to spare would copy as:
 
 ```text
 Afterimage Daily #304 · EAGLE EYE
-2,300 · 10/10 · 100%
+5,580 · 10/10 · 100% · BLAZE ×10 · 10 perfects · 2 surges
 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩
 Find the tile that doesn't belong.
 ```
+
+(The 5,580 figure is the verified full-clock ceiling for a perfect Focus-script run: 270+330+350+660+500+600+600+930+650+690. Real runs score less — the combo and perfect segments are the bragging rights.)
 
 ## Why it exists
 

@@ -626,6 +626,12 @@ h1 em {
 @media (max-width: 760px) {
   .hud-item.mode-item { display: none; }
 }
+.hud-item.streak.hot .v {
+  color: #ffd479;
+  text-shadow: 0 0 12px rgba(255, 212, 121, 0.55);
+}
+#hintBtn:disabled { opacity: 0.45; cursor: default; text-decoration: none; }
+.meta .best + .best { margin-left: 10px; }
 @media (max-width: 640px) {
   .hud-item.streak { display: none; }
   .brand span { display: none; }

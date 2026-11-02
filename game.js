@@ -13,19 +13,19 @@ const SCRIPTS = {
     { type: "hue",    n: 3, delta: 30, time: 15 },
     { type: "light",  n: 3, delta: 13, time: 15 },
     { type: "hue",    n: 4, delta: 23, time: 14 },
-    { type: "sat",    n: 4, delta: 26, time: 14 },
+    { type: "sat",    n: 4, delta: 26, time: 14, surge: true },
     { type: "rotate", n: 4, delta: 30, time: 16 },
     { type: "light",  n: 5, delta: 9,  time: 16 },
     { type: "size",   n: 5, delta: 15, time: 16 },
-    { type: "hue",    n: 6, delta: 16, time: 18 },
-    { type: "rotate", n: 6, delta: 20, time: 20 },
-    { type: "hue",    n: 7, delta: 20, time: 24 }
+    { type: "hue",    n: 6, delta: 15, time: 18, surge: true },
+    { type: "rotate", n: 6, delta: 15, time: 20 },
+    { type: "hue",    n: 7, delta: 13, time: 24 }
   ],
   nightmare: [
     { type: "hue",    n: 8,  delta: 18, time: 22 },
     { type: "light",  n: 8,  delta: 7,  time: 22 },
     { type: "sat",    n: 9,  delta: 15, time: 24 },
-    { type: "rotate", n: 9,  delta: 16, time: 26 },
+    { type: "rotate", n: 9,  delta: 16, time: 26, surge: true },
     { type: "size",   n: 9,  delta: 14, time: 24 },
     { type: "hue",    n: 10, delta: 13, time: 30 },
     { type: "light",  n: 10, delta: 6,  time: 30 },
@@ -118,6 +118,7 @@ const WIN_TITLES = {
 
 const BESTS_KEY = "afterimage.bests";
 const DAILY_KEY = "afterimage.daily";
+const PROFILE_KEY = "afterimage.profile";
 const HUES = [198, 214, 246, 268, 292, 330, 12, 38, 154, 174];
 const TAU = Math.PI * 2;
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -226,10 +227,51 @@ function saveDaily() {
   store.set(DAILY_KEY, JSON.stringify(state.daily));
 }
 
+function loadProfile() {
+  let saved = {};
+  try {
+    saved = JSON.parse(store.get(PROFILE_KEY, "{}")) || {};
+  } catch {
+    saved = {};
+  }
+  const num = (value) => (Number.isFinite(Number(value)) && Number(value) > 0 ? Math.floor(Number(value)) : 0);
+  const wins = {};
+  for (const mode of ["focus", "blitz", "zen", "nightmare", "daily"]) {
+    wins[mode] = num(saved.wins && saved.wins[mode]);
+  }
+  return {
+    runs: num(saved.runs),
+    clears: num(saved.clears),
+    bestStreak: num(saved.bestStreak),
+    hintsUsed: num(saved.hintsUsed),
+    freezes: Math.min(1, num(saved.freezes)),
+    wins
+  };
+}
+
+function saveProfile() {
+  store.set(PROFILE_KEY, JSON.stringify(state.profile));
+}
+
+function eyeLevel(clears) {
+  return Math.floor(clears / 10) + 1;
+}
+
+function freezeRepair(last, day) {
+  if (typeof last !== "string" || !last || typeof day !== "string" || !day) return false;
+  if (last === day) return false;
+  const yesterday = previousDateKey(day);
+  if (last === yesterday) return false;
+  return last === previousDateKey(yesterday);
+}
+
 function currentStreak() {
   const today = localDateKey();
   const yesterday = previousDateKey(today);
   if (state.daily.last === today || state.daily.last === yesterday) {
+    return state.daily.streak;
+  }
+  if (state.profile.freezes > 0 && freezeRepair(state.daily.last, today)) {
     return state.daily.streak;
   }
   return 0;
@@ -262,6 +304,9 @@ const ui = {
   copyResult: document.getElementById("copyResult"),
   skip: document.getElementById("skipBtn"),
   quit: document.getElementById("quitBtn"),
+  hint: document.getElementById("hintBtn"),
+  streakItem: document.getElementById("streakItem"),
+  metaLevel: document.getElementById("metaLevel"),
   resultKicker: document.getElementById("resultKicker"),
   resultTitle: document.getElementById("resultTitle"),
   resultScore: document.getElementById("resultScore"),
@@ -307,11 +352,20 @@ const state = {
   hover: -1,
   wrongFlash: -1,
   reveal: false,
+  hintActive: 0,
+  lastTickSec: 0,
+  typeMisses: {},
+  hints: 1,
+  slump: 0,
+  paceCalled: false,
+  perfectBoards: 0,
+  surgeBoards: 0,
   particles: [],
   lastFrame: 0,
   muted: store.get("afterimage.muted", "0") === "1",
   bests: loadBests(),
   daily: loadDaily(),
+  profile: loadProfile(),
   rng: null,
   dailyKey: "",
   dailyNumber: 0,
@@ -348,12 +402,25 @@ function tone(freq, duration, type, gain, delay = 0) {
 }
 
 function soundCorrect() {
-  tone(620, 0.09, "sine", 0.045);
-  tone(930, 0.16, "sine", 0.038, 0.07);
+  const lift = Math.min(6, state.streak) * 45;
+  tone(620 + lift, 0.09, "sine", 0.045);
+  tone(930 + lift * 1.4, 0.16, "sine", 0.038, 0.07);
+  const tier = comboTier(state.streak).name;
+  if (tier === "FEVER" || tier === "BLAZE") tone(1240 + lift, 0.2, "sine", 0.03, 0.14);
 }
 
 function soundWrong() {
   tone(146, 0.2, "triangle", 0.05);
+}
+
+function soundHint() {
+  tone(520, 0.12, "sine", 0.04);
+  tone(780, 0.18, "sine", 0.035, 0.1);
+}
+
+function soundSurge() {
+  tone(440, 0.1, "square", 0.022);
+  tone(660, 0.14, "square", 0.02, 0.09);
 }
 
 /* --------------------------------------------------------------- round art */
@@ -362,10 +429,11 @@ function random() {
   return state.rng ? state.rng() : Math.random();
 }
 
-function makeRound(def) {
+function makeRound(def, ease = 1) {
   const n = def.n;
   const odd = Math.floor(random() * n * n);
   const hue = HUES[Math.floor(random() * HUES.length)];
+  const delta = easedDelta(def, ease);
   const round = {
     def,
     n,
@@ -380,32 +448,32 @@ function makeRound(def) {
     case "hue": {
       const direction = random() < 0.5 ? -1 : 1;
       round.base = `hsl(${hue} 68% 58%)`;
-      round.oddColor = `hsl(${hue + direction * def.delta} 68% 58%)`;
+      round.oddColor = `hsl(${hue + direction * delta} 68% 58%)`;
       break;
     }
     case "light": {
       const direction = random() < 0.5 ? -1 : 1;
       round.base = `hsl(${hue} 62% 54%)`;
-      round.oddColor = `hsl(${hue} 62% ${54 + direction * def.delta}%)`;
+      round.oddColor = `hsl(${hue} 62% ${54 + direction * delta}%)`;
       break;
     }
     case "sat": {
       round.base = `hsl(${hue} 72% 60%)`;
-      round.oddColor = `hsl(${hue} ${72 - def.delta}% 60%)`;
+      round.oddColor = `hsl(${hue} ${72 - delta}% 60%)`;
       break;
     }
     case "size": {
       round.base = `hsl(${hue} 74% 62%)`;
       round.oddColor = round.base;
       const direction = random() < 0.5 ? -1 : 1;
-      round.oddScale = 1 + (direction * def.delta) / 100;
+      round.oddScale = 1 + (direction * delta) / 100;
       break;
     }
     case "rotate": {
       round.base = `hsl(${hue} 72% 62%)`;
       round.oddColor = round.base;
       const direction = random() < 0.5 ? -1 : 1;
-      round.oddAngle = (direction * def.delta * Math.PI) / 180;
+      round.oddAngle = (direction * delta * Math.PI) / 180;
       break;
     }
     default:
@@ -589,6 +657,22 @@ function paint() {
     ctx.stroke();
   }
 
+  if (state.hintActive > 0 && state.phase === "play") {
+    const tile = state.rects[round.odd];
+    if (tile) {
+      const pulse = 0.55 + Math.sin(now / 150) * 0.35;
+      ctx.strokeStyle = `rgba(79,209,197,${pulse.toFixed(3)})`;
+      ctx.lineWidth = Math.max(3, size * 0.006);
+      ctx.beginPath();
+      ctx.roundRect(tile.x - 2, tile.y - 2, tile.w + 4, tile.h + 4, tile.w * 0.24);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(79,209,197,${(pulse * 0.18).toFixed(3)})`;
+      ctx.beginPath();
+      ctx.roundRect(tile.x - 2, tile.y - 2, tile.w + 4, tile.h + 4, tile.w * 0.24);
+      ctx.fill();
+    }
+  }
+
   paintParticles();
 }
 
@@ -603,8 +687,16 @@ function renderHud() {
   ui.level.textContent = String(Math.min(state.level + 1, state.levels.length)).padStart(2, "0");
   ui.levelTotal.textContent = `/${state.levels.length}`;
   ui.score.textContent = state.score.toLocaleString("en-US");
-  ui.streak.textContent = String(state.streak);
+  const tier = comboTier(state.streak);
+  ui.streak.textContent = tier.name ? `${state.streak} ${tier.name}` : String(state.streak);
+  if (ui.streakItem) ui.streakItem.classList.toggle("hot", state.streak >= 3);
   ui.lives.textContent = "";
+
+  if (ui.hint) {
+    ui.hint.hidden = false;
+    ui.hint.disabled = state.hints <= 0 || state.phase !== "play";
+    ui.hint.textContent = state.hints > 0 ? `Hint (${state.hints}) [H]` : "No hints";
+  }
 
   if (!state.timed) return;
   for (let i = 0; i < state.maxLives; i += 1) {
@@ -627,8 +719,9 @@ function updateTimer() {
 function renderBests() {
   document.querySelectorAll("[data-best]").forEach((node) => {
     const value = state.bests[node.dataset.best] || 0;
-    node.textContent = value > 0 ? `BEST ${value.toLocaleString("en-US")}` : "";
-    node.hidden = value <= 0;
+    const cleared = (state.profile.wins && state.profile.wins[node.dataset.best]) || 0;
+    node.textContent = bestLine(value, cleared);
+    node.hidden = value <= 0 && cleared <= 0;
   });
 }
 
@@ -648,7 +741,15 @@ function renderDaily() {
   }
 
   const streak = currentStreak();
-  ui.metaStreak.textContent = streak > 0 ? `${streak}-day streak` : "Day one";
+  const freezeArmed = state.profile.freezes > 0 && streak > 0 ? " · freeze armed" : "";
+  ui.metaStreak.textContent =
+    streak >= 7 ? `${streak}-day streak · UNSTOPPABLE${freezeArmed}`
+    : streak >= 3 ? `${streak}-day streak · ROLLING${freezeArmed}`
+    : streak > 0 ? `${streak}-day streak${freezeArmed}`
+    : "Day one";
+  if (ui.metaLevel) {
+    ui.metaLevel.textContent = `EYE LV ${eyeLevel(state.profile.clears)} · ${state.profile.clears} clears · ${state.profile.runs} runs`;
+  }
 }
 
 function renderBoardStrip(icons) {
@@ -699,6 +800,13 @@ function startRun(mode) {
   state.remaining = 0;
   state.phase = "play";
   state.reveal = false;
+  state.hintActive = 0;
+  state.hints = mode === "zen" ? 3 : 1 + (daily ? bonusHints(currentStreak()) : 0);
+  state.paceCalled = false;
+  state.slump = 0;
+  state.perfectBoards = 0;
+  state.surgeBoards = 0;
+  state.typeMisses = {};
   state.wrongFlash = -1;
   state.hover = -1;
   state.particles = [];
@@ -727,9 +835,10 @@ function nextLevel() {
   const def = state.levels[state.level];
   const config = MODES[state.mode];
   const seconds = Math.max(config.minTime, Math.round(def.time * config.timeScale));
+  const ease = assistEase(state.slump);
 
   state.n = def.n;
-  state.data = makeRound(def);
+  state.data = makeRound(def, ease);
   state.odd = state.data.odd;
   state.timeLimit = seconds * 1000;
   state.remaining = state.timeLimit;
@@ -737,7 +846,9 @@ function nextLevel() {
   state.hover = -1;
   state.wrongFlash = -1;
   state.reveal = false;
+  state.hintActive = 0;
   state.levelMistakes = 0;
+  state.lastTickSec = 0;
   state.particles = [];
 
   computeLayout();
@@ -745,7 +856,12 @@ function nextLevel() {
   updateTimer();
   paint();
   ui.cells.classList.remove("off");
-  say(`Level ${state.level + 1} · ${TYPE_LABEL[def.type]} — find the one that differs.`);
+  const surge = Boolean(def.surge);
+  const assisted = ease > 1 ? " · assisted" : "";
+  const tip = firstRunTip(state.profile.runs, state.level, state.hints);
+  const beat = progressBeat(state.level, state.levels.length);
+  if (surge) soundSurge();
+  say(`Level ${state.level + 1} · ${TYPE_LABEL[def.type]}${surge ? " · SURGE 1.5×" : ""}${assisted}${tip}${beat} — find the one that differs.`);
 
   state.lastFrame = performance.now();
   ensureLoop();
@@ -759,20 +875,40 @@ function pick(index) {
     state.attempts += 1;
     state.hits += 1;
     state.cleared += 1;
-    state.boards.push(state.levelMistakes === 0 ? "🟩" : "🟨");
+    const perfect = state.levelMistakes === 0 && state.hintActive <= 0;
+    const surge = Boolean(state.data.def.surge);
+    state.boards.push(perfect ? "🟩" : "🟨");
     state.streak += 1;
     state.bestStreak = Math.max(state.bestStreak, state.streak);
+    state.slump = 0;
+    if (perfect) state.perfectBoards += 1;
+    if (surge) state.surgeBoards += 1;
 
-    const gain = scoreFor(state.remaining, state.streak);
+    const gain = scoreFor(state.remaining, state.streak, perfect, surge);
     state.score += gain;
     state.phase = "pause";
     ui.cells.classList.add("off");
 
     const tile = state.rects[index];
+    const tier = comboTier(state.streak).name;
     burst(tile.x + tile.w / 2, tile.y + tile.h / 2, state.data.oddColor);
+    if (state.streak >= 3) burst(tile.x + tile.w / 2, tile.y + tile.h / 2, "#ffffff");
     soundCorrect();
     const tail = state.streak > 1 ? ` · ${state.streak} in a row` : "";
-    say(`Correct · +${gain}${tail}`);
+    const flavor = tier ? ` · ${tier}` : "";
+    const bonus = `${perfect ? " · perfect +50" : ""}${surge ? " · SURGE 1.5×" : ""}`;
+    let pace = "";
+    if (state.timed && !state.paceCalled) {
+      const config = MODES[state.mode];
+      const target = config.daily
+        ? (state.daily.result && state.daily.result.date === state.dailyKey ? state.daily.result.score : 0)
+        : (state.bests[state.mode] || 0);
+      if (onBestPace(state.score, state.level + 1, state.levels.length, target)) {
+        state.paceCalled = true;
+        pace = " · best pace!";
+      }
+    }
+    say(`Correct · +${gain}${tail}${flavor}${bonus}${pace}`);
     renderHud();
 
     window.setTimeout(() => {
@@ -785,15 +921,27 @@ function pick(index) {
   state.attempts += 1;
   state.streak = 0;
   state.levelMistakes += 1;
+  state.slump += 1;
   state.wrongFlash = index;
   state.phase = "pause";
+  const missType = state.data.def.type;
+  state.typeMisses[missType] = (state.typeMisses[missType] || 0) + 1;
   ui.cells.classList.add("off");
   shake();
   soundWrong();
 
+  const near = isAdjacent(state.n, index, state.odd);
   if (state.timed) {
     state.lives = Math.max(0, state.lives - 1);
-    say(state.lives > 0 ? `Not that one · ${state.lives} focus left` : "Out of focus");
+    if (state.lives <= 0) {
+      say("Out of focus");
+    } else if (near) {
+      say(`So close — it was next door · ${state.lives} focus left`);
+    } else {
+      say(`Not that one · ${state.lives} focus left`);
+    }
+  } else if (near) {
+    say("So close — right next to it. Scan again");
   } else {
     say("Not that one — scan again");
   }
@@ -821,7 +969,10 @@ function timeout() {
   state.phase = "reveal";
   state.attempts += 1;
   state.streak = 0;
+  state.slump += 1;
   state.boards.push("🟥");
+  const missType = state.data.def.type;
+  state.typeMisses[missType] = (state.typeMisses[missType] || 0) + 1;
   state.reveal = true;
   state.hover = -1;
   ui.cells.classList.add("off");
@@ -853,11 +1004,82 @@ function advance() {
   nextLevel();
 }
 
-function scoreFor(remaining, streak) {
+function comboTier(streak) {
+  if (streak >= 6) return { name: "BLAZE", mult: 1.5 };
+  if (streak >= 4) return { name: "FEVER", mult: 1.25 };
+  if (streak >= 2) return { name: "COMBO", mult: 1.1 };
+  return { name: "", mult: 1 };
+}
+
+function assistEase(slump) {
+  return slump >= 2 ? 1.3 : 1;
+}
+
+function isAdjacent(n, a, b) {
+  if (a === b) return false;
+  const ar = Math.floor(a / n);
+  const ac = a % n;
+  const br = Math.floor(b / n);
+  const bc = b % n;
+  return Math.abs(ar - br) + Math.abs(ac - bc) === 1;
+}
+
+function firstRunTip(runs, level, hints) {
+  if (runs === 0 && level === 0 && hints > 0) return " · press H for a hint";
+  return "";
+}
+
+function progressBeat(level, total) {
+  if (level === total - 1) return " · final board";
+  if (level === total - 2) return " · two left";
+  if (level === Math.floor(total / 2)) return " · halfway";
+  return "";
+}
+
+function weakestType(misses) {
+  let weak = "";
+  let best = 0;
+  for (const [type, count] of Object.entries(misses || {})) {
+    if (count > best) {
+      best = count;
+      weak = type;
+    }
+  }
+  return weak;
+}
+
+function bonusHints(dailyStreak) {
+  return dailyStreak >= 3 ? 1 : 0;
+}
+
+function bestLine(best, wins) {
+  const parts = [];
+  if (best > 0) parts.push(`BEST ${best.toLocaleString("en-US")}`);
+  if (wins > 0) parts.push("CLEARED");
+  return parts.join(" · ");
+}
+
+function onBestPace(score, boardsDone, total, best) {
+  if (!(best > 0) || !(score > 0)) return false;
+  return score >= best * (boardsDone / total);
+}
+
+function easedDelta(def, ease) {
+  if (!ease || ease <= 1) return def.delta;
+  const caps = { hue: 40, light: 18, sat: 35, size: 25, rotate: 40 };
+  const cap = caps[def.type] || 40;
+  return Math.min(cap, Math.round(def.delta * ease * 10) / 10);
+}
+
+function scoreFor(remaining, streak, perfect = false, surge = false) {
   const speed = state.timed ? Math.round(Math.max(0, remaining) / 1000) * 8 : 40;
   const streakBonus = Math.min(120, Math.max(0, streak - 1) * 30);
-  const base = 100 + speed + streakBonus;
-  return Math.round((base * state.multiplier) / 10) * 10;
+  let base = 100 + speed + streakBonus;
+  if (perfect) base += 50;
+  const tier = comboTier(streak);
+  let total = base * state.multiplier * tier.mult;
+  if (surge) total *= 1.5;
+  return Math.round(total / 10) * 10;
 }
 
 function rateRun(won, cleared, total, accuracy, mode) {
@@ -919,7 +1141,15 @@ function recordDaily(won, accuracy, rating) {
   const yesterday = previousDateKey(day);
 
   if (state.daily.last !== day) {
-    state.daily.streak = state.daily.last === yesterday ? state.daily.streak + 1 : 1;
+    if (state.daily.last === yesterday) {
+      state.daily.streak += 1;
+    } else if (state.profile.freezes > 0 && freezeRepair(state.daily.last, day)) {
+      state.profile.freezes = 0;
+      state.daily.streak += 1;
+      saveProfile();
+    } else {
+      state.daily.streak = 1;
+    }
     state.daily.last = day;
   }
 
@@ -941,6 +1171,33 @@ function recordDaily(won, accuracy, rating) {
   return { isBest, streak: state.daily.streak };
 }
 
+function earnFreeze(won, accuracy) {
+  if (!won || accuracy < 100 || state.profile.freezes > 0) return false;
+  state.profile.freezes = 1;
+  saveProfile();
+  return true;
+}
+
+function useHint() {
+  if (state.phase !== "play" || !state.data || state.hints <= 0) return;
+  const runId = state.runId;
+  state.hints -= 1;
+  state.hintActive = 1;
+  state.levelMistakes += 1;
+  state.streak = 0;
+  state.profile.hintsUsed += 1;
+  saveProfile();
+  soundHint();
+  say("Hint — follow the pulse. Streak reset, but the board is still scorable.");
+  renderHud();
+  paint();
+  window.setTimeout(() => {
+    if (runId !== state.runId || state.phase !== "play") return;
+    state.hintActive = 0;
+    paint();
+  }, 2200);
+}
+
 function finish(won) {
   state.runId += 1;
   state.phase = "over";
@@ -949,6 +1206,17 @@ function finish(won) {
   ui.hud.hidden = true;
   ui.skip.hidden = true;
   ui.quit.hidden = true;
+  if (ui.hint) ui.hint.hidden = true;
+
+  state.profile.runs += 1;
+  state.profile.clears += state.cleared;
+  state.profile.bestStreak = Math.max(state.profile.bestStreak, state.bestStreak);
+  let firstClear = false;
+  if (won) {
+    state.profile.wins[state.mode] = (state.profile.wins[state.mode] || 0) + 1;
+    firstClear = state.profile.wins[state.mode] === 1;
+  }
+  saveProfile();
 
   const total = state.levels.length;
   const attempts = Math.max(1, state.attempts);
@@ -967,6 +1235,7 @@ function finish(won) {
   } else {
     isBest = Boolean(state.timed && config.best && saveBest(state.mode, state.score));
   }
+  const freezeEarned = isDaily && earnFreeze(won, accuracy);
 
   state.result = {
     mode: state.mode,
@@ -976,6 +1245,9 @@ function finish(won) {
     total,
     accuracy,
     bestStreak: state.bestStreak,
+    bestTier: comboTier(state.bestStreak).name,
+    perfectBoards: state.perfectBoards,
+    surgeBoards: state.surgeBoards,
     boards: boardIcons,
     isBest,
     rating: info.rating,
@@ -992,7 +1264,21 @@ function finish(won) {
     : "So close.";
   ui.resultScore.textContent = state.score.toLocaleString("en-US");
   ui.resultRating.textContent = info.rating;
-  ui.resultBlurb.textContent = info.blurb;
+  let blurb = state.perfectBoards >= 5
+    ? `${info.blurb} ${state.perfectBoards} perfect boards — locked in.`
+    : info.blurb;
+  const weak = weakestType(state.typeMisses);
+  if (weak && state.cleared < total) {
+    const label = TYPE_LABEL[weak] || weak;
+    blurb += ` ${label[0].toUpperCase()}${label.slice(1)} boards cost you most — Zen is a good place to study them.`;
+  }
+  if (freezeEarned) {
+    blurb += " Streak freeze earned — one missed day forgiven.";
+  }
+  if (firstClear) {
+    blurb += ` First ${MODES[state.mode].label} clear!`;
+  }
+  ui.resultBlurb.textContent = blurb;
   ui.resultMode.textContent = isDaily
     ? `Daily #${state.dailyNumber} · ${state.dailyDateLabel} · ${total} boards · ${state.maxLives} lives`
     : config.timed
@@ -1000,7 +1286,8 @@ function finish(won) {
       : `${config.label} · ${total} boards · no clock`;
   ui.statCleared.textContent = `${state.cleared}/${total}`;
   ui.statAccuracy.textContent = `${accuracy}%`;
-  ui.statStreak.textContent = String(state.bestStreak);
+  const bestTierName = comboTier(state.bestStreak).name;
+  ui.statStreak.textContent = bestTierName ? `${state.bestStreak} ${bestTierName}` : String(state.bestStreak);
   ui.newBest.textContent = isDaily ? "New daily best" : "New best";
   ui.newBest.hidden = !isBest;
   ui.saveCard.disabled = false;
@@ -1029,6 +1316,7 @@ function showMenu() {
   ui.hud.hidden = true;
   ui.skip.hidden = true;
   ui.quit.hidden = true;
+  if (ui.hint) ui.hint.hidden = true;
   renderBests();
   renderDaily();
 }
@@ -1234,9 +1522,15 @@ function renderScoreCard(result) {
     drawTracked(g, result.daily ? "NEW DAILY BEST" : "NEW PERSONAL BEST", 72, 552, 2.6);
   }
 
-  const footer = result.daily
+  const cardProof = [
+    result.bestTier ? `${result.bestTier} ×${result.bestStreak}` : "",
+    Number(result.perfectBoards) > 0 ? `${result.perfectBoards} PERFECT` : "",
+    Number(result.surgeBoards) > 0 ? `${result.surgeBoards} SURGE` : ""
+  ].filter(Boolean).join(" · ");
+  const footerBase = result.daily
     ? `${result.dailyLabel} · ${result.total} BOARDS · ONE DIFFERENCE`
     : `${result.total} BOARDS · ONE DIFFERENCE · NO HINTS`;
+  const footer = cardProof ? `${footerBase} · ${cardProof}` : footerBase;
   g.fillStyle = "#6f6f88";
   g.font = '600 12px "Segoe UI", system-ui, sans-serif';
   drawTracked(g, footer, 72, 592, 2);
@@ -1277,9 +1571,18 @@ function buildShareText(result) {
   const title = result.daily
     ? `Afterimage Daily #${result.dailyNumber}`
     : `Afterimage · ${mode.label}`;
+  const proof = [];
+  if (result.bestTier) proof.push(`${result.bestTier} ×${result.bestStreak}`);
+  if (Number(result.perfectBoards) > 0) {
+    proof.push(`${result.perfectBoards} perfect${result.perfectBoards === 1 ? "" : "s"}`);
+  }
+  if (Number(result.surgeBoards) > 0) {
+    proof.push(`${result.surgeBoards} surge${result.surgeBoards === 1 ? "" : "s"}`);
+  }
+  const proofLine = proof.length ? ` · ${proof.join(" · ")}` : "";
   return [
     `${title} · ${result.rating}`,
-    `${result.score.toLocaleString("en-US")} · ${result.cleared}/${result.total} · ${result.accuracy}%`,
+    `${result.score.toLocaleString("en-US")} · ${result.cleared}/${result.total} · ${result.accuracy}%${proofLine}`,
     (result.boards || []).join(""),
     "Find the tile that doesn't belong."
   ].join("\n");
@@ -1346,6 +1649,12 @@ function frame(now) {
       state.remaining = 0;
       updateTimer();
       timeout();
+    } else {
+      const whole = Math.ceil(state.remaining / 1000);
+      if (whole <= 3 && whole >= 1 && whole !== state.lastTickSec) {
+        state.lastTickSec = whole;
+        tone(880, 0.05, "square", 0.018);
+      }
     }
   }
 
@@ -1398,11 +1707,30 @@ ui.saveCard.addEventListener("click", saveScoreCard);
 ui.copyResult.addEventListener("click", copyResult);
 ui.changeMode.addEventListener("click", showMenu);
 ui.quit.addEventListener("click", showMenu);
+if (ui.hint) ui.hint.addEventListener("click", () => {
+  ensureAudio();
+  useHint();
+});
+
+document.addEventListener("keydown", (event) => {
+  if ((event.key === "h" || event.key === "H") && !event.metaKey && !event.ctrlKey) {
+    const tag = (document.activeElement && document.activeElement.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    if (!ui.veil.hidden) return;
+    if (state.phase === "play") {
+      ensureAudio();
+      useHint();
+    }
+  }
+});
 
 ui.skip.addEventListener("click", () => {
   if (state.mode !== "zen" || state.phase !== "play") return;
   state.skipped += 1;
+  state.slump += 1;
+  state.streak = 0;
   state.boards.push("⬜");
+  renderHud();
   advance();
 });
 
@@ -1442,6 +1770,7 @@ ui.menu.hidden = false;
 ui.over.hidden = true;
 ui.veil.hidden = false;
 ui.hud.hidden = true;
+if (ui.hint) ui.hint.hidden = true;
 
 const requestedMode = new URLSearchParams(window.location.search).get("mode");
 if (requestedMode && Object.prototype.hasOwnProperty.call(MODES, requestedMode)) {

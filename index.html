@@ -57,8 +57,9 @@
 
   <footer class="foot">
     <span>Find the tile that doesn't belong</span>
-    <span class="foot-keys"><kbd>Tab</kbd> + <kbd>Enter</kbd> works too</span>
+    <span class="foot-keys"><kbd>Tab</kbd> + <kbd>Enter</kbd> works too · <kbd>H</kbd> hint</span>
     <span class="foot-spacer"></span>
+    <button class="skip" id="hintBtn" type="button" hidden>Hint (1) [H]</button>
     <button class="skip" id="skipBtn" type="button" hidden>Skip level →</button>
     <button class="skip" id="quitBtn" type="button" hidden>Quit run</button>
   </footer>
@@ -87,7 +88,7 @@
         <span class="mode-desc">10 boards · half clock · 2 lives</span>
       </button>
       <button class="mode" type="button" data-mode="zen">
-        <span class="mode-head"><span class="mode-name">Zen</span></span>
+        <span class="mode-head"><span class="mode-name">Zen</span><span class="mode-best" data-best="zen"></span></span>
         <span class="mode-desc">10 boards · no clock · no fail</span>
       </button>
       <button class="mode danger" type="button" data-mode="nightmare">
@@ -97,6 +98,7 @@
     </div>
     <div class="meta">
       <span>No accounts · bests stay in this browser</span>
+      <span class="best" id="metaLevel">EYE LV 1</span>
       <span class="best" id="metaStreak">Day one</span>
     </div>
   </section>

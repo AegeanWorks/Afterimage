@@ -155,3 +155,222 @@ test('buildShareText formats share card text with result strip', () => {
   assert.ok(text.includes('🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩'));
   assert.ok(text.includes("Find the tile that doesn't belong."));
 });
+
+test('comboTier escalates multiplier with streak', () => {
+  const { comboTier } = createHarness();
+
+  assert.strictEqual(comboTier(0).mult, 1);
+  assert.strictEqual(comboTier(1).name, '');
+  assert.strictEqual(comboTier(2).name, 'COMBO');
+  assert.strictEqual(comboTier(4).name, 'FEVER');
+  assert.strictEqual(comboTier(6).name, 'BLAZE');
+  assert.ok(comboTier(6).mult > comboTier(4).mult);
+  assert.ok(comboTier(4).mult > comboTier(2).mult);
+});
+
+test('assistEase and easedDelta ease boards after a slump', () => {
+  const { assistEase, easedDelta } = createHarness();
+
+  assert.strictEqual(assistEase(0), 1);
+  assert.strictEqual(assistEase(1), 1);
+  assert.strictEqual(assistEase(2), 1.3);
+
+  const def = { type: 'hue', delta: 20 };
+  assert.strictEqual(easedDelta(def, 1), 20);
+  assert.ok(easedDelta(def, 1.3) > 20);
+  assert.ok(easedDelta({ type: 'hue', delta: 39 }, 1.3) <= 40);
+});
+
+test('makeRound accepts an ease factor for comeback boards', () => {
+  const { makeRound, SCRIPTS } = createHarness();
+
+  const round = makeRound(SCRIPTS.classic[0], 1.3);
+  assert.ok(round.odd >= 0 && round.odd < round.n * round.n);
+  assert.ok(round.base.startsWith('hsl('));
+});
+
+test('scoreFor rewards perfect and surge boards without breaking monotonicity', () => {
+  const { scoreFor } = createHarness();
+
+  const base = scoreFor(10000, 3);
+  const perfect = scoreFor(10000, 3, true);
+  const surge = scoreFor(10000, 3, false, true);
+  assert.ok(perfect > base, 'perfect board must pay more than a plain clear');
+  assert.ok(surge > base, 'surge board must pay more than a plain board');
+  assert.ok(scoreFor(10000, 3) > scoreFor(10000, 0), 'streak still pays more');
+});
+
+test('surge boards are scripted into classic and nightmare runs', () => {
+  const { SCRIPTS } = createHarness();
+
+  assert.ok(SCRIPTS.classic.some((round) => round.surge === true));
+  assert.ok(SCRIPTS.nightmare.some((round) => round.surge === true));
+});
+
+test('late classic boards ramp harder than before (flow curve)', () => {
+  const { SCRIPTS } = createHarness();
+
+  const last = SCRIPTS.classic[SCRIPTS.classic.length - 1];
+  assert.ok(last.delta <= 15, `final classic delta ${last.delta} must stay tight`);
+  assert.ok(last.n >= 7, 'final board must stay large');
+});
+
+test('eyeLevel progresses every ten clears', () => {
+  const { eyeLevel, loadProfile } = createHarness();
+
+  assert.strictEqual(eyeLevel(0), 1);
+  assert.strictEqual(eyeLevel(9), 1);
+  assert.strictEqual(eyeLevel(10), 2);
+  assert.strictEqual(eyeLevel(25), 3);
+
+  const profile = loadProfile();
+  assert.strictEqual(profile.runs, 0);
+  assert.strictEqual(profile.clears, 0);
+});
+
+test('buildShareText appends combo and perfect proof when present', () => {
+  const { buildShareText } = createHarness();
+
+  const result = {
+    daily: true,
+    dailyNumber: 304,
+    mode: 'focus',
+    won: true,
+    cleared: 10,
+    total: 10,
+    accuracy: 100,
+    score: 5580,
+    rating: 'EAGLE EYE',
+    bestTier: 'BLAZE',
+    bestStreak: 10,
+    perfectBoards: 10,
+    surgeBoards: 2,
+    boards: ['🟩', '🟩', '🟩', '🟩', '🟩', '🟩', '🟩', '🟩', '🟩', '🟩']
+  };
+
+  const text = buildShareText(result);
+  assert.ok(text.includes('Afterimage Daily #304 · EAGLE EYE'));
+  assert.ok(text.includes('5,580 · 10/10 · 100% · BLAZE ×10 · 10 perfects · 2 surges'));
+});
+
+test('buildShareText stays clean without combo fields (backward compat)', () => {  const { buildShareText } = createHarness();
+
+  const result = {
+    daily: false,
+    mode: 'zen',
+    won: true,
+    cleared: 8,
+    total: 10,
+    accuracy: 80,
+    score: 1200,
+    rating: 'SHARP SIGHT',
+    boards: ['🟩', '🟨', '🟩', '🟩', '🟩', '🟨', '🟩', '🟩', '⬜', '⬛']
+  };
+
+  const text = buildShareText(result);
+  assert.ok(text.includes('1,200 · 8/10 · 80%'));
+  assert.ok(!text.includes('×'));
+  assert.ok(!text.includes('perfect'));
+});
+
+test('isAdjacent detects orthogonal neighbors without wrap', () => {
+  const { isAdjacent } = createHarness();
+
+  assert.ok(isAdjacent(4, 5, 6));
+  assert.ok(isAdjacent(4, 5, 9));
+  assert.ok(isAdjacent(4, 0, 1));
+  assert.ok(!isAdjacent(4, 5, 5));
+  assert.ok(!isAdjacent(4, 3, 4), 'row wrap is not adjacent');
+  assert.ok(!isAdjacent(4, 0, 15), 'diagonal is not adjacent');
+  assert.ok(!isAdjacent(4, 0, 5), 'two rows apart is not adjacent');
+  assert.ok(isAdjacent(7, 48, 47));
+});
+
+test('firstRunTip coaches only the very first board', () => {
+  const { firstRunTip } = createHarness();
+
+  assert.strictEqual(firstRunTip(0, 0, 1), ' · press H for a hint');
+  assert.strictEqual(firstRunTip(0, 1, 1), '');
+  assert.strictEqual(firstRunTip(3, 0, 1), '');
+  assert.strictEqual(firstRunTip(0, 0, 0), '');
+});
+
+test('progressBeat marks halfway, two-left and final boards', () => {
+  const { progressBeat } = createHarness();
+
+  assert.strictEqual(progressBeat(0, 10), '');
+  assert.strictEqual(progressBeat(5, 10), ' · halfway');
+  assert.strictEqual(progressBeat(8, 10), ' · two left');
+  assert.strictEqual(progressBeat(9, 10), ' · final board');
+  assert.strictEqual(progressBeat(4, 8), ' · halfway');
+  assert.strictEqual(progressBeat(7, 8), ' · final board');
+});
+
+test('weakestType names the most-missed puzzle type', () => {
+  const { weakestType } = createHarness();
+
+  assert.strictEqual(weakestType({}), '');
+  assert.strictEqual(weakestType(null), '');
+  assert.strictEqual(weakestType({ rotate: 3, hue: 1 }), 'rotate');
+  assert.strictEqual(weakestType({ hue: 2, sat: 2, light: 1 }), 'hue');
+});
+
+test('bonusHints rewards daily streaks of 3+ days', () => {
+  const { bonusHints } = createHarness();
+
+  assert.strictEqual(bonusHints(0), 0);
+  assert.strictEqual(bonusHints(2), 0);
+  assert.strictEqual(bonusHints(3), 1);
+  assert.strictEqual(bonusHints(30), 1);
+});
+
+test('onBestPace compares prorated score against the target', () => {
+  const { onBestPace } = createHarness();
+
+  assert.strictEqual(onBestPace(0, 5, 10, 2000), false);
+  assert.strictEqual(onBestPace(1000, 5, 10, 0), false);
+  assert.strictEqual(onBestPace(1000, 5, 10, 2000), true);
+  assert.strictEqual(onBestPace(999, 5, 10, 2000), false);
+  assert.strictEqual(onBestPace(2000, 10, 10, 2000), true);
+});
+
+test('freezeRepair forgives exactly one missed day', () => {
+  const { freezeRepair } = createHarness();
+
+  assert.strictEqual(freezeRepair('2026-10-30', '2026-11-01'), true);
+  assert.strictEqual(freezeRepair('2026-10-31', '2026-11-01'), false);
+  assert.strictEqual(freezeRepair('2026-11-01', '2026-11-01'), false);
+  assert.strictEqual(freezeRepair('2026-10-29', '2026-11-01'), false);
+  assert.strictEqual(freezeRepair('2026-02-27', '2026-03-01'), true);
+  assert.strictEqual(freezeRepair('', '2026-11-01'), false);
+  assert.strictEqual(freezeRepair(null, '2026-11-01'), false);
+});
+
+test('earnFreeze grants one freeze for a perfect daily win', () => {
+  const first = createHarness();
+
+  assert.strictEqual(first.earnFreeze(true, 100), true);
+  assert.strictEqual(first.earnFreeze(true, 100), false);
+
+  const second = createHarness();
+  assert.strictEqual(second.earnFreeze(false, 100), false);
+  assert.strictEqual(second.earnFreeze(true, 99), false);
+});
+
+test('bestLine combines best score and cleared badge', () => {
+  const { bestLine } = createHarness();
+
+  assert.strictEqual(bestLine(0, 0), '');
+  assert.strictEqual(bestLine(2300, 0), 'BEST 2,300');
+  assert.strictEqual(bestLine(0, 2), 'CLEARED');
+  assert.strictEqual(bestLine(2300, 1), 'BEST 2,300 · CLEARED');
+});
+
+test('loadProfile defaults wins per mode to zero', () => {
+  const { loadProfile } = createHarness();
+
+  const profile = loadProfile();
+  for (const mode of ['focus', 'blitz', 'zen', 'nightmare', 'daily']) {
+    assert.strictEqual(profile.wins[mode], 0);
+  }
+});
