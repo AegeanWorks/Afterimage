@@ -68,7 +68,7 @@ test('SCRIPTS configuration integrity', () => {
 test('MODES configuration integrity', () => {
   const { MODES } = createHarness();
 
-  const requiredModes = ['focus', 'blitz', 'zen', 'nightmare', 'daily'];
+  const requiredModes = ['focus', 'blitz', 'zen', 'nightmare', 'onslaught', 'daily'];
   for (const m of requiredModes) {
     assert.ok(Object.prototype.hasOwnProperty.call(MODES, m), `mode ${m} must exist`);
     const cfg = MODES[m];
@@ -81,6 +81,7 @@ test('MODES configuration integrity', () => {
   assert.strictEqual(MODES.focus.lives, 3);
   assert.strictEqual(MODES.blitz.lives, 2);
   assert.strictEqual(MODES.nightmare.lives, 1);
+  assert.strictEqual(MODES.onslaught.lives, 2);
 });
 
 test('BOARD_CLASS maps result symbols to css classes', () => {
