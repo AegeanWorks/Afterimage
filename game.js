@@ -1609,7 +1609,7 @@ function saveScoreCard() {
 }
 
 function buildShareText(result) {
-  const mode = MODES[result.mode];
+  const mode = MODES[result.mode] || MODES.focus;
   const title = result.daily
     ? `Afterimage Daily #${result.dailyNumber}`
     : `Afterimage · ${mode.label}`;

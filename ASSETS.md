@@ -6,7 +6,7 @@ extracted, redistributed or included in a mod without a grant.
 
 | Path or pattern | Type | Rights holder | License | Notes |
 |---|---|---|---|---|
-| `assets/*.png` | screenshots & score cards | AegeanWorks | AGL-1.1 | Menu, nightmare, and score card captures |
+| `assets/**/*.png` | screenshots & score cards | AegeanWorks | AGL-1.1 | Menu, nightmare, and score card captures, including `assets/screenshots/` keepers; legacy `menu.png` (four modes) superseded per README |
 | `assets/*.svg` | vector brand artwork | AegeanWorks | AGL-1.1 | Brand logo and social preview artwork |
 | `icons/*.png` | application icons | AegeanWorks | AGL-1.1 | PWA icons, apple touch icon and maskable icons |
 | `favicon.svg` | favicon | AegeanWorks | AGL-1.1 | Vector browser tab favicon |

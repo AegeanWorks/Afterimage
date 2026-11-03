@@ -57,7 +57,7 @@ The card at the top is seeded by your local date: **the same ten boards all day*
 | Nightmare | 8 | up to 10×10, one life, 2× score |
 | Onslaught | 8 | surge-heavy, 2 lives, 1.25× score |
 
-Every board hides one tile that differs by **hue, lightness, saturation, size or angle**. Focus, Blitz and Nightmare keep a personal best in `localStorage`; Zen has no clock, so it keeps none. A perfect run earns **EAGLE EYE**, **QUICK EYE** or **NIGHT VISION** depending on the mode.
+Every board hides one tile that differs by **hue, lightness, saturation, size or angle**. Focus, Blitz, Nightmare and Onslaught keep a personal best in `localStorage`; Zen has no clock, so it keeps none. A perfect run earns **EAGLE EYE** (Focus, Zen, Onslaught, Daily), **QUICK EYE** (Blitz) or **NIGHT VISION** (Nightmare).
 
 `Tab` and the arrow keys move between tiles, `Enter` picks one. `Quit run` leaves any mode; `Skip level` appears in Zen.
 
@@ -127,7 +127,7 @@ The run caught two real bugs that the screenshots made obvious: burst particles 
 - Daily puzzles use mulberry32 seeded from the local date; the daily result and streak live under `afterimage.daily`.
 - Each board logs green/gold/red/skip/dark for the result strip and copied text; the clipboard uses the async API with a textarea fallback.
 - A service worker caches the shell; navigations are network-first with a cached-index fallback on failure **or non-OK responses**, assets are cache-first with a background refresh.
-- The manifest adds standalone display, maskable icons and Daily/Nightmare shortcuts.
+- The manifest adds standalone display, maskable icons and Daily/Nightmare/Onslaught shortcuts.
 - Per-mode bests are stored as JSON, with the old single best migrated.
 - A run token (`runId`) guards late `setTimeout` callbacks after quitting; particles are cleared between boards.
 - Respects `prefers-reduced-motion`; storage and audio failures are non-fatal.

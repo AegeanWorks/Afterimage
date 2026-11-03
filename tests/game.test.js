@@ -428,3 +428,10 @@ test('WIN_TITLES covers every playable mode (no undefined result title)', () => 
     );
   }
 });
+
+test('buildShareText falls back to Focus on unknown mode (no throw)', () => {
+  const { buildShareText } = createHarness();
+
+  const text = buildShareText({ mode: 'nope', daily: false, won: true, cleared: 1, total: 1, accuracy: 100, score: 100, rating: 'X', boards: [] });
+  assert.ok(text.includes('Afterimage · Focus run'), 'unknown mode must fall back to Focus label');
+});

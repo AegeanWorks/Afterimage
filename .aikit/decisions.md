@@ -72,3 +72,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: `assets/menu.png`, `nightmare.png` and `card.png` predate the media pipeline (no `media.json` entries, no README block, no commit record) and `menu.png` is stale content (four modes, daily #304; the game now ships five modes with Onslaught).
 - **Decision**: Keep the three legacy files untouched in `assets/` (ASSETS.md already covers `assets/*.png`); capture `2026-11-03-menu.png` (clean-storage first run, daily #307, DAY ONE) and `2026-11-03-daily.png` (Daily 01/10 hue board after PLAY) from `python -m http.server 8139` at viewport 1440x900, commit `5be4c63`, and register only the two new keepers in `.aikit/media.json` and the README `aegean:screenshots` block.
 - **Consequences**: README proves the current five-mode build; legacy files remain history, not proof. Reproduce with: serve 8139, clear storage, open the URL, screenshot, click PLAY on Today's board, screenshot.
+
+### ADR-011: Harden share-text mode lookup and correct Onslaught docs
+- **Date**: 2026-11-04
+- **Status**: Accepted
+- **Context**: Swarm analysis (7 modules) found `buildShareText` dereferenced `MODES[result.mode]` without the fallback `renderScoreCard` already used, so corrupt/unknown modes crashed copy; README omitted Onslaught bests/shortcuts and `ASSETS.md` glob missed `assets/screenshots/` keepers.
+- **Decision**: Fall back unknown share modes to Focus (`MODES[result.mode] || MODES.focus`); correct README bests sentence, perfect-title mapping, and manifest shortcut list; widen `ASSETS.md` to `assets/**/*.png` with legacy note. Legal items (AL-1.1 vs AGL-1.1 naming, missing `LicenseRef-AL-1.1` text, dangling `ASSET_POLICY.md`) deferred to owner.
+- **Consequences**: 34 tests pass (33 prior + 1 new fallback test); no scoring, script, storage or PWA-contract changes; `python aikit.py check afterimage` 5/5 green.
