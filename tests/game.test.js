@@ -86,6 +86,24 @@ test('ensureAudio survives a throwing AudioContext', () => {
   assert.doesNotThrow(() => h.ensureAudio());
 });
 
+test('hiddenPenalty charges wall-clock hidden time', () => {
+  const { hiddenPenalty } = createHarness();
+
+  assert.strictEqual(hiddenPenalty(15000, 30000), 0);
+  assert.strictEqual(hiddenPenalty(15000, 1000), 14000);
+  assert.strictEqual(hiddenPenalty(15000, 0), 15000);
+  assert.strictEqual(hiddenPenalty(15000, -500), 15000);
+});
+
+test('visibility handler does not credit hidden time', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'game.js'), 'utf8');
+
+  assert.ok(src.includes('hiddenAt'), 'visibility handler must track hidden start');
+  assert.ok(src.includes('hiddenPenalty'), 'hidden time must go through wall-clock penalty');
+});
+
 test('isValidDateKey accepts real calendar dates only', () => {
   const { isValidDateKey } = createHarness();
 

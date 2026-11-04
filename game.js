@@ -395,6 +395,7 @@ const state = {
   typeMisses: {},
   hints: 1,
   hintsUsedRun: 0,
+  hiddenAt: 0,
   slump: 0,
   paceCalled: false,
   perfectBoards: 0,
@@ -873,6 +874,7 @@ function startRun(mode) {
   state.hintActive = 0;
   state.hints = mode === "zen" ? 3 : 1 + (daily ? bonusHints(currentStreak()) : 0);
   state.hintsUsedRun = 0;
+  state.hiddenAt = 0;
   state.paceCalled = false;
   state.slump = 0;
   state.perfectBoards = 0;
@@ -1147,6 +1149,11 @@ function onBestPace(score, boardsDone, total, best) {
   if (!(best > 0) || !(score > 0)) return false;
   if (!(total > 0) || !(boardsDone >= 0) || boardsDone > total) return false;
   return score >= best * (boardsDone / total);
+}
+
+function hiddenPenalty(remaining, hiddenMs) {
+  if (!(hiddenMs > 0)) return remaining;
+  return Math.max(0, remaining - hiddenMs);
 }
 
 function easedDelta(def, ease) {
@@ -1845,8 +1852,24 @@ ui.sound.addEventListener("click", () => {
 });
 
 document.addEventListener("visibilitychange", () => {
-  state.lastFrame = performance.now();
-  renderDaily();
+  if (document.hidden) {
+    if (state.phase === "play" && state.timed) state.hiddenAt = performance.now();
+  } else {
+    if (state.hiddenAt) {
+      const hiddenMs = performance.now() - state.hiddenAt;
+      state.hiddenAt = 0;
+      if (state.phase === "play" && state.timed && hiddenMs > 0) {
+        state.remaining = hiddenPenalty(state.remaining, hiddenMs);
+        if (state.remaining <= 0) {
+          state.remaining = 0;
+          updateTimer();
+          timeout();
+        }
+      }
+    }
+    state.lastFrame = performance.now();
+    renderDaily();
+  }
 });
 
 let resizeTimer = 0;
