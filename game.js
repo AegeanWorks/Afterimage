@@ -191,7 +191,20 @@ function localDateKey(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
+function isValidDateKey(key) {
+  if (typeof key !== "string") return false;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+}
+
 function previousDateKey(key) {
+  if (!isValidDateKey(key)) throw new TypeError(`invalid date key: ${String(key)}`);
   const [year, month, day] = key.split("-").map(Number);
   const date = new Date(year, month - 1, day);
   date.setDate(date.getDate() - 1);
@@ -199,6 +212,7 @@ function previousDateKey(key) {
 }
 
 function dailyNumber(key) {
+  if (!isValidDateKey(key)) throw new TypeError(`invalid date key: ${String(key)}`);
   const [year, month, day] = key.split("-").map(Number);
   const start = Date.UTC(2026, 0, 1);
   const current = Date.UTC(year, month - 1, day);
@@ -206,6 +220,7 @@ function dailyNumber(key) {
 }
 
 function dailyDateLabel(key) {
+  if (!isValidDateKey(key)) throw new TypeError(`invalid date key: ${String(key)}`);
   const [year, month, day] = key.split("-").map(Number);
   return new Date(year, month - 1, day)
     .toLocaleDateString("en-US", { month: "short", day: "numeric" })
@@ -379,6 +394,7 @@ const state = {
   lastTickSec: 0,
   typeMisses: {},
   hints: 1,
+  hintsUsedRun: 0,
   slump: 0,
   paceCalled: false,
   perfectBoards: 0,
@@ -404,9 +420,21 @@ let audio = null;
 function ensureAudio() {
   if (!audio) {
     const Ctor = window.AudioContext || window.webkitAudioContext;
-    if (Ctor) audio = new Ctor();
+    if (Ctor) {
+      try {
+        audio = new Ctor();
+      } catch {
+        audio = null;
+      }
+    }
   }
-  if (audio && audio.state === "suspended") audio.resume();
+  if (audio && audio.state === "suspended") {
+    try {
+      audio.resume();
+    } catch {
+      /* silent devices stay silent */
+    }
+  }
 }
 
 function tone(freq, duration, type, gain, delay = 0) {
@@ -573,17 +601,31 @@ function computeLayout() {
 
 /* --------------------------------------------------------------- painting */
 
+function traceRoundRect(g, x, y, w, h, r) {
+  if (typeof g.roundRect === "function") {
+    g.beginPath();
+    g.roundRect(x, y, w, h, r);
+    return;
+  }
+  const radius = Math.max(0, Math.min(r, w / 2, h / 2));
+  g.beginPath();
+  g.moveTo(x + radius, y);
+  g.arcTo(x + w, y, x + w, y + h, radius);
+  g.arcTo(x + w, y + h, x, y + h, radius);
+  g.arcTo(x, y + h, x, y, radius);
+  g.arcTo(x, y, x + w, y, radius);
+  g.closePath();
+}
+
 function paintTile(tile, color) {
   const gradient = ctx.createLinearGradient(tile.x, tile.y, tile.x, tile.y + tile.h);
   gradient.addColorStop(0, "rgba(255,255,255,0.10)");
   gradient.addColorStop(0.45, "rgba(255,255,255,0)");
   ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.roundRect(tile.x, tile.y, tile.w, tile.h, tile.w * 0.22);
+  traceRoundRect(ctx, tile.x, tile.y, tile.w, tile.h, tile.w * 0.22);
   ctx.fill();
   ctx.fillStyle = gradient;
-  ctx.beginPath();
-  ctx.roundRect(tile.x, tile.y, tile.w, tile.h, tile.w * 0.22);
+  traceRoundRect(ctx, tile.x, tile.y, tile.w, tile.h, tile.w * 0.22);
   ctx.fill();
   ctx.strokeStyle = "rgba(255,255,255,0.07)";
   ctx.lineWidth = 1;
@@ -611,8 +653,7 @@ function paintPill(tile, color, angle) {
   ctx.translate(tile.x + tile.w / 2, tile.y + tile.h / 2);
   ctx.rotate(angle);
   ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.roundRect(-width / 2, -height / 2, width, height, height / 2);
+  traceRoundRect(ctx, -width / 2, -height / 2, width, height, height / 2);
   ctx.fill();
   ctx.restore();
 }
@@ -620,15 +661,13 @@ function paintPill(tile, color, angle) {
 function paintHover(tile) {
   ctx.strokeStyle = "rgba(255,255,255,0.4)";
   ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.roundRect(tile.x + 1.5, tile.y + 1.5, tile.w - 3, tile.h - 3, tile.w * 0.2);
+  traceRoundRect(ctx, tile.x + 1.5, tile.y + 1.5, tile.w - 3, tile.h - 3, tile.w * 0.2);
   ctx.stroke();
 }
 
 function paintWrong(tile) {
   ctx.fillStyle = "rgba(255,92,116,0.34)";
-  ctx.beginPath();
-  ctx.roundRect(tile.x, tile.y, tile.w, tile.h, tile.w * 0.22);
+  traceRoundRect(ctx, tile.x, tile.y, tile.w, tile.h, tile.w * 0.22);
   ctx.fill();
   ctx.strokeStyle = "rgba(255,92,116,0.9)";
   ctx.lineWidth = 2;
@@ -686,8 +725,7 @@ function paint() {
     const pulse = 0.62 + Math.sin(now / 170) * 0.26;
     ctx.strokeStyle = `rgba(255,255,255,${pulse.toFixed(3)})`;
     ctx.lineWidth = Math.max(2, size * 0.004);
-    ctx.beginPath();
-    ctx.roundRect(tile.x + 2, tile.y + 2, tile.w - 4, tile.h - 4, tile.w * 0.2);
+    traceRoundRect(ctx, tile.x + 2, tile.y + 2, tile.w - 4, tile.h - 4, tile.w * 0.2);
     ctx.stroke();
   }
 
@@ -697,12 +735,10 @@ function paint() {
       const pulse = 0.55 + Math.sin(now / 150) * 0.35;
       ctx.strokeStyle = `rgba(79,209,197,${pulse.toFixed(3)})`;
       ctx.lineWidth = Math.max(3, size * 0.006);
-      ctx.beginPath();
-      ctx.roundRect(tile.x - 2, tile.y - 2, tile.w + 4, tile.h + 4, tile.w * 0.24);
+      traceRoundRect(ctx, tile.x - 2, tile.y - 2, tile.w + 4, tile.h + 4, tile.w * 0.24);
       ctx.stroke();
       ctx.fillStyle = `rgba(79,209,197,${(pulse * 0.18).toFixed(3)})`;
-      ctx.beginPath();
-      ctx.roundRect(tile.x - 2, tile.y - 2, tile.w + 4, tile.h + 4, tile.w * 0.24);
+      traceRoundRect(ctx, tile.x - 2, tile.y - 2, tile.w + 4, tile.h + 4, tile.w * 0.24);
       ctx.fill();
     }
   }
@@ -836,6 +872,7 @@ function startRun(mode) {
   state.reveal = false;
   state.hintActive = 0;
   state.hints = mode === "zen" ? 3 : 1 + (daily ? bonusHints(currentStreak()) : 0);
+  state.hintsUsedRun = 0;
   state.paceCalled = false;
   state.slump = 0;
   state.perfectBoards = 0;
@@ -900,6 +937,17 @@ function nextLevel() {
 
   state.lastFrame = performance.now();
   ensureLoop();
+  // Keyboard users lose focus when the grid rebuilds; restore to the first
+  // cell unless focus already moved inside the new grid.
+  try {
+    const active = document.activeElement;
+    if (!active || active === document.body || !ui.cells.contains(active)) {
+      const first = ui.cells.querySelector("button.cell");
+      if (first) first.focus({ preventScroll: true });
+    }
+  } catch {
+    /* non-DOM harnesses ignore focus restore */
+  }
 }
 
 function pick(index) {
@@ -1089,13 +1137,15 @@ function bonusHints(dailyStreak) {
 
 function bestLine(best, wins) {
   const parts = [];
-  if (best > 0) parts.push(`BEST ${best.toLocaleString("en-US")}`);
+  const score = Number(best);
+  if (score > 0) parts.push(`BEST ${score.toLocaleString("en-US")}`);
   if (wins > 0) parts.push("CLEARED");
   return parts.join(" · ");
 }
 
 function onBestPace(score, boardsDone, total, best) {
   if (!(best > 0) || !(score > 0)) return false;
+  if (!(total > 0) || !(boardsDone >= 0) || boardsDone > total) return false;
   return score >= best * (boardsDone / total);
 }
 
@@ -1217,6 +1267,8 @@ function useHint() {
   if (state.phase !== "play" || !state.data || state.hints <= 0) return;
   const runId = state.runId;
   state.hints -= 1;
+  state.hintsUsedRun += 1;
+  state.attempts += 1;
   state.hintActive = 1;
   state.levelMistakes += 1;
   state.streak = 0;
@@ -1247,7 +1299,7 @@ function finish(won) {
   state.profile.clears += state.cleared;
   state.profile.bestStreak = Math.max(state.profile.bestStreak, state.bestStreak);
   let firstClear = false;
-  if (won) {
+  if (won && state.cleared > 0) {
     state.profile.wins[state.mode] = (state.profile.wins[state.mode] || 0) + 1;
     firstClear = state.profile.wins[state.mode] === 1;
   }
@@ -1258,7 +1310,9 @@ function finish(won) {
   const accuracy = Math.round((state.hits / attempts) * 100);
   const boardIcons = state.boards.slice(0, total);
   while (boardIcons.length < total) boardIcons.push("⬛");
-  const info = rateRun(won, state.cleared, total, accuracy, state.mode);
+  const assisted = state.hintsUsedRun > 0;
+  const ratingAccuracy = assisted ? Math.min(accuracy, 84) : accuracy;
+  const info = rateRun(won, state.cleared, total, ratingAccuracy, state.mode);
   const clean = state.skipped === 0 && state.cleared === total;
   const config = MODES[state.mode];
   const isDaily = Boolean(config.daily);
@@ -1270,7 +1324,7 @@ function finish(won) {
   } else {
     isBest = Boolean(state.timed && config.best && saveBest(state.mode, state.score));
   }
-  const freezeEarned = isDaily && earnFreeze(won, accuracy);
+  const freezeEarned = isDaily && state.hintsUsedRun === 0 && earnFreeze(won, accuracy);
 
   state.result = {
     mode: state.mode,
@@ -1279,6 +1333,7 @@ function finish(won) {
     cleared: state.cleared,
     total,
     accuracy,
+    hintsUsed: state.hintsUsedRun,
     bestStreak: state.bestStreak,
     bestTier: comboTier(state.bestStreak).name,
     perfectBoards: state.perfectBoards,
@@ -1441,8 +1496,7 @@ function drawCardBoard(g, x, y, board) {
   g.fillStyle = "rgba(255,255,255,0.025)";
   g.strokeStyle = "rgba(255,255,255,0.08)";
   g.lineWidth = 1.5;
-  g.beginPath();
-  g.roundRect(x - 22, y - 22, span + 44, span + 44, 30);
+  traceRoundRect(g, x - 22, y - 22, span + 44, span + 44, 30);
   g.fill();
   g.stroke();
 
@@ -1452,8 +1506,7 @@ function drawCardBoard(g, x, y, board) {
       const ty = y + row * (cell + gap);
       const odd = row === oddRow && col === oddCol;
       g.fillStyle = odd ? oddColor : base;
-      g.beginPath();
-      g.roundRect(tx, ty, cell, cell, 16);
+      traceRoundRect(g, tx, ty, cell, cell, 16);
       g.fill();
       g.strokeStyle = "rgba(255,255,255,0.07)";
       g.lineWidth = 1;
@@ -1497,8 +1550,7 @@ function renderScoreCard(result) {
 
   g.strokeStyle = "rgba(255,255,255,0.10)";
   g.lineWidth = 2;
-  g.beginPath();
-  g.roundRect(24, 24, width - 48, height - 48, 36);
+  traceRoundRect(g, 24, 24, width - 48, height - 48, 36);
   g.stroke();
 
   g.textBaseline = "alphabetic";
@@ -1536,8 +1588,7 @@ function renderScoreCard(result) {
   g.fillStyle = "rgba(139,124,255,0.14)";
   g.strokeStyle = "rgba(139,124,255,0.5)";
   g.lineWidth = 1.5;
-  g.beginPath();
-  g.roundRect(72, 352, pillWidth, 42, 21);
+  traceRoundRect(g, 72, 352, pillWidth, 42, 21);
   g.fill();
   g.stroke();
   g.fillStyle = "#cfc8ff";
@@ -1569,9 +1620,13 @@ function renderScoreCard(result) {
     Number(result.perfectBoards) > 0 ? `${result.perfectBoards} PERFECT` : "",
     Number(result.surgeBoards) > 0 ? `${result.surgeBoards} SURGE` : ""
   ].filter(Boolean).join(" · ");
+  const hintCount = Number(result.hintsUsed) || 0;
+  const hintSegment = hintCount > 0 ? ` · ${hintCount} HINT${hintCount === 1 ? "" : "S"}` : "";
   const footerBase = result.daily
-    ? `${result.dailyLabel} · ${result.total} BOARDS · ONE DIFFERENCE`
-    : `${result.total} BOARDS · ONE DIFFERENCE · NO HINTS`;
+    ? `${result.dailyLabel} · ${result.total} BOARDS · ONE DIFFERENCE${hintSegment}`
+    : (hintCount > 0
+      ? `${result.total} BOARDS · ONE DIFFERENCE${hintSegment}`
+      : `${result.total} BOARDS · ONE DIFFERENCE · NO HINTS`);
   const footer = cardProof ? `${footerBase} · ${cardProof}` : footerBase;
   g.fillStyle = "#6f6f88";
   g.font = '600 12px "Segoe UI", system-ui, sans-serif';
@@ -1620,6 +1675,9 @@ function buildShareText(result) {
   }
   if (Number(result.surgeBoards) > 0) {
     proof.push(`${result.surgeBoards} surge${result.surgeBoards === 1 ? "" : "s"}`);
+  }
+  if (Number(result.hintsUsed) > 0) {
+    proof.push(`${result.hintsUsed} hint${result.hintsUsed === 1 ? "" : "s"}`);
   }
   const proofLine = proof.length ? ` · ${proof.join(" · ")}` : "";
   return [

@@ -10,7 +10,7 @@
 - **Total Classes**: `0`
 - **Total Top-Level Functions**: `3`
 - **Total Class Methods**: `0`
-- **Total Source Lines**: `63`
+- **Total Source Lines**: `71`
 
 ---
 
@@ -19,7 +19,7 @@
 ### [`tools/make_icons.py`](tools/make_icons.py)
 > *Generate Afterimage's PWA and touch icons (Pillow is a dev-only dependency).*
 
-**Size**: `63` lines (`1964` bytes)
+**Size**: `71` lines (`2269` bytes)
 
 **Functions:**
 - `def background()`

@@ -28,13 +28,13 @@
       </div>
       <div class="hud-item">
         <span class="k">Level</span>
-        <span class="v"><span id="levelNum">01</span><span class="dim" id="levelTotal">/10</span></span>
+        <span class="v"><span id="levelNum">01</span><span class="dim" id="levelTotal">/–</span></span>
       </div>
       <div class="hud-item">
         <span class="k">Score</span>
         <span class="v" id="scoreNum">0</span>
       </div>
-      <div class="hud-item lives" id="livesItem">
+      <div class="hud-item lives">
         <span class="k">Focus</span>
         <span class="v lives" id="livesNum"></span>
       </div>
@@ -47,10 +47,10 @@
   </header>
 
   <section class="playfield">
-    <div class="timer" id="timer" aria-hidden="true"><i id="timerFill"></i></div>
+    <div class="timer" id="timer" role="timer" aria-label="Time remaining"><i id="timerFill"></i></div>
     <div class="stage" id="stage">
-      <canvas id="board" role="img" aria-label="Puzzle grid"></canvas>
-      <div class="cells" id="cells"></div>
+      <canvas id="board" aria-hidden="true"></canvas>
+      <div class="cells" id="cells" role="group" aria-label="Answer grid"></div>
     </div>
     <p class="status" id="status" aria-live="polite">Pick a mode to begin.</p>
   </section>
@@ -59,13 +59,13 @@
     <span>Find the tile that doesn't belong</span>
     <span class="foot-keys"><kbd>Tab</kbd> + <kbd>Enter</kbd> works too · <kbd>H</kbd> hint</span>
     <span class="foot-spacer"></span>
-    <button class="skip" id="hintBtn" type="button" hidden>Hint (1) [H]</button>
+    <button class="skip" id="hintBtn" type="button" hidden>Hint [H]</button>
     <button class="skip" id="skipBtn" type="button" hidden>Skip level →</button>
     <button class="skip" id="quitBtn" type="button" hidden>Quit run</button>
   </footer>
 </main>
 
-<div class="veil" id="veil">
+<div class="veil" id="veil" role="dialog" aria-modal="true" aria-labelledby="title">
   <section class="card" id="menu" aria-labelledby="title">
     <p class="eyebrow">Daily challenge · five modes</p>
     <h1 id="title">See what's<br><em>different.</em></h1>
@@ -136,6 +136,7 @@
   </section>
 </div>
 
+<noscript><p class="status">Afterimage needs JavaScript to play.</p></noscript>
 <script src="game.js"></script>
 </body>
 </html>

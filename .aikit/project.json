@@ -23,7 +23,7 @@
     ],
     "test": "node --test tests"
   },
-  "ui_required": false,
+  "ui_required": true,
   "mechanics_required": true,
   "created": "2026-10-31",
   "has_ui": true,
@@ -31,6 +31,6 @@
   "ui_evidence": [
     "index.html"
   ],
-  "ui_checked_at": "2026-11-02",
+  "ui_checked_at": "2026-11-04",
   "ui_source": "detected"
 }

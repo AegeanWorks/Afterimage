@@ -1,11 +1,10 @@
 "use strict";
 
 /* Bump CACHE when the shell changes so installed copies pick up the new assets. */
-const CACHE = "afterimage-v5";
+const CACHE = "afterimage-v6";
 const ROOT = new URL("./", self.location);
 const INDEX = new URL("index.html", ROOT).href;
 const SHELL = [
-  "",
   "index.html",
   "styles.css",
   "game.js",
@@ -15,12 +14,26 @@ const SHELL = [
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png"
-].map((path) => new URL(path, ROOT).href);
+];
+const CORE = [
+  "index.html",
+  "game.js",
+  "styles.css"
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE)
-      .then((cache) => cache.addAll(SHELL))
+      .then(async (cache) => {
+        const outcomes = await Promise.allSettled(
+          SHELL.map((path) => cache.add(new URL(path, ROOT).href))
+        );
+        const missing = CORE.filter((path) => {
+          const idx = SHELL.indexOf(path);
+          return !outcomes[idx] || outcomes[idx].status !== "fulfilled";
+        });
+        if (missing.length) throw new Error(`core shell missing: ${missing.join(", ")}`);
+      })
       .then(() => self.skipWaiting())
   );
 });
@@ -28,7 +41,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+      .then((keys) => Promise.all(keys.filter((key) => key.startsWith("afterimage-") && key !== CACHE).map((key) => caches.delete(key))))
       .then(() => self.clients.claim())
   );
 });
@@ -46,7 +59,11 @@ self.addEventListener("fetch", (event) => {
         .then((response) => {
           if (response && response.ok) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(INDEX, copy));
+            const copyRoot = response.clone();
+            caches.open(CACHE).then((cache) => {
+              cache.put(INDEX, copy);
+              cache.put(ROOT.href, copyRoot);
+            });
             return response;
           }
           return caches.match(INDEX)
@@ -64,7 +81,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
+    caches.match(request, { ignoreSearch: false }).then((cached) => {
       const network = fetch(request)
         .then((response) => {
           if (response && response.ok) {
@@ -73,7 +90,10 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => cached || new Response("", { status: 504 }));
+        .catch(() => cached || new Response("Offline", {
+          status: 503,
+          headers: { "Content-Type": "text/plain" }
+        }));
       return cached || network;
     })
   );

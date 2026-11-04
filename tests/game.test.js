@@ -49,6 +49,87 @@ test('daily date formatting and previous date arithmetic', () => {
   assert.strictEqual(label, 'OCT 31');
 });
 
+test('calendar helpers reject malformed keys', () => {
+  const { previousDateKey, dailyNumber, dailyDateLabel } = createHarness();
+
+  // NOTE: harness runs game.js in vm, so cross-realm Error prototypes differ;
+  // match by name/message instead of constructor identity.
+  const isTypeError = (err) => err && err.name === 'TypeError' && /invalid date key/.test(err.message);
+  assert.throws(() => previousDateKey(''), isTypeError);
+  assert.throws(() => previousDateKey(null), isTypeError);
+  assert.throws(() => previousDateKey('nope'), isTypeError);
+  assert.throws(() => dailyNumber('nope'), isTypeError);
+  assert.throws(() => dailyDateLabel('nope'), isTypeError);
+  assert.throws(() => dailyDateLabel(''), isTypeError);
+});
+
+test('onBestPace guards degenerate totals', () => {
+  const { onBestPace } = createHarness();
+
+  assert.strictEqual(onBestPace(100, 5, 0, 2000), false);
+  assert.strictEqual(onBestPace(9999, 11, 10, 2000), false);
+  assert.strictEqual(onBestPace(100, 0, 0, 2000), false);
+});
+
+test('bestLine formats numeric strings with commas', () => {
+  const { bestLine } = createHarness();
+
+  assert.strictEqual(bestLine('2300', 0), 'BEST 2,300');
+  assert.strictEqual(bestLine(2300, 0), 'BEST 2,300');
+  assert.strictEqual(bestLine(-5, 0), '');
+});
+
+test('ensureAudio survives a throwing AudioContext', () => {
+  const h = createHarness();
+  h.sandbox.window.AudioContext = () => { throw new Error('blocked'); };
+
+  assert.doesNotThrow(() => h.ensureAudio());
+});
+
+test('isValidDateKey accepts real calendar dates only', () => {
+  const { isValidDateKey } = createHarness();
+
+  assert.strictEqual(isValidDateKey('2026-10-31'), true);
+  assert.strictEqual(isValidDateKey('2024-02-29'), true);
+  assert.strictEqual(isValidDateKey('2026-13-01'), false);
+  assert.strictEqual(isValidDateKey('2026-02-30'), false);
+  assert.strictEqual(isValidDateKey('nope'), false);
+  assert.strictEqual(isValidDateKey(''), false);
+  assert.strictEqual(isValidDateKey(null), false);
+});
+
+test('canvas uses roundRect fallback helper (no raw roundRect calls)', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'game.js'), 'utf8');
+
+  assert.ok(src.includes('function traceRoundRect('), 'missing traceRoundRect helper');
+  assert.ok(src.includes('arcTo'), 'fallback must use arcTo');
+  const raw = src.match(/\.(roundRect)\s*\(/g) || [];
+  // Only the helper itself may call the native method once.
+  assert.ok(raw.length <= 1, `expected <=1 raw roundRect call, found ${raw.length}`);
+});
+
+test('nextLevel restores keyboard focus to the grid', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'game.js'), 'utf8');
+
+  assert.ok(src.includes('button.cell'), 'focus restore must target grid cells');
+  assert.ok(src.includes('preventScroll'), 'focus restore must avoid scrolling');
+});
+
+test('buildShareText discloses hints used', () => {
+  const { buildShareText } = createHarness();
+
+  const hinted = buildShareText({ mode: 'focus', daily: false, won: true, cleared: 10, total: 10, accuracy: 91, score: 2000, rating: 'SHARP SIGHT', boards: [], hintsUsed: 1 });
+  assert.ok(hinted.includes('1 hint'), 'hinted run must disclose hint');
+  assert.ok(!hinted.includes('NO HINTS'), 'hinted run must not claim NO HINTS');
+
+  const clean = buildShareText({ mode: 'focus', daily: false, won: true, cleared: 10, total: 10, accuracy: 100, score: 2000, rating: 'EAGLE EYE', boards: [] });
+  assert.ok(clean.includes('NO HINTS') || !clean.includes('hint'), 'clean run keeps legacy proof line');
+});
+
 test('SCRIPTS configuration integrity', () => {
   const { SCRIPTS, TYPE_LABEL } = createHarness();
 

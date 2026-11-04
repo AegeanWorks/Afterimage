@@ -2,11 +2,17 @@
 
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter
+try:
+    from PIL import Image, ImageDraw, ImageFilter
+except ModuleNotFoundError as exc:
+    import sys
+
+    print("Why: Pillow (dev-only) is not installed.", file=sys.stderr)
+    print("Fix: pip install Pillow>=9.1", file=sys.stderr)
+    raise SystemExit(2) from exc
 
 SIZE = 1024
 OUT = Path(__file__).resolve().parent.parent / "icons"
-OUT.mkdir(exist_ok=True)
 
 BG_TOP = (20, 16, 42)
 BG_BOTTOM = (8, 11, 18)
@@ -32,7 +38,7 @@ def draw_icon(total, tile, gap):
     glow = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
     pen = ImageDraw.Draw(glow)
     pen.rounded_rectangle(
-        [start - 24, start - 24, start + total + 24, start + total + 24],
+        [start - 24, start - 24, start + total + 23, start + total + 23],
         radius=80,
         fill=(*VIOLET, 70),
     )
@@ -45,11 +51,13 @@ def draw_icon(total, tile, gap):
             x = start + col * (tile + gap)
             y = start + row * (tile + gap)
             fill = TEAL if (row, col) == (2, 2) else VIOLET
-            pen.rounded_rectangle([x, y, x + tile, y + tile], radius=radius, fill=fill)
+            # Pillow boxes are inclusive: x1 is the last drawn pixel.
+            pen.rounded_rectangle([x, y, x + tile - 1, y + tile - 1], radius=radius, fill=fill)
     return image
 
 
 def main():
+    OUT.mkdir(exist_ok=True)
     regular = draw_icon(740, 220, 40)
     maskable = draw_icon(560, 168, 28)
 
