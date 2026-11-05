@@ -395,7 +395,7 @@ const state = {
   typeMisses: {},
   hints: 1,
   hintsUsedRun: 0,
-  hiddenAt: 0,
+  hiddenAt: null,
   slump: 0,
   paceCalled: false,
   perfectBoards: 0,
@@ -874,7 +874,7 @@ function startRun(mode) {
   state.hintActive = 0;
   state.hints = mode === "zen" ? 3 : 1 + (daily ? bonusHints(currentStreak()) : 0);
   state.hintsUsedRun = 0;
-  state.hiddenAt = 0;
+  state.hiddenAt = null;
   state.paceCalled = false;
   state.slump = 0;
   state.perfectBoards = 0;
@@ -1855,9 +1855,9 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     if (state.phase === "play" && state.timed) state.hiddenAt = performance.now();
   } else {
-    if (state.hiddenAt) {
+    if (state.hiddenAt != null) {
       const hiddenMs = performance.now() - state.hiddenAt;
-      state.hiddenAt = 0;
+      state.hiddenAt = null;
       if (state.phase === "play" && state.timed && hiddenMs > 0) {
         state.remaining = hiddenPenalty(state.remaining, hiddenMs);
         if (state.remaining <= 0) {

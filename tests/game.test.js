@@ -102,6 +102,8 @@ test('visibility handler does not credit hidden time', () => {
 
   assert.ok(src.includes('hiddenAt'), 'visibility handler must track hidden start');
   assert.ok(src.includes('hiddenPenalty'), 'hidden time must go through wall-clock penalty');
+  assert.ok(src.includes('hiddenAt = null'), 'hidden sentinel must be null so time-origin hides are not missed');
+  assert.ok(src.includes('hiddenAt != null'), 'hidden restore must use null-safe check, not truthiness');
 });
 
 test('isValidDateKey accepts real calendar dates only', () => {
