@@ -3,32 +3,15 @@
   "active_task": {
     "task_id": "afterimage-cycle10-final-boss",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794085471.8357615,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794085515.6328971
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle4-mobile-hud",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Wrap the topbar/HUD on narrow screens so play no longer overflows horizontally",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794081011.7940447,
-      "timestamp_str": "2026-11-07 22:50:11",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "At 390x844 the play screen has scrollWidth 449 (69px overflow); the SOUND button is pushed offscreen and the streak HUD is clipped, harming the installed mobile PWA experience",
-        "benefits": "All HUD values and sound control stay inside a 390px viewport; the board remains centered; no horizontal scrolling on phones",
-        "risks": "contract: CSS-only responsive rules, no DOM/JS changes; dependency: none; concurrency: none; state: none",
-        "mitigation": "Failing CSS contract test first; CDP measure scrollWidth and every HUD rect at 390x844; screenshot pair before/after; desktop 1440 regression check; full gates"
-      },
-      "plan_digest": "445ad33efdc626285bc995759c8b5cf5fe572112146ade8f41b443b4e5262539"
-    },
     {
       "task_id": "afterimage-cycle4-mobile-hud",
       "phase": "phase 4",
@@ -272,6 +255,16 @@
       "status": "in_progress",
       "timestamp": 1794085471.8357615,
       "timestamp_str": "2026-11-08 00:04:31",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle10-final-boss",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle10-final-boss' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794085515.6328993,
+      "timestamp_str": "2026-11-08 00:05:15",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]
