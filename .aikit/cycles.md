@@ -256,6 +256,9 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   - `node "$env:TEMP\afterimage-tools\save-card-probe.mjs" before failure|success` /
     `after failure|success` (cycle 12); the failure mode replaces `document.createElement`
     canvases with a null 2D context after the result screen opens.
+  - `node "$env:TEMP\afterimage-tools\copy-result-probe.mjs" before failure|success` /
+    `after failure|success` (cycle 13); the failure mode rejects
+    `navigator.clipboard.writeText` and makes `document.execCommand` return false.`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
