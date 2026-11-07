@@ -266,7 +266,11 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   - `node "$env:TEMP\afterimage-tools\offline-probe.mjs" probe` and
     `node "$env:TEMP\afterimage-tools\offline-cold-probe.mjs"` (cycle 16 offline dead end).
   - `node "$env:TEMP\afterimage-tools\wrong-focus-probe.mjs" before` / `after` (cycle 16
-    in-grid focus); real CDP Enter/arrow events drive the wrong pick and recovery.`
+    in-grid focus); real CDP Enter/arrow events drive the wrong pick and recovery.
+  - `node "$env:TEMP\afterimage-tools\initial-focus-probe.mjs" before
+    http://127.0.0.1:8140` / `after` (cycle 17); `Emulation.setFocusEmulationEnabled` makes
+    programmatic first-load focus visible as it is in a real window. The score-card overflow
+    dead end used `node "$env:TEMP\afterimage-tools\score-card-probe.mjs"`.`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
