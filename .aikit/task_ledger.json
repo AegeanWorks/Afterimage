@@ -3,32 +3,15 @@
   "active_task": {
     "task_id": "afterimage-cycle18-modal-trap",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794092896.0425029,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794092948.8619838
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle12-save-fallback",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Surface a save-card failure instead of a silent no-op and keep a status fallback",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794086398.0654628,
-      "timestamp_str": "2026-11-08 00:19:58",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "When the card canvas cannot be created, saveScoreCard returns without any feedback: the Save card button stays unchanged and the player gets no card and no explanation",
-        "benefits": "A failed export now says why and points to Copy result; a successful export reports the download request; screen readers hear the status",
-        "risks": "contract: result-screen adds a hidden role=status line, no scoring/save schema changes; dependency: none; concurrency: none; state: a transient status element reset per result",
-        "mitigation": "Failing-first pure saveCardFeedback test and shell status contract; same loss-result/canvas-failure screenshot pair; normal save-card played run; full gates"
-      },
-      "plan_digest": "8c2348e27a4d454c781f3aa602c1cbef211aee5d12a1f60a859dada1a5dfe320"
-    },
     {
       "task_id": "afterimage-cycle12-save-fallback",
       "phase": "phase 4",
@@ -272,6 +255,16 @@
       "status": "in_progress",
       "timestamp": 1794092896.0425029,
       "timestamp_str": "2026-11-08 02:08:16",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle18-modal-trap",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle18-modal-trap' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794092948.8619854,
+      "timestamp_str": "2026-11-08 02:09:08",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]
