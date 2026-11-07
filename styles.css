@@ -674,6 +674,34 @@ h1 em {
 }
 .copy:hover { color: var(--ink); }
 .copy:disabled { color: var(--faint); cursor: default; text-decoration: none; }
+.copy-fallback {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 12px;
+  border: 1px solid rgba(255, 212, 121, 0.34);
+  border-radius: 13px;
+  background: rgba(255, 212, 121, 0.05);
+}
+.copy-fallback label {
+  color: #ffd479;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.copy-fallback textarea {
+  width: 100%;
+  min-height: 92px;
+  padding: 8px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--ink);
+  font: 11px/1.55 ui-monospace, Consolas, monospace;
+}
+.copy-fallback .skip { justify-self: end; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 760px) {

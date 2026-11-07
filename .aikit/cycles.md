@@ -339,3 +339,32 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   `before-success-save-card.png` / `after-success-save-card.png` and the four JSON logs in
   `shots/afterimage/cycle12/`.
 - **Gate results**: `node --test tests` 71/71 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 13 — Copy result: manual fallback when the clipboard is blocked
+
+- **Area**: result-card sharing / clipboard fallback (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback).
+- **Defect (reproduced)**: with both `navigator.clipboard.writeText` and `execCommand("copy")`
+  blocked, clicking Copy result showed a disabled `Copy failed` label, exposed none of the share
+  text, and left `document.activeElement` on `BODY`. The player had no way to recover.
+- **Files**: `game.js` (pure `copyFeedback`, fallback panel, focus handling), `index.html`
+  (panel/label/textarea/Close), `styles.css` (panel styling), `tests/game.test.js`
+  (failing-first feedback test), `tests/web-shell.test.js` (panel contract), `sw.js` +
+  `tests/pwa.test.js` (cache v17), `README.md` (manual copy note).
+- **Fix**: blocked copies open the complete share text in a read-only textarea, selected and
+  focused, under `Text selected — press Ctrl+C / Cmd+C`; Close hides it and returns focus to
+  Copy result. The copy button stays enabled, and the hidden-textarea fallback now restores
+  focus too.
+- **Visual proof** (same seeded Daily #312 loss result, same 1440x900 viewport, same blocked
+  clipboard):
+  - before: `shots/afterimage/cycle13/before-failure-copy-result.png` (sha256
+    6FF81836385B720B…) shows only `COPY FAILED` and no text.
+  - after: `shots/afterimage/cycle13/after-failure-copy-result.png` (sha256 591B3DEAE8B66CE7…)
+    shows the selected share text, the Ctrl+C/Cmd+C label and Close.
+- **Played run**: the blocked flow exposed the exact `buildShareText` output
+  (selection 0–95), focused `#copyText`, and Close restored focus to `#copyResult`; the normal
+  clipboard flow still shows `Copied` with the panel hidden and focus on the button. Logs:
+  `before-failure-log.json` / `after-failure-log.json` /
+  `before-success-log.json` / `after-success-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 73/73 pass; `python aikit.py check afterimage` 5/5 pass.

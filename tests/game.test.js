@@ -577,6 +577,18 @@ test('loadDaily drops an invalid result and malformed last key', () => {
   assert.strictEqual(daily.result, null, 'result without a score is discarded');
 });
 
+test('copyFeedback keeps a manual fallback for blocked copies', () => {
+  const { copyFeedback } = createHarness();
+
+  const ok = copyFeedback(true);
+  assert.strictEqual(ok.label, 'Copied');
+  assert.strictEqual(ok.fallback, false);
+
+  const blocked = copyFeedback(false);
+  assert.strictEqual(blocked.label, 'Copy blocked');
+  assert.strictEqual(blocked.fallback, true);
+});
+
 test('saveCardFeedback explains failed and successful exports', () => {
   const { saveCardFeedback } = createHarness();
 

@@ -128,6 +128,11 @@
       <p class="mode-note" id="resultMode">Focus run · 10 boards · 3 lives</p>
       <button class="copy" id="copyResult" type="button">Copy result</button>
     </div>
+    <div class="copy-fallback" id="copyFallback" hidden>
+      <label for="copyText">Text selected — press Ctrl+C / Cmd+C</label>
+      <textarea id="copyText" readonly spellcheck="false"></textarea>
+      <button class="skip" id="copyClose" type="button">Close</button>
+    </div>
     <div class="actions">
       <button class="btn primary" id="playAgain" type="button">Play again</button>
       <div class="actions-row">

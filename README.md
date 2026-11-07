@@ -102,7 +102,7 @@ The result screen logs every board and shows the pattern as colored squares:
 - ⬜ skipped in Zen
 - ⬛ untouched
 
-**Copy result** writes the same pattern as text, ready to paste. A perfect daily cleared with full clock to spare would copy as:
+**Copy result** writes the same pattern as text, ready to paste. If the clipboard is blocked, the share text opens selected in a read-only box with a Close action, so the result can still be copied by hand. A perfect daily cleared with full clock to spare would copy as:
 
 ```text
 Afterimage Daily #304 · EAGLE EYE

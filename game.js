@@ -387,6 +387,9 @@ const ui = {
   metaStreak: document.getElementById("metaStreak"),
   boardStrip: document.getElementById("boardStrip"),
   copyResult: document.getElementById("copyResult"),
+  copyFallback: document.getElementById("copyFallback"),
+  copyText: document.getElementById("copyText"),
+  copyClose: document.getElementById("copyClose"),
   skip: document.getElementById("skipBtn"),
   quit: document.getElementById("quitBtn"),
   hint: document.getElementById("hintBtn"),
@@ -1528,6 +1531,7 @@ function finish(won) {
   ui.saveCard.disabled = false;
   ui.saveCard.textContent = "Save card";
   showSaveStatus("");
+  hideCopyFallback();
   ui.copyResult.textContent = "Copy result";
   ui.copyResult.disabled = false;
 
@@ -1559,6 +1563,7 @@ function showMenu() {
   if (ui.final) ui.final.hidden = true;
   if (ui.stage) ui.stage.classList.remove("finale");
   showSaveStatus("");
+  hideCopyFallback();
   renderBests();
   renderDaily();
 }
@@ -1886,6 +1891,37 @@ function buildShareText(result) {
   ].join("\n");
 }
 
+function copyFeedback(copied) {
+  return copied
+    ? { label: "Copied", fallback: false }
+    : { label: "Copy blocked", fallback: true };
+}
+
+function showCopyFallback(text) {
+  if (!ui.copyFallback || !ui.copyText) return;
+  ui.copyText.value = text;
+  ui.copyFallback.hidden = false;
+  try {
+    ui.copyText.focus({ preventScroll: true });
+    ui.copyText.select();
+  } catch {
+    /* text selection is best-effort */
+  }
+}
+
+function hideCopyFallback(restoreFocus = false) {
+  if (!ui.copyFallback) return;
+  ui.copyFallback.hidden = true;
+  if (ui.copyText) ui.copyText.value = "";
+  if (restoreFocus && ui.copyResult) {
+    try {
+      ui.copyResult.focus({ preventScroll: true });
+    } catch {
+      /* non-DOM harnesses ignore focus */
+    }
+  }
+}
+
 async function copyResult() {
   if (!state.result) return;
   const text = buildShareText(state.result);
@@ -1916,13 +1952,25 @@ async function copyResult() {
       copied = false;
     }
     area.remove();
+    if (ui.copyResult) {
+      try {
+        ui.copyResult.focus({ preventScroll: true });
+      } catch {
+        /* focus restoration is best-effort */
+      }
+    }
   }
 
-  ui.copyResult.textContent = copied ? "Copied" : "Copy failed";
-  ui.copyResult.disabled = true;
+  const feedback = copyFeedback(copied);
+  if (feedback.fallback) {
+    showCopyFallback(text);
+  } else {
+    hideCopyFallback();
+  }
+  ui.copyResult.textContent = feedback.label;
+  ui.copyResult.disabled = false;
   window.setTimeout(() => {
     ui.copyResult.textContent = "Copy result";
-    ui.copyResult.disabled = false;
   }, 1600);
 }
 
@@ -2004,6 +2052,7 @@ ui.dailyBtn.addEventListener("click", () => startRun("daily"));
 ui.playAgain.addEventListener("click", () => startRun(state.mode));
 ui.saveCard.addEventListener("click", saveScoreCard);
 ui.copyResult.addEventListener("click", copyResult);
+if (ui.copyClose) ui.copyClose.addEventListener("click", () => hideCopyFallback(true));
 ui.changeMode.addEventListener("click", showMenu);
 ui.quit.addEventListener("click", showMenu);
 if (ui.hint) ui.hint.addEventListener("click", () => {

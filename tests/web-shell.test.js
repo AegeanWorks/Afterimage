@@ -37,6 +37,18 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('blocked copy results expose a manual fallback panel', () => {
+  const htmlText = html();
+  const cssText = css();
+  const jsText = js();
+  assert.ok(htmlText.includes('id="copyFallback"'), 'index.html must carry the copy fallback panel');
+  assert.ok(htmlText.includes('id="copyText"'), 'index.html must carry the selectable share text');
+  assert.ok(htmlText.includes('id="copyClose"'), 'index.html must let the player close the fallback');
+  assert.ok(cssText.includes('.copy-fallback'), 'styles.css must style the fallback panel');
+  assert.ok(jsText.includes('copyFeedback'), 'game.js must derive the copy feedback state');
+  assert.ok(jsText.includes('showCopyFallback'), 'game.js must open the manual fallback');
+});
+
 test('failed score-card saves surface a live status fallback', () => {
   const htmlText = html();
   const jsText = js();
