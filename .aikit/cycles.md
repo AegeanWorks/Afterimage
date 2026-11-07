@@ -426,3 +426,33 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   5,580, 10/10. Frames `before-win-result.png` / `after-win-result.png`; logs
   `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 75/75 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 16 — Keyboard focus: wrong-pick recovery in the grid
+
+- **Dead end (recorded, no change)**: installed-PWA offline behavior already works. A warm offline
+  reload of `/?mode=daily` played a full 10/10 Daily, and a cold browser restart with the same
+  profile and network disabled also loaded the Daily board. Evidence:
+  `shots/afterimage/cycle16/offline-dead-end.json` / `.png`.
+- **Area**: keyboard focus / in-grid wrong-pick recovery (covered: progression/saves, UI
+  readability, graphics/effects, responsive layout, levels, save resilience, failure feedback,
+  audio cues, debrief copy, boss presentation, daily-best results, save-card fallback, copy
+  fallback, menu focus, result focus, in-grid wrong-pick focus).
+- **Defect (reproduced)**: a nonfatal wrong pick hides the grid while the focused cell is inside
+  it (`ui.cells.classList.add("off")`), so focus falls to `BODY`; the 640ms play reset removes
+  the hidden state but never restores focus. The before log shows `activeTag: BODY` and
+  `recovered: null`; the keyboard user cannot arrow back to the odd tile.
+- **Files**: `game.js` (restore the picked cell’s tab stop and focus after the pause),
+  `tests/web-shell.test.js` (failing-first focus contract), `sw.js` + `tests/pwa.test.js`
+  (cache v20), `README.md` (keyboard note).
+- **Fix**: on the nonfatal wrong branch, clear every cell’s tab stop, set the picked cell to
+  `tabIndex = 0`, and focus it after `off` is removed. No scoring, layout or save changes.
+- **Visual proof** (same seeded Daily #312, same wrong pick on cell 0, same 1440x900 viewport):
+  - before: `shots/afterimage/cycle16/before-wrong-focus.png` (sha256 D331450F4CD52A42…)
+    shows the board after the miss with no grid focus ring.
+  - after: `shots/afterimage/cycle16/after-wrong-focus.png` (sha256 5AE8A9F0F4F2FFCC…)
+    shows the white focus ring on the picked cell.
+- **Played run (keyboard only)**: wrong pick on cell 0 → focus returns to cell 0
+  (`focusVisible: true`) → two ArrowDowns and one ArrowRight reach the odd cell 7 → Enter
+  clears the board, level advances to 1 with 210 points. The before build stops at `BODY` and
+  cannot recover. Logs: `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 76/76 pass; `python aikit.py check afterimage` 5/5 pass.

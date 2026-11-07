@@ -1151,6 +1151,18 @@ function pick(index) {
     }
     state.phase = "play";
     ui.cells.classList.remove("off");
+    const cell = ui.cells.children[index];
+    if (cell) {
+      Array.from(ui.cells.children).forEach((item) => {
+        item.tabIndex = -1;
+      });
+      cell.tabIndex = 0;
+      try {
+        cell.focus({ preventScroll: true });
+      } catch {
+        /* non-DOM harnesses ignore focus */
+      }
+    }
     state.lastFrame = performance.now();
     ensureLoop();
   }, fatal ? 1150 : (REDUCED ? 400 : 640));

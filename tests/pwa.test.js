@@ -7,7 +7,7 @@ const path = require('node:path');
 
 test('sw cache version is pinned', () => {
   const sw = fs.readFileSync(path.join(__dirname, '..', 'sw.js'), 'utf8');
-  assert.match(sw, /const CACHE = "afterimage-v19";/);
+  assert.match(sw, /const CACHE = "afterimage-v20";/);
 });
 
 test('pwa shell entries all resolve to tracked files', () => {
