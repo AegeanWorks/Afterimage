@@ -308,3 +308,31 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   Both result screens are in `shots/afterimage/cycle11/` (`before-win-result.png` /
   `after-win-result.png`); logs `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 69/69 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 12 — Save card: a visible fallback for a failed export
+
+- **Area**: result card / save/download edge case (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback).
+- **Defect (reproduced)**: when `renderScoreCard` returned an empty URL (new canvas context
+  unavailable), `saveScoreCard` returned without changing anything. The before log shows the
+  button still `Save card`, enabled, and no status node; the result screen looked untouched.
+- **Files**: `game.js` (pure `saveCardFeedback`, status writer, save-flow rewrite),
+  `index.html` (`saveStatus` live region), `styles.css` (status line), `tests/game.test.js`
+  (failing-first feedback test), `tests/web-shell.test.js` (live-region contract), `sw.js` +
+  `tests/pwa.test.js` (cache v16), `README.md` (card failure note).
+- **Fix**: failed exports now show `Card unavailable — Copy result still works.` in a
+  `role="status"` line, leave the button enabled for retry, and clear the status on a new
+  result/menu; successful exports show `Download requested — check your downloads.` alongside
+  the `Saved` button state.
+- **Visual proof** (same seeded Daily #312 loss result, same 1440x900 viewport, same mocked
+  empty canvas export):
+  - before: `shots/afterimage/cycle12/before-failure-save-card.png` (sha256 82A0834757F2E4E9…)
+    shows no feedback at all after the click.
+  - after: `shots/afterimage/cycle12/after-failure-save-card.png` (sha256 45D26BDA235F987F…)
+    shows the red `Card unavailable — Copy result still works.` line.
+- **Played run**: the same result-screen flow under a normal canvas export gives `Saved` and
+  `Download requested — check your downloads.` with zero console errors. Evidence:
+  `before-success-save-card.png` / `after-success-save-card.png` and the four JSON logs in
+  `shots/afterimage/cycle12/`.
+- **Gate results**: `node --test tests` 71/71 pass; `python aikit.py check afterimage` 5/5 pass.

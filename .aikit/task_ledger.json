@@ -1,38 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle11-daily-best",
+    "task_id": "afterimage-cycle12-save-fallback",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794086098.888307,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794086916.1317184,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": [],
-    "completed_at": 1794086133.519536
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle5-surge-badge",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Persistent SURGE stage badge, show/hide paths, cache v9 and a full Daily run verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794082135.8983428,
-      "timestamp_str": "2026-11-07 23:08:55",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle5-surge-badge",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle5-surge-badge' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794082216.0362115,
-      "timestamp_str": "2026-11-07 23:10:16",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle6-corrupt-daily",
       "phase": "phase 2",
@@ -265,6 +243,35 @@
       "status": "completed",
       "timestamp": 1794086133.5195384,
       "timestamp_str": "2026-11-08 00:15:33",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle12-save-fallback",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Surface a save-card failure instead of a silent no-op and keep a status fallback",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794086398.0654628,
+      "timestamp_str": "2026-11-08 00:19:58",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "When the card canvas cannot be created, saveScoreCard returns without any feedback: the Save card button stays unchanged and the player gets no card and no explanation",
+        "benefits": "A failed export now says why and points to Copy result; a successful export reports the download request; screen readers hear the status",
+        "risks": "contract: result-screen adds a hidden role=status line, no scoring/save schema changes; dependency: none; concurrency: none; state: a transient status element reset per result",
+        "mitigation": "Failing-first pure saveCardFeedback test and shell status contract; same loss-result/canvas-failure screenshot pair; normal save-card played run; full gates"
+      },
+      "plan_digest": "8c2348e27a4d454c781f3aa602c1cbef211aee5d12a1f60a859dada1a5dfe320"
+    },
+    {
+      "task_id": "afterimage-cycle12-save-fallback",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Save-card failure status, live-region contract, cache v16 and failure/success result flows verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794086916.1317184,
+      "timestamp_str": "2026-11-08 00:28:36",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

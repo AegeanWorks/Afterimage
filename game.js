@@ -404,6 +404,7 @@ const ui = {
   newBest: document.getElementById("newBest"),
   playAgain: document.getElementById("playAgain"),
   saveCard: document.getElementById("saveCard"),
+  saveStatus: document.getElementById("saveStatus"),
   changeMode: document.getElementById("changeMode")
 };
 
@@ -464,6 +465,7 @@ const state = {
 
 let raf = 0;
 let audio = null;
+let saveStatusTimer = 0;
 
 /* ------------------------------------------------------------------ audio */
 
@@ -1525,6 +1527,7 @@ function finish(won) {
   ui.newBest.hidden = !isBest;
   ui.saveCard.disabled = false;
   ui.saveCard.textContent = "Save card";
+  showSaveStatus("");
   ui.copyResult.textContent = "Copy result";
   ui.copyResult.disabled = false;
 
@@ -1555,6 +1558,7 @@ function showMenu() {
   if (ui.surge) ui.surge.hidden = true;
   if (ui.final) ui.final.hidden = true;
   if (ui.stage) ui.stage.classList.remove("finale");
+  showSaveStatus("");
   renderBests();
   renderDaily();
 }
@@ -1806,6 +1810,25 @@ function renderScoreCard(result) {
   return card.toDataURL("image/png");
 }
 
+function saveCardFeedback(url) {
+  return url
+    ? { ok: true, message: "Download requested — check your downloads." }
+    : { ok: false, message: "Card unavailable — Copy result still works." };
+}
+
+function showSaveStatus(message, error = false) {
+  if (!ui.saveStatus) return;
+  window.clearTimeout(saveStatusTimer);
+  ui.saveStatus.textContent = message;
+  ui.saveStatus.classList.toggle("error", Boolean(error));
+  ui.saveStatus.hidden = !message;
+  if (message) {
+    saveStatusTimer = window.setTimeout(() => {
+      ui.saveStatus.hidden = true;
+    }, 5000);
+  }
+}
+
 function saveScoreCard() {
   if (!state.result) return;
 
@@ -1813,10 +1836,15 @@ function saveScoreCard() {
   try {
     url = renderScoreCard(state.result);
   } catch {
-    ui.saveCard.textContent = "Could not save";
+    url = "";
+  }
+  const feedback = saveCardFeedback(url);
+  showSaveStatus(feedback.message, !feedback.ok);
+  if (!feedback.ok) {
+    ui.saveCard.textContent = "Save card";
+    ui.saveCard.disabled = false;
     return;
   }
-  if (!url) return;
 
   const link = document.createElement("a");
   link.href = url;

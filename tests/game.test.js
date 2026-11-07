@@ -577,6 +577,20 @@ test('loadDaily drops an invalid result and malformed last key', () => {
   assert.strictEqual(daily.result, null, 'result without a score is discarded');
 });
 
+test('saveCardFeedback explains failed and successful exports', () => {
+  const { saveCardFeedback } = createHarness();
+
+  const ok = saveCardFeedback('data:image/png;base64,abc');
+  assert.strictEqual(ok.ok, true);
+  assert.match(ok.message, /download/i);
+
+  const failed = saveCardFeedback('');
+  assert.strictEqual(failed.ok, false);
+  assert.match(failed.message, /Copy result/);
+
+  assert.strictEqual(saveCardFeedback(null).ok, false);
+});
+
 test('dailyResultBeats prefers wins, then higher scores', () => {
   const { dailyResultBeats } = createHarness();
 

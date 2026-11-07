@@ -65,7 +65,7 @@ Every board hides one tile that differs by **hue, lightness, saturation, size or
 
 ## Score card
 
-Every result can be saved as a **1200 × 630 PNG**, drawn on a second canvas: score, rating, stats and a mini board. Daily cards add the date and their daily number.
+Every result can be saved as a **1200 × 630 PNG**, drawn on a second canvas: score, rating, stats and a mini board. Daily cards add the date and their daily number. If the browser cannot build the card, the result screen explains the failure and points to **Copy result** instead of failing silently.
 
 ## Addictivity systems
 

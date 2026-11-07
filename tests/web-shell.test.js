@@ -37,6 +37,16 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('failed score-card saves surface a live status fallback', () => {
+  const htmlText = html();
+  const jsText = js();
+  assert.ok(htmlText.includes('id="saveStatus"'), 'index.html must carry the save status node');
+  assert.ok(/id="saveStatus"[^>]*role="status"/.test(htmlText), 'save status must be a live status region');
+  assert.ok(/id="saveStatus"[^>]*aria-live="polite"/.test(htmlText), 'save status must use polite live updates');
+  assert.ok(jsText.includes('saveCardFeedback'), 'game.js must derive the save feedback');
+  assert.ok(jsText.includes('Card unavailable'), 'game.js must explain a failed card export');
+});
+
 test('the final board carries a persistent boss marker', () => {
   const htmlText = html();
   const cssText = css();
