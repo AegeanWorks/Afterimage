@@ -1,55 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle8-audio-cues",
+    "task_id": "afterimage-cycle9-debrief-copy",
     "last_phase": "phase 4",
     "active_phase": 4,
     "status": "in_progress",
-    "updated_at": 1794083945.7869809,
+    "updated_at": 1794084358.9430673,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
     "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle2-menu-meta",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Fix menu meta-row wrapping and pluralization; prove with same-state screenshot pair",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794078259.3593676,
-      "timestamp_str": "2026-11-07 22:04:19",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "The menu status row packs three items into one flex line at 1440x900, each wrapping into two lines, and renders '1 runs'; the first impression is cramped and ungrammatical",
-        "benefits": "Status row reads as two clear bands (privacy note over eye level/streak), singular/plural labels are correct, and the menu height is stable",
-        "risks": "contract: menu copy only; dependency: none; concurrency: none; state: none (profileLine is pure, storage untouched)",
-        "mitigation": "Pure profileLine test first; CSS grid with baseline alignment; same seeded save state, viewport and screenshots before/after; full node and aikit gates"
-      },
-      "plan_digest": "8fac9351d274b70f7312e35858dec0db01c199ab954bb8cd34d48062161f3e55"
-    },
-    {
-      "task_id": "afterimage-cycle2-menu-meta",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Two-band menu grid, pluralization and 390px stack verified with failing-first test, same-state screenshots and a full Zen run (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794079370.3417885,
-      "timestamp_str": "2026-11-07 22:22:50",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle2-menu-meta",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle2-menu-meta' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794079540.1729019,
-      "timestamp_str": "2026-11-07 22:25:40",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle3-pick-feedback",
       "phase": "phase 2",
@@ -272,6 +233,45 @@
       "status": "in_progress",
       "timestamp": 1794083945.7869809,
       "timestamp_str": "2026-11-07 23:39:05",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle8-audio-cues",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle8-audio-cues' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794084028.081709,
+      "timestamp_str": "2026-11-07 23:40:28",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle9-debrief-copy",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Remove the duplicated Zen practice pointer from the warming-up debrief",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794084055.908415,
+      "timestamp_str": "2026-11-07 23:40:55",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "A failed run's result says Zen is a good place to study the boards and then immediately says the weakest type costs most - Zen is a good place to study them, repeating the same advice twice",
+        "benefits": "The debrief reads as one clear diagnosis plus one specific practice pointer instead of duplicated filler",
+        "risks": "contract: copy-only change to the WARMING UP rating blurb; dependency: none; concurrency: none; state: none",
+        "mitigation": "Failing-first rateRun test; same three-miss Daily result screenshot pair; full suite and gates"
+      },
+      "plan_digest": "b5b6cddfe27038ceb6141af3c075d0e310599023f04f55671ee7baa97c7ea08e"
+    },
+    {
+      "task_id": "afterimage-cycle9-debrief-copy",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] WARMING UP debrief de-duplicated, copy test, same-state screenshots, cache v13 and gates verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794084358.9430673,
+      "timestamp_str": "2026-11-07 23:45:58",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

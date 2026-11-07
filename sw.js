@@ -1,7 +1,7 @@
 "use strict";
 
 /* Bump CACHE when the shell changes so installed copies pick up the new assets. */
-const CACHE = "afterimage-v12";
+const CACHE = "afterimage-v13";
 const ROOT = new URL("./", self.location);
 const INDEX = new URL("index.html", ROOT).href;
 const SHELL = [

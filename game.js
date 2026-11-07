@@ -1329,7 +1329,7 @@ function rateRun(won, cleared, total, accuracy, mode) {
   }
   return {
     rating: "WARMING UP",
-    blurb: "Every miss is a calibration. Zen mode is a good place to study the boards."
+    blurb: "Every miss is a calibration. Start with the bright, big boards and work down."
   };
 }
 

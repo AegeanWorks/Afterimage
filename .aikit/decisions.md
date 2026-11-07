@@ -149,3 +149,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: A timeout reused the wrong-pick buzz (one 146Hz triangle), and the result screen was silent. With the same cue for a wrong pick and the clock running out, and no finish sting, the three outcomes were indistinguishable by ear.
 - **Decision**: Add `soundTimeout` (descending 392→294→196Hz), `soundWin` (rising 523.25→659.25→783.99→1046.5Hz), and `soundLose` (220→164.81Hz). `timeout()` uses the timeout cue; `finish()` plays the win sting only when the run has at least one clear and the loss fall otherwise. Bump the service-worker cache to `afterimage-v12`.
 - **Consequences**: 65 tests pass (64 prior + 1 failing-first oscillator-capture test with 7 assertions). Real-Chromium tone logs show the before timeout equal to the wrong buzz and no finish sting, while the after run logs the descending timeout, the loss fall after the fatal buzz, and the rising win arpeggio after the last correct tone. The Daily timeout/loss and Zen 10/10 runs both completed with zero console errors. Logs and frames are under `shots/afterimage/cycle8/`; `python aikit.py check afterimage` green.
+
+### ADR-022: Let the weakest-type line own the Zen pointer
+- **Date**: 2026-11-07
+- **Status**: Accepted
+- **Context**: A failed run's WARMING UP blurb told the player Zen was a good place to study, then the appended weakest-type sentence said the same thing again for the costliest type. The paragraph repeated itself instead of diagnosing once and pointing once.
+- **Decision**: Change the WARMING UP base blurb to "Every miss is a calibration. Start with the bright, big boards and work down." Leave the weakest-type sentence as the only Zen practice pointer. Bump the service-worker cache to `afterimage-v13`.
+- **Consequences**: 66 tests pass (65 prior + 1 failing-first copy test). The same three-miss Daily #311 result now reads one general cue plus "Hue boards cost you most — Zen is a good place to study them." zero console errors on both runs. Before/after frames are in `.aikit/cycles.md` under `shots/afterimage/cycle9/`; `python aikit.py check afterimage` green.

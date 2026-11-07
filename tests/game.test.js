@@ -287,6 +287,14 @@ test('rateRun assigns accurate titles and rating thresholds', () => {
   assert.notStrictEqual(partialRun.rating, 'EAGLE EYE');
 });
 
+test('warming-up debrief leaves the practice pointer to the weakest type', () => {
+  const { rateRun } = createHarness();
+  const info = rateRun(false, 0, 10, 0, 'focus');
+
+  assert.ok(info.blurb.length > 0);
+  assert.ok(!info.blurb.includes('Zen'), 'base blurb must not duplicate the weakest-type Zen pointer');
+});
+
 test('buildShareText formats share card text with result strip', () => {
   const { buildShareText } = createHarness();
 

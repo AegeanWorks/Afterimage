@@ -201,3 +201,25 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   `Zen complete.` Both runs logged the expected cue contours with zero console errors; frames:
   `timeout-reveal.png`, `loss-result.png`, `win-result.png` (before/after).
 - **Gate results**: `node --test tests` 65/65 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 9 — Failure debrief: remove the duplicate Zen pointer
+
+- **Area**: failure debrief copy / UI readability (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy).
+- **Defect (reproduced)**: the WARMING UP blurb ended with "Zen mode is a good place to study
+  the boards", and the weakest-type sentence immediately appended "Hue boards cost you most —
+  Zen is a good place to study them." The same advice appeared twice in one paragraph.
+- **Files**: `game.js` (WARMING UP blurb), `tests/game.test.js` (failing-first copy test),
+  `sw.js` + `tests/pwa.test.js` (cache v13).
+- **Fix**: the base blurb now says "Every miss is a calibration. Start with the bright, big
+  boards and work down." The weakest-type sentence remains the single, specific Zen pointer.
+- **Visual proof** (same 1440x900 viewport, same three-miss Daily #311, same result state):
+  - before: `shots/afterimage/cycle9/before-result.png` (sha256 7E761FAE6CFE6896…) repeats
+    "Zen" twice.
+  - after: `shots/afterimage/cycle9/after-result.png` (sha256 0543779353DC18ED…) reads one
+    general cue plus the hue-specific Zen sentence.
+- **Played run (scripted pointer input, Daily #311)**: three wrong picks, `So close.`, 0/10,
+  0%, WARMING UP; both builds logged zero console errors. Result logs:
+  `shots/afterimage/cycle9/before-log.json` / `after-log.json`.
+- **Gate results**: `node --test tests` 66/66 pass; `python aikit.py check afterimage` 5/5 pass.
