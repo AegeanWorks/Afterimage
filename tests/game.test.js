@@ -448,6 +448,45 @@ test('freezeRepair forgives exactly one missed day', () => {
   assert.strictEqual(freezeRepair(null, '2026-11-01'), false);
 });
 
+test('daily streak advances only when the daily is completed', () => {
+  const { dailyStreakAfter } = createHarness();
+  const day = '2026-11-07';
+  const yesterday = '2026-11-06';
+
+  const lost = dailyStreakAfter(yesterday, 3, 0, day, false);
+  assert.strictEqual(lost.streak, 3, 'a loss must not mint streak progress');
+  assert.strictEqual(lost.last, yesterday, 'a loss must not mark the day completed');
+
+  const won = dailyStreakAfter(yesterday, 3, 0, day, true);
+  assert.strictEqual(won.streak, 4, 'a win on the next day advances the streak');
+  assert.strictEqual(won.last, day);
+
+  const replay = dailyStreakAfter(day, 4, 0, day, true);
+  assert.strictEqual(replay.streak, 4, 'a same-day replay cannot double-count');
+  assert.strictEqual(replay.last, day);
+
+  const replayLoss = dailyStreakAfter(day, 4, 0, day, false);
+  assert.strictEqual(replayLoss.streak, 4, 'a replay loss keeps the completed day');
+
+  const frozen = dailyStreakAfter('2026-11-05', 3, 1, day, true);
+  assert.strictEqual(frozen.streak, 4, 'a freeze bridges exactly one missed day');
+  assert.strictEqual(frozen.freezes, 0, 'bridging consumes the freeze');
+
+  const lostGap = dailyStreakAfter('2026-11-05', 3, 1, day, false);
+  assert.strictEqual(lostGap.last, '2026-11-05', 'a loss never marks the day completed');
+  assert.strictEqual(lostGap.streak, 3, 'a loss never spends a freeze');
+  assert.strictEqual(lostGap.freezes, 1);
+
+  const broken = dailyStreakAfter('2026-11-05', 3, 0, day, true);
+  assert.strictEqual(broken.streak, 1, 'a longer gap starts a fresh streak');
+  assert.strictEqual(broken.last, day);
+
+  const first = dailyStreakAfter('', 0, 0, day, true);
+  assert.strictEqual(first.last, day);
+  assert.strictEqual(first.streak, 1, 'the first win starts at one');
+  assert.strictEqual(first.freezes, 0);
+});
+
 test('earnFreeze grants one freeze for a perfect daily win', () => {
   const first = createHarness();
 

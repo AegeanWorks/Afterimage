@@ -302,6 +302,21 @@ function freezeRepair(last, day) {
   return last === previousDateKey(yesterday);
 }
 
+function dailyStreakAfter(last, streak, freezes, day, won) {
+  const current = Number.isFinite(Number(streak)) && Number(streak) > 0 ? Math.floor(Number(streak)) : 0;
+  const held = Number.isFinite(Number(freezes)) && Number(freezes) > 0 ? Math.floor(Number(freezes)) : 0;
+  if (!won || !isValidDateKey(day) || last === day) {
+    return { last, streak: current, freezes: held };
+  }
+  if (last === previousDateKey(day)) {
+    return { last: day, streak: current + 1, freezes: held };
+  }
+  if (held > 0 && freezeRepair(last, day)) {
+    return { last: day, streak: current + 1, freezes: held - 1 };
+  }
+  return { last: day, streak: 1, freezes: held };
+}
+
 function currentStreak() {
   const today = localDateKey();
   const yesterday = previousDateKey(today);
@@ -812,11 +827,13 @@ function renderDaily() {
   }
 
   const streak = currentStreak();
+  const atRisk = result && result.won === false && streak > 0;
   const freezeArmed = state.profile.freezes > 0 && streak > 0 ? " · freeze armed" : "";
+  const risk = atRisk ? " · at risk" : "";
   ui.metaStreak.textContent =
-    streak >= 7 ? `${streak}-day streak · UNSTOPPABLE${freezeArmed}`
-    : streak >= 3 ? `${streak}-day streak · ROLLING${freezeArmed}`
-    : streak > 0 ? `${streak}-day streak${freezeArmed}`
+    streak >= 7 ? `${streak}-day streak · UNSTOPPABLE${freezeArmed}${risk}`
+    : streak >= 3 ? `${streak}-day streak · ROLLING${freezeArmed}${risk}`
+    : streak > 0 ? `${streak}-day streak${freezeArmed}${risk}`
     : "Day one";
   if (ui.metaLevel) {
     ui.metaLevel.textContent = `EYE LV ${eyeLevel(state.profile.clears)} · ${state.profile.clears} clears · ${state.profile.runs} runs`;
@@ -1230,20 +1247,13 @@ function saveBest(mode, score) {
 
 function recordDaily(won, accuracy, rating) {
   const day = state.dailyKey || localDateKey();
-  const yesterday = previousDateKey(day);
-
-  if (state.daily.last !== day) {
-    if (state.daily.last === yesterday) {
-      state.daily.streak += 1;
-    } else if (state.profile.freezes > 0 && freezeRepair(state.daily.last, day)) {
-      state.profile.freezes = 0;
-      state.daily.streak += 1;
-      saveProfile();
-    } else {
-      state.daily.streak = 1;
-    }
-    state.daily.last = day;
+  const next = dailyStreakAfter(state.daily.last, state.daily.streak, state.profile.freezes, day, won);
+  if (next.freezes < state.profile.freezes) {
+    state.profile.freezes = next.freezes;
+    saveProfile();
   }
+  state.daily.last = next.last;
+  state.daily.streak = next.streak;
 
   const prior = state.daily.result && state.daily.result.date === day ? state.daily.result : null;
   const isBest = !prior || state.score > prior.score;
@@ -1377,6 +1387,9 @@ function finish(won) {
   }
   if (firstClear) {
     blurb += ` First ${MODES[state.mode].label} clear!`;
+  }
+  if (isDaily && !won && state.daily.streak > 0) {
+    blurb += ` Your ${state.daily.streak}-day streak is at risk — clear today's board to keep it.`;
   }
   ui.resultBlurb.textContent = blurb;
   ui.resultMode.textContent = isDaily

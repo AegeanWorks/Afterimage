@@ -45,7 +45,7 @@ The cache name lives in `sw.js`; bump `CACHE` whenever a cached asset changes.
 
 ## Daily challenge
 
-The card at the top is seeded by your local date: **the same ten boards all day**, a three-life clock run, and a streak that grows each day you finish one. The menu keeps your best score for today; replays are allowed but only improve the day's best. Two fresh starts produce identical pixels — the seed is a small mulberry32 PRNG hashed from `YYYY-MM-DD`.
+The card at the top is seeded by your local date: **the same ten boards all day**, a three-life clock run, and a streak that grows each day you finish one. Only a completed daily advances the streak: a lost run leaves it *at risk* until a same-day replay clears the board. The menu keeps your best score for today; replays are allowed but only improve the day's best. Two fresh starts produce identical pixels — the seed is a small mulberry32 PRNG hashed from `YYYY-MM-DD`.
 
 ## Modes
 
