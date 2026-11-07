@@ -1,55 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle7-fatal-reveal",
+    "task_id": "afterimage-cycle8-audio-cues",
     "last_phase": "phase 4",
     "active_phase": 4,
     "status": "in_progress",
-    "updated_at": 1794083347.9778266,
+    "updated_at": 1794083945.7869809,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
     "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle1-daily-streak",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Prove the daily streak counts a lost run; extract pure streak advancement; wire and verify",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794076354.0300875,
-      "timestamp_str": "2026-11-07 21:32:34",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "A failed daily run currently increments the streak (3-day becomes 4-day) and marks the day complete, contradicting the README promise that the streak grows each day you finish one",
-        "benefits": "Daily streak becomes truthful and testable; loss no longer mints streak progress or consumes the day; replay win still advances exactly one day",
-        "risks": "contract: daily save shape and menu copy unchanged; dependency: none; concurrency: none; state: afterimage.daily last/streak on loss no longer written",
-        "mitigation": "Pure helper with unit tests for loss, win, replay, gap, freeze and malformed input; scripted before/after daily-loss playthrough; full node and aikit gates"
-      },
-      "plan_digest": "1bf8b01ec161f76ea937d7c094c0163dd0c70c1e17102c3e83966b284008bcce"
-    },
-    {
-      "task_id": "afterimage-cycle1-daily-streak",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Daily streak integrity verified with failing-first test, scripted daily loss/replay run, before/after screenshots and full gates (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794077965.8644905,
-      "timestamp_str": "2026-11-07 21:59:25",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle1-daily-streak",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle1-daily-streak' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794078136.053157,
-      "timestamp_str": "2026-11-07 22:02:16",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle2-menu-meta",
       "phase": "phase 2",
@@ -272,6 +233,45 @@
       "status": "in_progress",
       "timestamp": 1794083347.9778266,
       "timestamp_str": "2026-11-07 23:29:07",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle7-fatal-reveal",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle7-fatal-reveal' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794083452.7739286,
+      "timestamp_str": "2026-11-07 23:30:52",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle8-audio-cues",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Give timeouts, wins and losses their own audible cues instead of reusing the wrong-pick buzz",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794083490.869609,
+      "timestamp_str": "2026-11-07 23:31:30",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "A timeout plays the same single 146Hz tone as a wrong pick, and the result screen is silent, so the three outcomes are indistinguishable by ear",
+        "benefits": "Timeout, win and loss each have a distinct, recognisable contour; players can hear the outcome even before reading the result",
+        "risks": "contract: WebAudio-only additions, muted storage respected; dependency: none; concurrency: none; state: no persisted changes",
+        "mitigation": "Pure-ish oscillator-capture test with a fake AudioContext; before/after tone logs from a real Chromium run; full suite and gates"
+      },
+      "plan_digest": "8bdb1aeb137cb07061b58003aeaf1da8987f6ab1b2964a6b2556ffe12cfc69c0"
+    },
+    {
+      "task_id": "afterimage-cycle8-audio-cues",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Distinct timeout/win/loss cues, oscillator capture, real-Chromium tone logs, cache v12 and played Daily/Zen runs verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794083945.7869809,
+      "timestamp_str": "2026-11-07 23:39:05",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

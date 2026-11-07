@@ -513,6 +513,24 @@ function soundWrong() {
   tone(146, 0.2, "triangle", 0.05);
 }
 
+function soundTimeout() {
+  tone(392, 0.14, "triangle", 0.04);
+  tone(294, 0.16, "triangle", 0.038, 0.12);
+  tone(196, 0.22, "triangle", 0.035, 0.26);
+}
+
+function soundWin() {
+  tone(523.25, 0.14, "sine", 0.042);
+  tone(659.25, 0.14, "sine", 0.04, 0.08);
+  tone(783.99, 0.16, "sine", 0.038, 0.16);
+  tone(1046.5, 0.28, "sine", 0.036, 0.28);
+}
+
+function soundLose() {
+  tone(220, 0.18, "triangle", 0.04);
+  tone(164.81, 0.3, "triangle", 0.036, 0.16);
+}
+
 function soundHint() {
   tone(520, 0.12, "sine", 0.04);
   tone(780, 0.18, "sine", 0.035, 0.1);
@@ -1141,7 +1159,7 @@ function timeout() {
   state.reveal = true;
   state.hover = -1;
   ui.cells.classList.add("off");
-  soundWrong();
+  soundTimeout();
 
   if (state.timed) {
     state.lives = Math.max(0, state.lives - 1);
@@ -1493,6 +1511,8 @@ function finish(won) {
   ui.menu.hidden = true;
   ui.over.hidden = false;
   ui.veil.hidden = false;
+  if (won && state.cleared > 0) soundWin();
+  else soundLose();
 }
 
 function showMenu() {

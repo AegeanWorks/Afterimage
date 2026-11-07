@@ -176,3 +176,28 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   carried no console errors. Full logs: `shots/afterimage/cycle7/before-log.json` /
   `after-log.json`; result frames `before-result.png` / `after-result.png`.
 - **Gate results**: `node --test tests` 64/64 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 8 — Audio cues: distinct timeout, win and loss
+
+- **Area**: audio cues (covered: progression/saves, UI readability, graphics/effects,
+  responsive layout, levels, save resilience, failure feedback, audio cues).
+- **Defect (reproduced)**: `timeout()` called `soundWrong()`, so a timeout and a wrong pick
+  played the same single 146Hz triangle; `finish()` played nothing, so wins and losses were
+  silent. The before tone log shows `wrong: [146]`, `timeout: [880 tick, 146]`, `loss: [146]`,
+  `win: [890, 1308, 1510]` (correct-pick tones only).
+- **Files**: `game.js` (new `soundTimeout`/`soundWin`/`soundLose`, timeout call, finish call),
+  `tests/harness.js` (exports), `tests/game.test.js` (failing-first oscillator-capture test),
+  `sw.js` + `tests/pwa.test.js` (cache v12), `README.md` (audio grammar).
+- **Fix**: timeout is a descending 392→294→196Hz fall; win is a rising
+  523.25→659.25→783.99→1046.5Hz arpeggio; loss is a low 220→164.81Hz fall. `finish` plays the
+  win sting only for a run with at least one clear, otherwise the loss fall.
+- **Audio proof** (real Chromium, instrumented `AudioContext`, same 1440x900 / Daily #311 setup):
+  - before: `shots/afterimage/cycle8/before-log.json` — timeout 146Hz = wrong 146Hz; no finish
+    sting on win.
+  - after: `shots/afterimage/cycle8/after-log.json` — timeout `[880 tick, 392, 294, 196]`,
+    loss `[146, 220, 164.81]`, win `[890, 1308, 1510, 523.25, 659.25, 783.99, 1046.5]`.
+- **Played run**: Daily #311 wrong pick → shortened clock → timeout reveal (`Time — here it
+  was`), then a fatal miss → loss result; a separate Zen run cleared 10/10, 100%, 4,210 →
+  `Zen complete.` Both runs logged the expected cue contours with zero console errors; frames:
+  `timeout-reveal.png`, `loss-result.png`, `win-result.png` (before/after).
+- **Gate results**: `node --test tests` 65/65 pass; `python aikit.py check afterimage` 5/5 pass.

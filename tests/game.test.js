@@ -86,6 +86,57 @@ test('ensureAudio survives a throwing AudioContext', () => {
   assert.doesNotThrow(() => h.ensureAudio());
 });
 
+test('timeout, win and lose cues are distinct from the wrong buzz', () => {
+  const h = createHarness();
+  const freq = [];
+  const node = () => ({ connect() { return this; }, start() {}, stop() {} });
+  h.sandbox.window.AudioContext = function FakeAudioContext() {
+    return {
+      currentTime: 0,
+      state: 'running',
+      destination: {},
+      createOscillator() {
+        return {
+          ...node(),
+          type: '',
+          frequency: {
+            setValueAtTime(value) { freq.push(value); },
+            linearRampToValueAtTime() {},
+            exponentialRampToValueAtTime() {}
+          }
+        };
+      },
+      createGain() {
+        return {
+          ...node(),
+          gain: {
+            setValueAtTime() {},
+            linearRampToValueAtTime() {},
+            exponentialRampToValueAtTime() {}
+          }
+        };
+      },
+      resume() {}
+    };
+  };
+  h.ensureAudio();
+
+  const capture = (fn) => { freq.length = 0; fn(); return freq.slice(); };
+  const wrong = capture(h.soundWrong);
+  const timeout = capture(h.soundTimeout);
+  const win = capture(h.soundWin);
+  const lose = capture(h.soundLose);
+
+  assert.ok(wrong.length >= 1);
+  assert.ok(timeout.length >= 2);
+  assert.ok(win.length >= 3);
+  assert.ok(lose.length >= 2);
+  assert.notStrictEqual(timeout.join(','), wrong.join(','), 'timeout must not reuse the wrong buzz');
+  assert.ok(timeout[0] > timeout[timeout.length - 1], 'timeout cue descends');
+  assert.ok(win[win.length - 1] > win[0], 'win cue rises');
+  assert.ok(lose[0] > lose[lose.length - 1], 'lose cue descends');
+});
+
 test('hiddenPenalty charges wall-clock hidden time', () => {
   const { hiddenPenalty } = createHarness();
 
