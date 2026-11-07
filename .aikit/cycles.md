@@ -591,3 +591,30 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   but `afterimage.profile` and `afterimage.bests` remain byte-identical version-2 JSON; zero
   console errors. Logs: `before-log.json` / `after-log.json`.
 - **Gate results**: `node --test tests` 81/81 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 21 — Progression: quitting keeps the attempt
+
+- **Area**: abandoned-run accounting (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics).
+- **Defect (reproduced)**: clearing two Focus boards then pressing **Quit run** returned to a
+  menu reading `EYE LV 1 · 0 clears · 0 runs`. The attempt and its cleared boards vanished
+  because only the finished-result path touched profile runs/clears/bestStreak.
+- **Files**: `game.js` (pure `abandonedTotals`, `quitRun`), `tests/game.test.js`
+  (failing-first test), `tests/harness.js` (export), `sw.js` + `tests/pwa.test.js` (cache v25),
+  `README.md` (Quit run note).
+- **Fix**: Quit run now adds one run, adds `state.cleared` to lifetime clears, keeps the
+  maximum run streak, saves the versioned profile, and then opens the menu. Change mode and the
+  finished-result path are unchanged, so completed runs are not double-counted.
+- **Visual proof** (same fresh save, same two-cleared Focus boards, same 1440x900 viewport):
+  - before: `shots/afterimage/cycle21/before-after-quit-menu.png` (sha256 87009D82FCF9450F…)
+    shows `EYE LV 1 · 0 CLEARS · 0 RUNS`.
+  - after: `shots/afterimage/cycle21/after-after-quit-menu.png` (sha256 048836CEA95A3002…)
+    shows `EYE LV 1 · 2 CLEARS · 1 RUN`.
+- **Played run**: quit after two clears stores `{runs:1, clears:2, bestStreak:2, version:1}`;
+  a following Focus run that clears one board then loses adds exactly one run and one clear
+  (`runs:2, clears:3`), proving the finished path is not double-counted. Logs:
+  `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 82/82 pass; `python aikit.py check afterimage` 5/5 pass.

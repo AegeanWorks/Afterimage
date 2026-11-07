@@ -328,6 +328,15 @@ function eyeLevel(clears) {
   return Math.floor(clears / 10) + 1;
 }
 
+function abandonedTotals(runs, clears, bestStreak, runClears, runBestStreak) {
+  const num = (value) => (Number.isFinite(Number(value)) && Number(value) > 0 ? Math.floor(Number(value)) : 0);
+  return {
+    runs: num(runs) + 1,
+    clears: num(clears) + num(runClears),
+    bestStreak: Math.max(num(bestStreak), num(runBestStreak))
+  };
+}
+
 function profileLine(clears, runs) {
   const safeClears = Number.isFinite(Number(clears)) && Number(clears) > 0 ? Math.floor(Number(clears)) : 0;
   const safeRuns = Number.isFinite(Number(runs)) && Number(runs) > 0 ? Math.floor(Number(runs)) : 0;
@@ -1576,6 +1585,23 @@ function finish(won) {
   else soundLose();
 }
 
+function quitRun() {
+  if (state.phase === "play" || state.phase === "pause" || state.phase === "reveal") {
+    const totals = abandonedTotals(
+      state.profile.runs,
+      state.profile.clears,
+      state.profile.bestStreak,
+      state.cleared,
+      state.bestStreak
+    );
+    state.profile.runs = totals.runs;
+    state.profile.clears = totals.clears;
+    state.profile.bestStreak = totals.bestStreak;
+    saveProfile();
+  }
+  showMenu();
+}
+
 function showMenu() {
   state.runId += 1;
   state.phase = "menu";
@@ -2091,7 +2117,7 @@ ui.saveCard.addEventListener("click", saveScoreCard);
 ui.copyResult.addEventListener("click", copyResult);
 if (ui.copyClose) ui.copyClose.addEventListener("click", () => hideCopyFallback(true));
 ui.changeMode.addEventListener("click", showMenu);
-ui.quit.addEventListener("click", showMenu);
+ui.quit.addEventListener("click", quitRun);
 if (ui.hint) ui.hint.addEventListener("click", () => {
   ensureAudio();
   useHint();

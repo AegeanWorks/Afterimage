@@ -666,6 +666,25 @@ test('earnFreeze grants one freeze for a perfect daily win', () => {
   assert.strictEqual(second.earnFreeze(true, 99), false);
 });
 
+test('abandoning a run counts the attempt and cleared boards', () => {
+  const { abandonedTotals } = createHarness();
+
+  const fresh = abandonedTotals(0, 0, 0, 2, 2);
+  assert.strictEqual(fresh.runs, 1);
+  assert.strictEqual(fresh.clears, 2);
+  assert.strictEqual(fresh.bestStreak, 2);
+
+  const carried = abandonedTotals(5, 10, 7, 3, 4);
+  assert.strictEqual(carried.runs, 6);
+  assert.strictEqual(carried.clears, 13);
+  assert.strictEqual(carried.bestStreak, 7, 'a shorter quit streak keeps the lifetime best');
+
+  const empty = abandonedTotals(-1, -2, -3, -4, -5);
+  assert.strictEqual(empty.runs, 1);
+  assert.strictEqual(empty.clears, 0);
+  assert.strictEqual(empty.bestStreak, 0);
+});
+
 test('only completed timed best modes can save a personal best', () => {
   const { bestEligible } = createHarness();
 
