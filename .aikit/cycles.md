@@ -273,7 +273,11 @@ input sequence from the HEAD build (before) and the working-tree build (after).
     dead end used `node "$env:TEMP\afterimage-tools\score-card-probe.mjs"`.
   - `node "$env:TEMP\afterimage-tools\modal-focus-probe.mjs" before` / `after` (cycle 18);
     Shift+Tab is dispatched as a real CDP key event, then a keyboard Daily run reaches the
-    result and checks the wrap.`
+    result and checks the wrap.
+  - `node "$env:TEMP\afterimage-tools\mode-best-probe.mjs" before` / `after` (cycle 19);
+    `Page.addScriptToEvaluateOnNewDocument` fixes `Math.random` so the Blitz boards and score
+    match across builds. `node "$env:TEMP\afterimage-tools\mode-loss-audit.mjs"` audits
+    Blitz/Nightmare/Focus losses.`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
