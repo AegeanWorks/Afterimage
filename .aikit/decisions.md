@@ -107,3 +107,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: The menu `.meta` row was a single flex line. At 1440x900 its three children each wrapped to two lines, and `renderDaily` printed ungrammatical counts such as "1 runs" and "1 clears", making the first screen cramped.
 - **Decision**: Replace the flex row with a two-column grid: the privacy note spans the first band, Eye LV (left) and streak (right) share the second, and below 500px the best labels stack left-aligned. Add pure `profileLine(clears, runs)` with numeric guards and correct singular/plural labels.
 - **Consequences**: 58 tests pass (57 prior + 1 failing-first test with 4 assertions); at 1440x900 the second band measures 221px + 197px inside a 430px row and no longer wraps, while 390x844 renders three clean left-aligned lines. A played Zen run (10/10, 100%, 4,210) landed on `EYE LV 2 · 10 clears · 1 run` with the Zen `CLEARED` badge. No scoring or storage changes; `python aikit.py check afterimage` green.
+
+### ADR-016: Put correct-pick payoff at the tile
+- **Date**: 2026-11-07
+- **Status**: Accepted
+- **Context**: Correct picks were rewarded only in the distant HUD, and on size/angle boards the burst used the same color as every tile, so the success moment had no local, readable payoff.
+- **Decision**: Add pure `sparkColor(def, oddColor)` and `scorePopText(gain)`; use accent teal sparks for shape boards, and spawn a transient gold `+points` pop at the picked tile (dark offset for contrast) that is painted above the particles and cleared on every board change. Reduced-motion users keep the static feedback only.
+- **Consequences**: 59 tests pass (58 prior + 1 failing-first test with 7 assertions). A played Daily #311 run produced one pop per board matching the score gain (+270 through +690), accent sparks on all three shape boards, 10/10, 100%, 5,580, EAGLE EYE, zero console errors. Before/after frames are recorded in `.aikit/cycles.md` under `shots/afterimage/cycle3/`; `python aikit.py check afterimage` green.

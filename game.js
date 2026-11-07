@@ -422,6 +422,7 @@ const state = {
   perfectBoards: 0,
   surgeBoards: 0,
   particles: [],
+  pops: [],
   lastFrame: 0,
   muted: store.get("afterimage.muted", "0") === "1",
   bests: loadBests(),
@@ -709,6 +710,22 @@ function paintParticles() {
   ctx.restore();
 }
 
+function paintPops() {
+  if (!state.pops.length) return;
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = `800 ${Math.max(20, Math.round(ui.stage.clientWidth * 0.055))}px "Segoe UI", system-ui, sans-serif`;
+  for (const pop of state.pops) {
+    ctx.globalAlpha = Math.max(0, Math.min(1, pop.life * 1.5));
+    ctx.fillStyle = "rgba(5,5,9,0.62)";
+    ctx.fillText(pop.text, pop.x + 2, pop.y + 2);
+    ctx.fillStyle = pop.color;
+    ctx.fillText(pop.text, pop.x, pop.y);
+  }
+  ctx.restore();
+}
+
 function paint() {
   if (!state.data || !state.rects.length) return;
 
@@ -766,6 +783,7 @@ function paint() {
   }
 
   paintParticles();
+  paintPops();
 }
 
 /* ------------------------------------------------------------------- hud */
@@ -906,6 +924,7 @@ function startRun(mode) {
   state.wrongFlash = -1;
   state.hover = -1;
   state.particles = [];
+  state.pops = [];
   state.result = null;
 
   document.body.classList.add("playing");
@@ -946,6 +965,7 @@ function nextLevel() {
   state.levelMistakes = 0;
   state.lastTickSec = 0;
   state.particles = [];
+  state.pops = [];
   state.enterAt = performance.now();
 
   computeLayout();
@@ -999,8 +1019,11 @@ function pick(index) {
 
     const tile = state.rects[index];
     const tier = comboTier(state.streak).name;
-    burst(tile.x + tile.w / 2, tile.y + tile.h / 2, state.data.oddColor);
-    if (state.streak >= 3) burst(tile.x + tile.w / 2, tile.y + tile.h / 2, "#ffffff");
+    const centerX = tile.x + tile.w / 2;
+    const centerY = tile.y + tile.h / 2;
+    burst(centerX, centerY, sparkColor(state.data.def, state.data.oddColor));
+    if (state.streak >= 3) burst(centerX, centerY, "#ffffff");
+    scorePop(centerX, centerY, gain);
     soundCorrect();
     const tail = state.streak > 1 ? ` · ${state.streak} in a row` : "";
     const flavor = tier ? ` · ${tier}` : "";
@@ -1121,6 +1144,17 @@ function comboTier(streak) {
 
 function assistEase(slump) {
   return slump >= 2 ? 1.3 : 1;
+}
+
+function sparkColor(def, oddColor) {
+  const type = def && def.type;
+  return type === "size" || type === "rotate" ? "#4fd1c5" : oddColor;
+}
+
+function scorePopText(gain) {
+  const value = Number(gain);
+  const safe = Number.isFinite(value) && value > 0 ? Math.round(value) : 0;
+  return `+${safe.toLocaleString("en-US")}`;
 }
 
 function isAdjacent(n, a, b) {
@@ -1465,6 +1499,31 @@ function burst(x, y, color) {
   }
 }
 
+function scorePop(x, y, gain) {
+  if (REDUCED) return;
+  state.pops.push({
+    x,
+    y: y - 12,
+    text: scorePopText(gain),
+    color: "#ffe28a",
+    life: 1,
+    vy: -55
+  });
+}
+
+function updatePops(dt) {
+  for (let i = state.pops.length - 1; i >= 0; i -= 1) {
+    const pop = state.pops[i];
+    pop.life -= dt * 1.4;
+    if (pop.life <= 0) {
+      state.pops.splice(i, 1);
+      continue;
+    }
+    pop.y += pop.vy * dt;
+    pop.vy += 80 * dt;
+  }
+}
+
 function updateParticles(dt) {
   for (let i = state.particles.length - 1; i >= 0; i -= 1) {
     const particle = state.particles[i];
@@ -1785,6 +1844,7 @@ function frame(now) {
   }
 
   updateParticles(dt);
+  updatePops(dt);
   paint();
   updateTimer();
 

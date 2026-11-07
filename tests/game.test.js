@@ -507,6 +507,18 @@ test('bestLine combines best score and cleared badge', () => {
   assert.strictEqual(bestLine(2300, 1), 'BEST 2,300 · CLEARED');
 });
 
+test('correct-pick feedback names shape-board sparks and formats the pop', () => {
+  const { sparkColor, scorePopText } = createHarness();
+
+  assert.strictEqual(sparkColor({ type: 'rotate' }, '#123456'), '#4fd1c5');
+  assert.strictEqual(sparkColor({ type: 'size' }, '#123456'), '#4fd1c5');
+  assert.strictEqual(sparkColor({ type: 'hue' }, '#123456'), '#123456');
+  assert.strictEqual(sparkColor(null, '#123456'), '#123456');
+  assert.strictEqual(scorePopText(350), '+350');
+  assert.strictEqual(scorePopText(1234), '+1,234');
+  assert.strictEqual(scorePopText(-5), '+0');
+});
+
 test('profileLine keeps the menu status grammatical and numeric', () => {
   const { profileLine } = createHarness();
 

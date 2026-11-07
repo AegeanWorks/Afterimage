@@ -55,3 +55,28 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   `EYE LV 2 · 10 clears · 1 run`, `CLEARED` on the Zen tile and `DAY ONE` chapter. Full log:
   `shots/afterimage/cycle2/play.json`.
 - **Gate results**: `node --test tests` 58/58 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 3 — Graphics and effects: correct-pick payoff
+
+- **Area**: graphics and effects (covered: progression/saves, UI readability, graphics/effects).
+- **Defect (reproduced)**: a correct pick paid only in the top HUD. On a rotate board the burst
+  used `oddColor`, identical to every pill, so the 120ms frame showed purple/white specks and no
+  local score; the player had to look away from the tile to see the gain.
+- **Files**: `game.js` (pure `sparkColor`/`scorePopText`; transient `state.pops`; canvas pop
+  painting/update), `tests/harness.js` (exports), `tests/game.test.js` (failing-first test),
+  `README.md` (local payoff bullet).
+- **Fix**: shape boards burst in accent teal (`#4fd1c5`) while color boards keep the odd color;
+  every correct pick spawns a gold `+points` pop at the tile with a dark offset for contrast,
+  cleared on board change and suppressed under reduced motion.
+- **Visual proof** (same 1440x900 viewport, same seeded Daily #311, rotate board 5, frozen at
+  120ms after the correct click):
+  - before: `shots/afterimage/cycle3/before-rotate-burst.png` (sha256 45A56AE7E10C0180…)
+    shows only purple/white specks and no local score.
+  - after: `shots/afterimage/cycle3/after-rotate-burst.png` (sha256 97FBFDC5671AAEB5…)
+    shows teal/white sparks and a gold `+500` at the tile. Full-page pair:
+    `before-rotate-burst-full.png` / `after-rotate-burst-full.png`.
+- **Played run (scripted pointer input, Daily #311)**: ten correct clicks produced one pop per
+  board with the exact gain (+270, +330, +350, +660, +500, +600, +600, +930, +650, +690);
+  rotate and size boards listed `#4fd1c5` sparks; final `Daily cleared.`, 5,580, 10/10, 100%,
+  EAGLE EYE, zero console errors. Full log: `shots/afterimage/cycle3/played-daily.json`.
+- **Gate results**: `node --test tests` 59/59 pass; `python aikit.py check afterimage` 5/5 pass.
