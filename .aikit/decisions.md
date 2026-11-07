@@ -114,3 +114,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: Correct picks were rewarded only in the distant HUD, and on size/angle boards the burst used the same color as every tile, so the success moment had no local, readable payoff.
 - **Decision**: Add pure `sparkColor(def, oddColor)` and `scorePopText(gain)`; use accent teal sparks for shape boards, and spawn a transient gold `+points` pop at the picked tile (dark offset for contrast) that is painted above the particles and cleared on every board change. Reduced-motion users keep the static feedback only.
 - **Consequences**: 59 tests pass (58 prior + 1 failing-first test with 7 assertions). A played Daily #311 run produced one pop per board matching the score gain (+270 through +690), accent sparks on all three shape boards, 10/10, 100%, 5,580, EAGLE EYE, zero console errors. Before/after frames are recorded in `.aikit/cycles.md` under `shots/afterimage/cycle3/`; `python aikit.py check afterimage` green.
+
+### ADR-017: Wrap phone play controls instead of overflowing
+- **Date**: 2026-11-07
+- **Status**: Accepted
+- **Context**: At 390x844 the Focus play screen overflowed horizontally (`scrollWidth` 449). The desktop topbar put brand, five HUD values and SOUND on one line, so the sound control left the viewport and the streak value clipped on the installed-PWA form factor.
+- **Decision**: At 640px and below, wrap the topbar: brand and sound share the first row; the HUD takes a full-width second row with left-aligned stats, lives pushed right, and the sound control pinned via auto margin. Bump the service-worker cache to `afterimage-v8` because shell assets changed in cycles 2–4.
+- **Consequences**: 60 tests pass (59 prior + 1 failing-first CSS contract; cache pin updated to v8). Measured at 390x844: `scrollWidth` 449→390, HUD right 354→374, sound right 374 (inside), stage remains 358px. A mobile Focus run (level 02, 270, two lives) kept every value and control inside the viewport with zero console errors. Desktop layout is unchanged above 640px; `python aikit.py check afterimage` green.

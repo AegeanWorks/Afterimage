@@ -80,3 +80,26 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   rotate and size boards listed `#4fd1c5` sparks; final `Daily cleared.`, 5,580, 10/10, 100%,
   EAGLE EYE, zero console errors. Full log: `shots/afterimage/cycle3/played-daily.json`.
 - **Gate results**: `node --test tests` 59/59 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 4 — Responsive layout: phone play HUD
+
+- **Area**: responsive layout / UI readability (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout).
+- **Defect (reproduced)**: at 390x844 the play screen measured `scrollWidth` 449 against
+  `innerWidth` 390. The topbar never wrapped, so the SOUND button was pushed offscreen and the
+  streak HUD was clipped at the right edge.
+- **Files**: `styles.css` (640px topbar/HUD wrap), `tests/web-shell.test.js` (failing-first CSS
+  contract), `sw.js` + `tests/pwa.test.js` (cache v8 for the changed shell assets), `README.md`
+  (phone topbar note).
+- **Fix**: below 640px the brand and sound share the first topbar row, the five HUD values take
+  a full second row, lives are pushed right, and the sound control stays on the brand row.
+- **Visual proof** (same 390x844 viewport, same clean Focus start):
+  - before: `shots/afterimage/cycle4/before-focus-390.png` (sha256 6F5353BEF2CA9700…) shows
+    the clipped streak and offscreen SOUND control; `scrollWidth` 449.
+  - after: `shots/afterimage/cycle4/after-focus-390.png` (sha256 6D0E91B177A8545A…) shows both
+    rows inside the viewport; `scrollWidth` 390, HUD right edge 374, sound right edge 374.
+- **Played run (real pointer input, Focus, 390x844)**: cleared board 1 (+270, level 02), then
+  took a wrong pick (Focus 3→2). Active HUD read `Focus 02/10 · 270 · streak 0`, all items and
+  the SOUND button inside 390px, no horizontal scroll, zero console errors. Full log:
+  `shots/afterimage/cycle4/play.json`; screenshot `play-hud-active-390.png`.
+- **Gate results**: `node --test tests` 60/60 pass; `python aikit.py check afterimage` 5/5 pass.

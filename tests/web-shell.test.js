@@ -37,6 +37,16 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('narrow play layout wraps the HUD instead of overflowing', () => {
+  const cssText = css();
+  const mobile = /@media \(max-width: 640px\) \{([\s\S]*?)\n\}/.exec(cssText);
+  assert.ok(mobile, 'styles.css must keep a 640px breakpoint');
+  assert.ok(/\.topbar\s*\{[^}]*flex-wrap:\s*wrap/.test(mobile[1]), 'topbar must wrap on narrow screens');
+  assert.ok(/\.hud\s*\{[^}]*width:\s*100%/.test(mobile[1]), 'HUD must take its own full-width row');
+  assert.ok(/\.hud\s*\{[^}]*margin-left:\s*0/.test(mobile[1]), 'wrapped HUD must not keep the desktop auto margin');
+  assert.ok(/\.sound\s*\{[^}]*margin-left:\s*auto/.test(mobile[1]), 'sound control must stay reachable on the brand row');
+});
+
 test('keyboard contract stays discoverable and canvas stays hidden from AT', () => {
   const htmlText = html();
   const cssText = css();

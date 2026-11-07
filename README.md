@@ -132,6 +132,7 @@ The run caught two real bugs that the screenshots made obvious: burst particles 
 - Per-mode bests are stored as JSON, with the old single best migrated.
 - A run token (`runId`) guards late `setTimeout` callbacks after quitting; particles are cleared between boards.
 - Respects `prefers-reduced-motion`; storage and audio failures are non-fatal.
+- On phones the topbar wraps: brand and sound share the first row, all five HUD values share the second, and play never scrolls sideways.
 
 ## 📦 What's Inside
 

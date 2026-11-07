@@ -635,6 +635,10 @@ h1 em {
 }
 #hintBtn:disabled { opacity: 0.45; cursor: default; text-decoration: none; }
 @media (max-width: 640px) {
+  .topbar { flex-wrap: wrap; row-gap: 8px; }
+  .hud { order: 3; width: 100%; margin-left: 0; justify-content: flex-start; gap: clamp(12px, 4vw, 20px); }
+  .hud-item.lives { margin-left: auto; }
+  .sound { margin-left: auto; }
   .hud-item.streak .k { display: none; }
   .brand span { display: none; }
   .foot-keys { opacity: 0.75; font-size: 11px; }
