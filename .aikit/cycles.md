@@ -32,3 +32,26 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   EAGLE EYE, `daily.streak` 4. Full log: `shots/afterimage/cycle1/play-log.json`.
 - **Gate results**: `node --test tests` 57/57 pass; `python aikit.py check afterimage` green
   (tests, mechanics, hygiene, guidelines, secrets).
+
+## Cycle 2 — UI readability: menu status row
+
+- **Area**: UI readability (covered: progression/saves, UI readability).
+- **Defect (reproduced)**: at 1440x900 the menu `.meta` row was a single flex line; its three
+  children each wrapped (24/32/32px tall) and read `EYE LV 1 · 0 clears · 1 runs`. The menu's
+  first impression was cramped and ungrammatical.
+- **Files**: `styles.css` (two-band grid, mobile stack), `game.js` (pure `profileLine`),
+  `tests/harness.js` (export), `tests/game.test.js` (failing-first pluralization test).
+- **Fix**: the privacy note spans the first band; Eye LV and streak share the second band,
+  right-aligned streak; below 500px the best labels stack left-aligned. `profileLine` guards
+  non-numeric input and pluralizes clear/run.
+- **Visual proof** (same 1440x900 viewport, same preset save, same date):
+  - before: `shots/afterimage/cycle2/before-menu-meta.png` (sha256 ACBC7DE5F06009D9…)
+    shows three two-line labels packed into one row.
+  - after: `shots/afterimage/cycle2/after-menu-meta.png` (sha256 A1FADBE51ECF796B…)
+    shows two bands: privacy note over `EYE LV 1 · 0 clears · 1 run` / `3-DAY STREAK · ROLLING · AT RISK`.
+  - mobile check at 390x844: `after-390-menu-meta.png` (three clean left-aligned lines, no wrapping).
+- **Played run (real pointer input, Zen)**: started Zen from the menu, cleared 10/10 boards,
+  100%, 4,210 points; result screen `Zen complete.`; Change mode returned to the menu with
+  `EYE LV 2 · 10 clears · 1 run`, `CLEARED` on the Zen tile and `DAY ONE` chapter. Full log:
+  `shots/afterimage/cycle2/play.json`.
+- **Gate results**: `node --test tests` 58/58 pass; `python aikit.py check afterimage` 5/5 pass.

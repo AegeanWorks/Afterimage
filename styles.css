@@ -481,10 +481,10 @@ h1 em {
 .btn:active { transform: translateY(0); }
 
 .meta {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 6px 12px;
   margin-top: 22px;
   padding-top: 16px;
   border-top: 1px solid var(--line);
@@ -494,7 +494,9 @@ h1 em {
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
+.meta > span:first-child { grid-column: 1 / -1; }
 .meta .best { color: var(--ink); font-size: 12px; letter-spacing: 0.02em; }
+.meta .best:last-child { text-align: right; }
 
 /* ---------- result ---------- */
 .result-title {
@@ -632,11 +634,14 @@ h1 em {
   text-shadow: 0 0 12px rgba(255, 212, 121, 0.55);
 }
 #hintBtn:disabled { opacity: 0.45; cursor: default; text-decoration: none; }
-.meta .best + .best { margin-left: 10px; }
 @media (max-width: 640px) {
   .hud-item.streak .k { display: none; }
   .brand span { display: none; }
   .foot-keys { opacity: 0.75; font-size: 11px; }
+}
+@media (max-width: 500px) {
+  .meta { grid-template-columns: 1fr; }
+  .meta .best:last-child { text-align: left; }
 }
 @media (max-width: 480px) {
   .modes { grid-template-columns: 1fr; }

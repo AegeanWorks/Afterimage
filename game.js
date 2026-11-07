@@ -294,6 +294,12 @@ function eyeLevel(clears) {
   return Math.floor(clears / 10) + 1;
 }
 
+function profileLine(clears, runs) {
+  const safeClears = Number.isFinite(Number(clears)) && Number(clears) > 0 ? Math.floor(Number(clears)) : 0;
+  const safeRuns = Number.isFinite(Number(runs)) && Number(runs) > 0 ? Math.floor(Number(runs)) : 0;
+  return `EYE LV ${eyeLevel(safeClears)} · ${safeClears} ${safeClears === 1 ? "clear" : "clears"} · ${safeRuns} ${safeRuns === 1 ? "run" : "runs"}`;
+}
+
 function freezeRepair(last, day) {
   if (typeof last !== "string" || !last || typeof day !== "string" || !day) return false;
   if (last === day) return false;
@@ -836,7 +842,7 @@ function renderDaily() {
     : streak > 0 ? `${streak}-day streak${freezeArmed}${risk}`
     : "Day one";
   if (ui.metaLevel) {
-    ui.metaLevel.textContent = `EYE LV ${eyeLevel(state.profile.clears)} · ${state.profile.clears} clears · ${state.profile.runs} runs`;
+    ui.metaLevel.textContent = profileLine(state.profile.clears, state.profile.runs);
   }
 }
 

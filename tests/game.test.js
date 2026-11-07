@@ -507,6 +507,15 @@ test('bestLine combines best score and cleared badge', () => {
   assert.strictEqual(bestLine(2300, 1), 'BEST 2,300 · CLEARED');
 });
 
+test('profileLine keeps the menu status grammatical and numeric', () => {
+  const { profileLine } = createHarness();
+
+  assert.strictEqual(profileLine(0, 0), 'EYE LV 1 · 0 clears · 0 runs');
+  assert.strictEqual(profileLine(1, 1), 'EYE LV 1 · 1 clear · 1 run');
+  assert.strictEqual(profileLine(10, 2), 'EYE LV 2 · 10 clears · 2 runs');
+  assert.strictEqual(profileLine(-5, NaN), 'EYE LV 1 · 0 clears · 0 runs');
+});
+
 test('loadProfile defaults wins per mode to zero', () => {
   const { loadProfile } = createHarness();
 

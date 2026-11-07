@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle1-daily-streak",
+    "task_id": "afterimage-cycle2-menu-meta",
     "last_phase": "phase 4",
     "active_phase": 4,
     "status": "in_progress",
-    "updated_at": 1794077965.8644905,
+    "updated_at": 1794079370.3417885,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
     "continuations": []
@@ -65,6 +65,45 @@
       "status": "in_progress",
       "timestamp": 1794077965.8644905,
       "timestamp_str": "2026-11-07 21:59:25",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle1-daily-streak",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle1-daily-streak' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794078136.053157,
+      "timestamp_str": "2026-11-07 22:02:16",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle2-menu-meta",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Fix menu meta-row wrapping and pluralization; prove with same-state screenshot pair",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794078259.3593676,
+      "timestamp_str": "2026-11-07 22:04:19",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "The menu status row packs three items into one flex line at 1440x900, each wrapping into two lines, and renders '1 runs'; the first impression is cramped and ungrammatical",
+        "benefits": "Status row reads as two clear bands (privacy note over eye level/streak), singular/plural labels are correct, and the menu height is stable",
+        "risks": "contract: menu copy only; dependency: none; concurrency: none; state: none (profileLine is pure, storage untouched)",
+        "mitigation": "Pure profileLine test first; CSS grid with baseline alignment; same seeded save state, viewport and screenshots before/after; full node and aikit gates"
+      },
+      "plan_digest": "8fac9351d274b70f7312e35858dec0db01c199ab954bb8cd34d48062161f3e55"
+    },
+    {
+      "task_id": "afterimage-cycle2-menu-meta",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Two-band menu grid, pluralization and 390px stack verified with failing-first test, same-state screenshots and a full Zen run (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794079370.3417885,
+      "timestamp_str": "2026-11-07 22:22:50",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]
