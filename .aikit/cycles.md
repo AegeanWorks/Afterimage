@@ -371,3 +371,28 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   `before-failure-log.json` / `after-failure-log.json` /
   `before-success-log.json` / `after-success-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 73/73 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 14 — Keyboard focus: returning to the menu
+
+- **Area**: keyboard focus / menu return (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus).
+- **Defect (reproduced)**: after a result, keyboard users tabbed to Change mode and activated
+  it; the menu opened with `document.activeElement` on `BODY`, because the focused button lived
+  inside the hidden result overlay. The before log also shows result-entry focus on `BODY`.
+- **Files**: `game.js` (`showMenu` focuses the primary Daily action), `tests/web-shell.test.js`
+  (failing-first focus contract), `sw.js` + `tests/pwa.test.js` (cache v18), `README.md`
+  (keyboard return note).
+- **Fix**: `showMenu` focuses `#dailyBtn` with `preventScroll` after the menu is rendered, for
+  both Change mode and Quit run. No layout, copy or state changes.
+- **Visual proof** (same seeded Daily #312 loss result, same keyboard-only tab sequence to
+  Change mode, same 1440x900 viewport):
+  - before: `shots/afterimage/cycle14/before-menu-focus.png` (sha256 6AE51832CEFE621C…)
+    shows the menu with no focus ring and `activeId: ""`.
+  - after: `shots/afterimage/cycle14/after-menu-focus.png` (sha256 0E9BA75B1B4076FB…)
+    shows the white Daily card focus ring, `activeId: "dailyBtn"`, `focusVisible: true`.
+- **Played run**: the loss result was navigated entirely by keyboard (four Tabs: Copy result →
+  Play again → Save card → Change mode), Change mode returned to the menu with focus on
+  Today's board. Logs: `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 74/74 pass; `python aikit.py check afterimage` 5/5 pass.

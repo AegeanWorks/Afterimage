@@ -59,7 +59,7 @@ The card at the top is seeded by your local date: **the same ten boards all day*
 
 Every board hides one tile that differs by **hue, lightness, saturation, size or angle**. Focus, Blitz, Nightmare and Onslaught keep a personal best in `localStorage`; Zen has no clock, so it keeps none. A perfect run earns **EAGLE EYE** (Focus, Zen, Onslaught, Daily), **QUICK EYE** (Blitz) or **NIGHT VISION** (Nightmare).
 
-`Tab` and the arrow keys move between tiles, `Enter` picks one. `Quit run` leaves any mode; `Skip level` appears in Zen.
+`Tab` and the arrow keys move between tiles, `Enter` picks one. `Quit run` leaves any mode; `Skip level` appears in Zen. Returning to the menu from a result (**Change mode**) or a run (**Quit run**) focuses Today's board, so keyboard play continues without tabbing from the top.
 
 ![Nightmare mode](assets/nightmare.png)
 

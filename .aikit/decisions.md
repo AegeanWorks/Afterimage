@@ -184,3 +184,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: When both clipboard paths were blocked, Copy result showed a disabled `Copy failed` label, exposed no share text, and dropped focus to `BODY`. The player lost both the content and the keyboard position.
 - **Decision**: Add pure `copyFeedback(copied)` and a hidden fallback panel with a read-only textarea. A blocked copy fills and selects the exact share text, focuses it, and labels the action `Copy blocked`; Close hides the panel and restores focus to Copy result. The copy button stays enabled, and the hidden-textarea path restores focus after removal. Bump the service-worker cache to `afterimage-v17`.
 - **Consequences**: 73 tests pass (71 prior + 2 failing-first tests: feedback state and panel contract). The blocked flow exposes the exact 95-character share text with selection 0–95 and focuses `#copyText`; Close returns focus to `#copyResult`. The normal flow still reports `Copied`, hides the panel, and keeps focus on the button. Logs are under `shots/afterimage/cycle13/`; `python aikit.py check afterimage` green.
+
+### ADR-027: Return menu focus to the primary Daily action
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: After keyboard activation of Change mode, the result overlay hid the focused button and the menu opened with `document.activeElement` on `BODY`. Keyboard users had to restart tabbing from the top of the page.
+- **Decision**: `showMenu` focuses `#dailyBtn` with `preventScroll` after the menu content is rendered, covering both Change mode and Quit run. This is a focus-only change; no layout, copy or persisted state changes. Bump the service-worker cache to `afterimage-v18`.
+- **Consequences**: 74 tests pass (73 prior + 1 failing-first shell contract). The played keyboard flow (four Tabs to Change mode, activate) now lands on `#dailyBtn` with `:focus-visible` true; the before log lands on `BODY` with no focus. Evidence is under `shots/afterimage/cycle14/`; `python aikit.py check afterimage` green.

@@ -37,6 +37,12 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('returning to the menu restores focus to the daily card', () => {
+  const match = /function showMenu\(\) \{([\s\S]*?)\n\}/.exec(js());
+  assert.ok(match, 'game.js must keep showMenu');
+  assert.ok(match[1].includes('ui.dailyBtn.focus'), 'showMenu must focus the primary Daily action');
+});
+
 test('blocked copy results expose a manual fallback panel', () => {
   const htmlText = html();
   const cssText = css();

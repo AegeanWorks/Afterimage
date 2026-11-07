@@ -1,38 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle13-copy-fallback",
+    "task_id": "afterimage-cycle14-menu-focus",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794087620.879258,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794088247.4865503,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": [],
-    "completed_at": 1794087677.2328577
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle7-fatal-reveal",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Fatal-miss reveal, 1150ms beat, cache v11 and a three-miss Daily run verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794083347.9778266,
-      "timestamp_str": "2026-11-07 23:29:07",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle7-fatal-reveal",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle7-fatal-reveal' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794083452.7739286,
-      "timestamp_str": "2026-11-07 23:30:52",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle8-audio-cues",
       "phase": "phase 2",
@@ -265,6 +243,35 @@
       "status": "completed",
       "timestamp": 1794087677.2328594,
       "timestamp_str": "2026-11-08 00:41:17",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle14-menu-focus",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Restore keyboard focus to the Daily card when Change mode or Quit returns to the menu",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794087969.8027122,
+      "timestamp_str": "2026-11-08 00:46:09",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "After keyboard activation of Change mode, the menu opens with document.activeElement on BODY: the clicked button is hidden and no menu control receives focus, so keyboard users lose their place",
+        "benefits": "Returning to the menu lands focus on the primary Daily card with a visible focus ring; keyboard play can continue without tabbing from the page start",
+        "risks": "contract: focus-only change, no menu layout/copy or state changes; dependency: none; concurrency: none; state: none",
+        "mitigation": "Failing shell contract first; same keyboard result->Change mode flow before/after; activeElement and :focus-visible logged; full gates"
+      },
+      "plan_digest": "1619f304cc9624ed2a2a10d09ec5361e0bd298a0a1559e12de7b29f66590d091"
+    },
+    {
+      "task_id": "afterimage-cycle14-menu-focus",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Menu-return focus, keyboard tab flow, focus-ring screenshots, cache v18 and gates verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794088247.4865503,
+      "timestamp_str": "2026-11-08 00:50:47",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

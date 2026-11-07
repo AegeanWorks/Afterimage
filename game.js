@@ -1566,6 +1566,11 @@ function showMenu() {
   hideCopyFallback();
   renderBests();
   renderDaily();
+  try {
+    ui.dailyBtn.focus({ preventScroll: true });
+  } catch {
+    /* non-DOM harnesses ignore focus */
+  }
 }
 
 function shake() {
