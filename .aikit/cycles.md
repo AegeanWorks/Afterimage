@@ -223,3 +223,34 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   0%, WARMING UP; both builds logged zero console errors. Result logs:
   `shots/afterimage/cycle9/before-log.json` / `after-log.json`.
 - **Gate results**: `node --test tests` 66/66 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Capture method (all cycles)
+
+- Server: `python -m http.server 8139 --bind 127.0.0.1` from `projects/afterimage`.
+  Before-build pairs were served on 8140 from a detached worktree:
+  `git worktree add $env:TEMP\afterimage-head <sha>`.
+- Driver: Chromium 156 (Playwright install) headless over CDP at 1440x900 (or 390x844 for
+  mobile), `deviceScaleFactor 1`, fresh temporary user-data-dir, clean `localStorage`, real
+  `Input.dispatchMouseEvent` clicks, `Page.captureScreenshot` (stage clips use the stage rect).
+  Daily captures use the deterministic `?mode=daily` seed. Animation-frozen frames cancel the
+  next `requestAnimationFrame` at the recorded moment.
+- Exact probe commands (helper lives in `%TEMP%\afterimage-tools\cdp.mjs`):
+  - `node "$env:TEMP\afterimage-tools\daily-loss-probe.mjs" before2 http://127.0.0.1:8140`
+    and `... after` (cycle 1).
+  - `node "$env:TEMP\afterimage-tools\menu-meta-probe.mjs" before` / `after` / `after390 ... 390 844`
+    (cycle 2).
+  - `node "$env:TEMP\afterimage-tools\burst-probe.mjs" before3 http://127.0.0.1:8140` / `after2`
+    (cycle 3).
+  - `node "$env:TEMP\afterimage-tools\mobile-play-probe.mjs" http://127.0.0.1:8140 "cycle4-before-"`
+    / `http://127.0.0.1:8139 "cycle4-after-"` (cycle 4).
+  - `node "$env:TEMP\afterimage-tools\surge-probe.mjs" before` / `after` (cycle 5).
+  - `node "$env:TEMP\afterimage-tools\corrupt-save-probe.mjs" before2 http://127.0.0.1:8140` /
+    `after` (cycle 6).
+  - `node "$env:TEMP\afterimage-tools\fatal-reveal-probe.mjs" before` / `after` (cycles 7, 9).
+  - `node "$env:TEMP\afterimage-tools\audio-probe.mjs" before http://127.0.0.1:8140` / `after`
+    (cycle 8); the same probe wraps `AudioContext.createOscillator` via
+    `Page.addScriptToEvaluateOnNewDocument` and records each `frequency.setValueAtTime` call.
+- Gate commands after every cycle: `node --test tests` from the project and
+  `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
+- The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
+  is git-ignored and the binaries are never committed.
