@@ -246,6 +246,31 @@ function mulberry32(seed) {
   };
 }
 
+function sanitizeDailyResult(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value) || !isValidDateKey(value.date)) {
+    return null;
+  }
+  const score = Number(value.score);
+  if (!Number.isFinite(score) || score < 0) return null;
+
+  const totalRaw = Number(value.total);
+  const total = Number.isFinite(totalRaw) && totalRaw > 0 ? Math.floor(totalRaw) : 10;
+  const clearedRaw = Number(value.cleared);
+  const cleared = Number.isFinite(clearedRaw) && clearedRaw > 0 ? Math.min(total, Math.floor(clearedRaw)) : 0;
+  const accuracyRaw = Number(value.accuracy);
+  const accuracy = Number.isFinite(accuracyRaw) && accuracyRaw > 0 ? Math.min(100, Math.round(accuracyRaw)) : 0;
+  const rating = typeof value.rating === "string" && value.rating.trim() ? value.rating.trim() : "WARMING UP";
+  return {
+    date: value.date,
+    score: Math.round(score),
+    cleared,
+    total,
+    accuracy,
+    rating,
+    won: Boolean(value.won)
+  };
+}
+
 function loadDaily() {
   let saved = {};
   try {
@@ -254,9 +279,9 @@ function loadDaily() {
     saved = {};
   }
   return {
-    last: typeof saved.last === "string" ? saved.last : "",
+    last: isValidDateKey(saved.last) ? saved.last : "",
     streak: Number(saved.streak) > 0 ? Math.floor(Number(saved.streak)) : 0,
-    result: saved.result && typeof saved.result === "object" ? saved.result : null
+    result: sanitizeDailyResult(saved.result)
   };
 }
 

@@ -448,6 +448,54 @@ test('freezeRepair forgives exactly one missed day', () => {
   assert.strictEqual(freezeRepair(null, '2026-11-01'), false);
 });
 
+test('sanitizeDailyResult rejects malformed records and clamps valid ones', () => {
+  const { sanitizeDailyResult } = createHarness();
+  const day = '2026-11-07';
+
+  assert.strictEqual(sanitizeDailyResult(null), null);
+  assert.strictEqual(sanitizeDailyResult({}), null);
+  assert.strictEqual(sanitizeDailyResult({ date: 'nope', score: 1 }), null);
+  assert.strictEqual(sanitizeDailyResult({ date: day, score: -1 }), null);
+  assert.strictEqual(sanitizeDailyResult({ date: day, score: 'not a number' }), null);
+
+  const fixed = sanitizeDailyResult({
+    date: day, score: '5580', cleared: 99, total: 10, accuracy: 120, rating: 42, won: 1
+  });
+  assert.strictEqual(fixed.date, day);
+  assert.strictEqual(fixed.score, 5580);
+  assert.strictEqual(fixed.cleared, 10, 'cleared is capped at total');
+  assert.strictEqual(fixed.total, 10);
+  assert.strictEqual(fixed.accuracy, 100, 'accuracy is capped at 100');
+  assert.strictEqual(fixed.rating, 'WARMING UP', 'non-string ratings fall back');
+  assert.strictEqual(fixed.won, true);
+
+  const legacy = sanitizeDailyResult({ date: day, score: 100, rating: 'EAGLE EYE' });
+  assert.strictEqual(legacy.total, 10, 'missing totals default to the ten-board daily');
+  assert.strictEqual(legacy.cleared, 0);
+  assert.strictEqual(legacy.accuracy, 0);
+  assert.strictEqual(legacy.won, false);
+});
+
+test('loadDaily drops an invalid result and malformed last key', () => {
+  const map = new Map([['afterimage.daily', JSON.stringify({
+    last: 'not-a-date',
+    streak: 3,
+    result: { date: '2026-11-07' }
+  })]]);
+  const storage = {
+    getItem: (key) => (map.has(key) ? map.get(key) : null),
+    setItem: () => {},
+    removeItem: () => {},
+    clear: () => {}
+  };
+  const { loadDaily } = createHarness({ storage });
+  const daily = loadDaily();
+
+  assert.strictEqual(daily.last, '', 'malformed last keys are discarded');
+  assert.strictEqual(daily.streak, 3, 'valid streak survives');
+  assert.strictEqual(daily.result, null, 'result without a score is discarded');
+});
+
 test('daily streak advances only when the daily is completed', () => {
   const { dailyStreakAfter } = createHarness();
   const day = '2026-11-07';

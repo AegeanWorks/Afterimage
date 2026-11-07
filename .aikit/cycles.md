@@ -126,3 +126,29 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   final `Daily cleared.`, 5,580, 10/10, 100%, zero console errors. Full log:
   `shots/afterimage/cycle5/play.json`.
 - **Gate results**: `node --test tests` 61/61 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 6 — Progression and saves: corrupt daily recovery
+
+- **Area**: progression and saves / save resilience (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience).
+- **Defect (reproduced)**: a persisted `afterimage.daily.result` of `{date: today}` (valid date,
+  missing score) threw `TypeError: Cannot read properties of undefined (reading 'toLocaleString')`
+  inside `renderDaily` during boot. `/?mode=daily` stayed on the menu, and the boot sequence
+  never reached `startRun`.
+- **Files**: `game.js` (pure `sanitizeDailyResult`, validated `loadDaily`), `tests/harness.js`
+  (exports), `tests/game.test.js` (failing-first sanitizer + loader tests), `sw.js` +
+  `tests/pwa.test.js` (cache v10), `README.md` (save validation note).
+- **Fix**: the loader accepts only a valid date plus a finite non-negative score; totals default
+  to 10, cleared is capped at total, accuracy at 100, ratings fall back to `WARMING UP`, and
+  `won` is coerced. Malformed results become `null`; malformed `last` keys become empty.
+- **Visual proof** (same 1440x900 viewport, same corrupt save, same `/?mode=daily` URL):
+  - before: `shots/afterimage/cycle6/before-corrupt-deeplink.png` (sha256 E08B2F2DC8B412ED…)
+    shows the menu; the log records the boot TypeError.
+  - after: `shots/afterimage/cycle6/after-corrupt-deeplink.png` (sha256 CEA76D33336A0128…)
+    shows Daily level 1; the log records `phase: play`, zero errors.
+- **Played run (scripted pointer input, Daily #311, corrupt save)**: the deep link started the
+  run, ten correct clicks cleared it, result `Daily cleared.` 5,570, 10/10, 100%, EAGLE EYE;
+  the daily record repaired to `{last: 2026-11-07, streak: 4, result: score 5570, won: true}`
+  with zero console errors. Full log: `shots/afterimage/cycle6/after-log.json`; result frame
+  `recovered-result.png`.
+- **Gate results**: `node --test tests` 63/63 pass; `python aikit.py check afterimage` 5/5 pass.

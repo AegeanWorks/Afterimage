@@ -128,3 +128,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: SURGE 1.5× was announced only in the opening status line. A wrong pick replaced that line with "Not that one", so Daily board 4 still paid 1.5× while the screen no longer said so.
 - **Decision**: Add an aria-hidden `SURGE · 1.5×` pill inside the stage's top-left padding, driven by `def.surge` in `nextLevel`; hide it on normal boards and on start/finish/menu paths. Bump the service-worker cache to `afterimage-v9` for the changed shell.
 - **Consequences**: 61 tests pass (60 prior + 1 failing-first shell contract; cache pin v9). A played Daily #311 run showed the badge on exactly boards 4 and 8, hid it on the other eight and after the result, and still scored 10/10, 100%, 5,580 with zero console errors. Before/after frames are recorded in `.aikit/cycles.md` under `shots/afterimage/cycle5/`; `python aikit.py check afterimage` green.
+
+### ADR-019: Validate the saved daily result before it reaches the menu
+- **Date**: 2026-11-07
+- **Status**: Accepted
+- **Context**: A persisted daily result with a valid date but no score threw inside `renderDaily` during boot, so `/?mode=daily` stayed on the menu and never called `startRun`. The loader trusted any object stored under `afterimage.daily`.
+- **Decision**: Add pure `sanitizeDailyResult`: accept only a valid date and finite non-negative score; default totals to 10, cap cleared at total, accuracy at 100, fall back to `WARMING UP` for non-string ratings, and coerce `won`. `loadDaily` uses it and also validates `last`; malformed records become `null` without touching unrelated saves. Bump the service-worker cache to `afterimage-v10`.
+- **Consequences**: 63 tests pass (61 prior + 2 failing-first tests: sanitizer and loader). A corrupt save followed by `/?mode=daily` now starts and clears a full Daily #311 (5,570, 10/10, 100%, EAGLE EYE), repairs the record to a 4-day streak, and logs zero console errors. Before/after frames are recorded in `.aikit/cycles.md` under `shots/afterimage/cycle6/`; `python aikit.py check afterimage` green.
