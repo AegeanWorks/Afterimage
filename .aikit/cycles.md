@@ -460,3 +460,33 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   clears the board, level advances to 1 with 210 points. The before build stops at `BODY` and
   cannot recover. Logs: `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 76/76 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 17 — Initial focus: first load lands inside the menu
+
+- **Dead end (recorded, no change)**: score-card overflow. Synthetic max daily, hinted daily,
+  loss daily and Nightmare cards all render inside the 1200x630 frame with no clipped or
+  overlapping text. Evidence: `shots/afterimage/cycle17/dead-end-*-daily.png` /
+  `dead-end-nightmare.png`.
+- **Area**: modal initial focus (covered: progression/saves, UI readability, graphics/effects,
+  responsive layout, levels, save resilience, failure feedback, audio cues, debrief copy, boss
+  presentation, daily-best results, save-card fallback, copy fallback, menu focus, result focus,
+  in-grid wrong-pick focus, initial modal focus).
+- **Defect (reproduced)**: first load left `document.activeElement` on `BODY`; the first Tab
+  reached the brand link behind the open modal veil. The before log shows
+  `activeTag: BODY`, then `A / AFTERIMAGE` after one Tab, and `started: null`.
+- **Files**: `game.js` (boot focus), `styles.css` (the Daily card’s `:focus` outline),
+  `tests/web-shell.test.js` (failing-first boot contract), `sw.js` + `tests/pwa.test.js`
+  (cache v21), `README.md` (keyboard note).
+- **Fix**: the boot block focuses `#dailyBtn` with `preventScroll` after the menu is shown; the
+  Daily card’s focus outline now uses `:focus` so the programmatic first-load focus is visible.
+- **Visual proof** (same fresh save, same 1440x900 viewport; focus emulation enabled so the
+  window focus state matches a real user):
+  - before: `shots/afterimage/cycle17/before-initial-menu.png` (sha256 7A68D4550C809E3C…)
+    shows no focus ring anywhere.
+  - after: `shots/afterimage/cycle17/after-initial-menu.png` (sha256 67472D2B6B989631…)
+    shows the white ring around Today's board.
+- **Played run**: first load focuses `dailyBtn` (`focusVisible: true`); Enter starts the Daily
+  run immediately and grid focus moves to cell 0. The before build cannot start from the
+  initial state (`started: null`). Logs: `before-log.json` / `after-log.json`; zero console
+  errors.
+- **Gate results**: `node --test tests` 77/77 pass; `python aikit.py check afterimage` 5/5 pass.

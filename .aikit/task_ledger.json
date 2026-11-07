@@ -1,38 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle16-wrong-focus",
+    "task_id": "afterimage-cycle17-initial-focus",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794090426.9371693,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794092053.8561082,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": [],
-    "completed_at": 1794090471.9753265
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle10-final-boss",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Final-board badge and finale glow, pure boundary test, shell contract, cache v14 and a 10-board played run verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794085471.8357615,
-      "timestamp_str": "2026-11-08 00:04:31",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle10-final-boss",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle10-final-boss' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794085515.6328993,
-      "timestamp_str": "2026-11-08 00:05:15",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle11-daily-best",
       "phase": "phase 2",
@@ -265,6 +243,35 @@
       "status": "completed",
       "timestamp": 1794090471.9753284,
       "timestamp_str": "2026-11-08 01:27:51",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle17-initial-focus",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Put first-load focus on the Daily card instead of the body/background brand",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794090944.150057,
+      "timestamp_str": "2026-11-08 01:35:44",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "The menu is a modal dialog but first load leaves focus on BODY; the first Tab reaches the brand link behind the overlay, so keyboard users start outside the dialog and cannot start play directly",
+        "benefits": "First load lands on the primary Daily action with a visible focus ring; Enter starts the daily immediately; no background control is the first stop",
+        "risks": "contract: boot focus only, no menu layout/state changes; dependency: none; concurrency: none; state: none",
+        "mitigation": "Failing boot-focus contract first; same first-load menu screenshot pair; keyboard Enter starts Daily from first load; full gates"
+      },
+      "plan_digest": "38acbdd7499ac880bc8f1bd3294f661b95eb5bb95754739b5ad8982291c34256"
+    },
+    {
+      "task_id": "afterimage-cycle17-initial-focus",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Boot Daily focus, visible first-load ring, Enter-start run, cache v21 and gates verified; score-card overflow dead end recorded (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794092053.8561082,
+      "timestamp_str": "2026-11-08 01:54:13",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

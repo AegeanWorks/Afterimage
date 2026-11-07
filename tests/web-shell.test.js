@@ -37,6 +37,14 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('first load focuses the menu daily card', () => {
+  const jsText = js();
+  const bootStart = jsText.lastIndexOf('renderBests();');
+  const bootEnd = jsText.indexOf('const requestedMode');
+  assert.ok(bootStart >= 0 && bootEnd > bootStart, 'game.js must keep the boot block');
+  assert.ok(jsText.slice(bootStart, bootEnd).includes('ui.dailyBtn.focus'), 'boot must focus the primary Daily action');
+});
+
 test('a nonfatal wrong pick restores grid focus', () => {
   const jsText = js();
   const pickBody = jsText.slice(jsText.indexOf('function pick('), jsText.indexOf('function timeout('));

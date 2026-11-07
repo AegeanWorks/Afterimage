@@ -2162,6 +2162,11 @@ if (ui.hint) ui.hint.hidden = true;
 if (ui.surge) ui.surge.hidden = true;
 if (ui.final) ui.final.hidden = true;
 if (ui.stage) ui.stage.classList.remove("finale");
+try {
+  ui.dailyBtn.focus({ preventScroll: true });
+} catch {
+  /* non-DOM harnesses ignore focus */
+}
 
 const requestedMode = new URLSearchParams(window.location.search).get("mode");
 if (requestedMode && Object.prototype.hasOwnProperty.call(MODES, requestedMode)) {
