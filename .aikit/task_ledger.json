@@ -3,32 +3,15 @@
   "active_task": {
     "task_id": "afterimage-cycle12-save-fallback",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794086916.1317184,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794086964.8054273
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle6-corrupt-daily",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Sanitize the persisted daily record so a malformed result cannot break boot or daily deep links",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794082341.8074467,
-      "timestamp_str": "2026-11-07 23:12:21",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "A saved daily result with a valid date but no score throws in renderDaily at boot; the Daily deep link then stays on the menu and never starts, confirmed with a TypeError",
-        "benefits": "Corrupt or partially migrated daily saves render safely, the menu keeps working, and daily deep links always start; malformed values are dropped instead of crashing",
-        "risks": "contract: afterimage.daily.result shape unchanged for valid saves, invalid results become null; dependency: none; concurrency: none; state: only the loader normalizes/clamps values",
-        "mitigation": "Failing-first sanitizer and loader tests; same corrupt-save deep-link screenshot pair; full 10-board recovery run with zero console errors; all gates"
-      },
-      "plan_digest": "ec069294d28cd019de0fe755e640d1086dc12bbb8dea2e317dcbd1ebc560ad72"
-    },
     {
       "task_id": "afterimage-cycle6-corrupt-daily",
       "phase": "phase 4",
@@ -272,6 +255,16 @@
       "status": "in_progress",
       "timestamp": 1794086916.1317184,
       "timestamp_str": "2026-11-08 00:28:36",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle12-save-fallback",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle12-save-fallback' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794086964.805429,
+      "timestamp_str": "2026-11-08 00:29:24",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]
