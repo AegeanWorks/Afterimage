@@ -456,6 +456,19 @@ test('firstRunTip coaches only the very first board', () => {
   assert.strictEqual(firstRunTip(0, 0, 0), '');
 });
 
+test('isFinalBoard marks only the last board', () => {
+  const { isFinalBoard } = createHarness();
+
+  assert.strictEqual(isFinalBoard(9, 10), true);
+  assert.strictEqual(isFinalBoard(7, 8), true);
+  assert.strictEqual(isFinalBoard(8, 10), false);
+  assert.strictEqual(isFinalBoard(0, 1), true);
+  assert.strictEqual(isFinalBoard(9, 0), false);
+  assert.strictEqual(isFinalBoard(-1, 10), false);
+  assert.strictEqual(isFinalBoard(9.5, 10), false);
+  assert.strictEqual(isFinalBoard(NaN, 10), false);
+});
+
 test('progressBeat marks halfway, two-left and final boards', () => {
   const { progressBeat } = createHarness();
 

@@ -254,3 +254,29 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
   is git-ignored and the binaries are never committed.
+
+## Cycle 10 — Boss presentation: the final board
+
+- **Area**: enemies/bosses / final-board presentation (covered: progression/saves, UI
+  readability, graphics/effects, responsive layout, levels, save resilience, failure feedback,
+  audio cues, debrief copy, boss presentation).
+- **Defect (reproduced)**: board 10 looked exactly like every other board. Its only cue was the
+  transient status line, so the run's climax had no persistent visual identity; the before log
+  shows `stageClass: "stage"` and no badge.
+- **Files**: `game.js` (pure `isFinalBoard`, stage class and badge wiring), `index.html` (badge
+  node), `styles.css` (gold finale border + badge), `tests/game.test.js` (failing-first pure
+  test), `tests/web-shell.test.js` (shell/CSS/JS contract), `sw.js` + `tests/pwa.test.js`
+  (cache v14), `README.md` (boss beat).
+- **Fix**: only the last level toggles `.stage.finale` and shows an aria-hidden
+  `FINAL BOARD` badge; start/finish/menu/boot clear both.
+- **Visual proof** (same seeded Daily, same 1440x900 viewport, same board-10 state with score
+  4,890; stage class and badge logged):
+  - before: `shots/afterimage/cycle10/before-final-board.png` (sha256 33343053C8C7782C…)
+    shows an ordinary stage with no marker.
+  - after: `shots/afterimage/cycle10/after-final-board.png` (sha256 9AF14A2B96E6A1A7…)
+    shows the gold finale border and `FINAL BOARD` badge.
+- **Played run (scripted pointer input, Daily)**: all 10 boards cleared; the badge and finale
+  class appeared only on board 10, were absent on boards 1–9, and both were gone on the result
+  (`stage`, badge hidden). Final result `Daily cleared.`, 5,580, 10/10, 100%, zero console
+  errors. Full log: `shots/afterimage/cycle10/played-daily.json`; frame `played-result.png`.
+- **Gate results**: `node --test tests` 68/68 pass; `python aikit.py check afterimage` 5/5 pass.

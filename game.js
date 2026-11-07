@@ -364,6 +364,7 @@ const ui = {
   stage: document.getElementById("stage"),
   canvas: document.getElementById("board"),
   surge: document.getElementById("surgeBadge"),
+  final: document.getElementById("finalBadge"),
   cells: document.getElementById("cells"),
   timer: document.getElementById("timer"),
   timerFill: document.getElementById("timerFill"),
@@ -980,6 +981,8 @@ function startRun(mode) {
   ui.skip.hidden = mode !== "zen";
   ui.quit.hidden = false;
   if (ui.surge) ui.surge.hidden = true;
+  if (ui.final) ui.final.hidden = true;
+  if (ui.stage) ui.stage.classList.remove("finale");
   ui.cells.classList.remove("off");
 
   ensureAudio();
@@ -1020,6 +1023,9 @@ function nextLevel() {
   ui.cells.classList.remove("off");
   const surge = Boolean(def.surge);
   if (ui.surge) ui.surge.hidden = !surge;
+  const final = isFinalBoard(state.level, state.levels.length);
+  if (ui.stage) ui.stage.classList.toggle("finale", final);
+  if (ui.final) ui.final.hidden = !final;
   const assisted = ease > 1 ? " · assisted" : "";
   const tip = firstRunTip(state.profile.runs, state.level, state.hints);
   const beat = progressBeat(state.level, state.levels.length);
@@ -1227,6 +1233,12 @@ function firstRunTip(runs, level, hints) {
   return "";
 }
 
+function isFinalBoard(level, total) {
+  const index = Number(level);
+  const count = Number(total);
+  return Number.isInteger(index) && Number.isInteger(count) && count > 0 && index === count - 1;
+}
+
 function progressBeat(level, total) {
   if (level === total - 1) return " · final board";
   if (level === total - 2) return " · two left";
@@ -1408,6 +1420,8 @@ function finish(won) {
   ui.quit.hidden = true;
   if (ui.hint) ui.hint.hidden = true;
   if (ui.surge) ui.surge.hidden = true;
+  if (ui.final) ui.final.hidden = true;
+  if (ui.stage) ui.stage.classList.remove("finale");
 
   state.profile.runs += 1;
   state.profile.clears += state.cleared;
@@ -1530,6 +1544,8 @@ function showMenu() {
   ui.quit.hidden = true;
   if (ui.hint) ui.hint.hidden = true;
   if (ui.surge) ui.surge.hidden = true;
+  if (ui.final) ui.final.hidden = true;
+  if (ui.stage) ui.stage.classList.remove("finale");
   renderBests();
   renderDaily();
 }
@@ -2034,6 +2050,8 @@ ui.veil.hidden = false;
 ui.hud.hidden = true;
 if (ui.hint) ui.hint.hidden = true;
 if (ui.surge) ui.surge.hidden = true;
+if (ui.final) ui.final.hidden = true;
+if (ui.stage) ui.stage.classList.remove("finale");
 
 const requestedMode = new URLSearchParams(window.location.search).get("mode");
 if (requestedMode && Object.prototype.hasOwnProperty.call(MODES, requestedMode)) {

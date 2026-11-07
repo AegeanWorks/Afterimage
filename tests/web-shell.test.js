@@ -37,6 +37,21 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('the final board carries a persistent boss marker', () => {
+  const htmlText = html();
+  const cssText = css();
+  const jsText = js();
+  assert.ok(htmlText.includes('id="finalBadge"'), 'index.html must carry the final-board badge');
+  assert.ok(htmlText.includes('class="final-badge"'), 'final badge must use its CSS hook');
+  assert.ok(cssText.includes('.final-badge'), 'styles.css must style the final badge');
+  assert.ok(cssText.includes('.stage.finale'), 'styles.css must style the final stage');
+  assert.ok(jsText.includes('final: document.getElementById("finalBadge")'), 'game.js must look up the badge');
+  assert.ok(jsText.includes('isFinalBoard(state.level, state.levels.length)'), 'nextLevel must derive the final state');
+  assert.ok(jsText.includes('classList.toggle("finale", final)'), 'the stage must toggle the finale class');
+  const hides = jsText.match(/ui\.final\.hidden = true/g) || [];
+  assert.ok(hides.length >= 2, 'start/menu/finish paths must clear the final badge');
+});
+
 test('surge boards keep a persistent stage badge', () => {
   const htmlText = html();
   const cssText = css();

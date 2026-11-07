@@ -156,3 +156,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: A failed run's WARMING UP blurb told the player Zen was a good place to study, then the appended weakest-type sentence said the same thing again for the costliest type. The paragraph repeated itself instead of diagnosing once and pointing once.
 - **Decision**: Change the WARMING UP base blurb to "Every miss is a calibration. Start with the bright, big boards and work down." Leave the weakest-type sentence as the only Zen practice pointer. Bump the service-worker cache to `afterimage-v13`.
 - **Consequences**: 66 tests pass (65 prior + 1 failing-first copy test). The same three-miss Daily #311 result now reads one general cue plus "Hue boards cost you most — Zen is a good place to study them." zero console errors on both runs. Before/after frames are in `.aikit/cycles.md` under `shots/afterimage/cycle9/`; `python aikit.py check afterimage` green.
+
+### ADR-023: Give the final board a persistent boss identity
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: The last board of every run looked identical to every other board; only the transient status line said "final board", so the climax had no persistent visual identity.
+- **Decision**: Add pure `isFinalBoard(level, total)`; the last level toggles a `.stage.finale` gold border/glow and an aria-hidden `FINAL BOARD` badge, while start/finish/menu/boot clear both. Bump the service-worker cache to `afterimage-v14`.
+- **Consequences**: 68 tests pass (66 prior + 2 failing-first contracts: pure boundary test and shell/CSS/JS test). The same seeded Daily board-10 state (score 4,890) gains only the badge and glow in the after frame. A scripted 10-board run showed the badge and `finale` class only on board 10, cleared both on the result, and scored 10/10, 100%, 5,580 with zero console errors. Evidence is under `shots/afterimage/cycle10/`; `python aikit.py check afterimage` green.

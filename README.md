@@ -73,6 +73,7 @@ Every result can be saved as a **1200 × 630 PNG**, drawn on a second canvas: sc
 - **Perfect bonus**: clearing a board at first glance without a hint adds +50 before multipliers.
 - **Local payoff**: every correct pick pops its points at the tile, and shape boards burst in accent teal so the win lands where you clicked.
 - **Audio grammar**: a wrong pick is one low buzz, a timeout is a descending three-note fall, a win is a rising arpeggio, and a loss is a low two-note fall — outcomes are audible before the result is read.
+- **Boss beat**: the last board of every run wears a gold FINAL BOARD badge and stage glow, so the climax is visible before the clock starts.
 - **SURGE boards**: scripted bonus boards (two per classic run) pay 1.5×, are announced up front, and carry a persistent SURGE badge for the whole board.
 - **Hints**: press `H` or the Hint button — 1 per timed run, 3 in Zen. A pulsing ring marks the odd tile for ~2s at the cost of a streak reset.
 - **Comeback assist**: after two straight non-green boards the next difference is eased ~30%, keeping struggling runs in the flow channel instead of rage-quitting.
