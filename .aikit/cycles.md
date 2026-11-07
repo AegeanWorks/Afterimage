@@ -556,3 +556,35 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   confirms Blitz, Nightmare and Focus losses all leave `newBestHidden: true` and bests at zero.
   Logs: `before-log.json` / `after-log.json` / `mode-loss-audit-after.json`; zero console errors.
 - **Gate results**: `node --test tests` 79/79 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 20 — Persisted saves: version, migrate, refuse future
+
+- **Dead end (recorded, no change)**: Onslaught repeated-run persistence. A win saved
+  `BEST 5,250 · CLEARED`, a following loss kept it and added a run, a reload preserved it, and
+  a second equal-score win left the best unchanged. Evidence:
+  `shots/afterimage/cycle20/dead-end-onslaught-*.png` / `dead-end-onslaught-log.json`.
+- **Area**: persisted state format versioning (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning).
+- **Defect (reproduced)**: the project guideline requires a format version and refusal of
+  unsupported versions, but the structured saves had none. A version-2 profile loaded as 99
+  runs and the next hint save dropped the version and overwrote the file
+  (`hintsUsed` 7→8, `version` gone).
+- **Files**: `game.js` (`SAVE_VERSION`, `parseStoredObject`, blocked-key guard, versioned
+  writers), `tests/game.test.js` (failing-first version/refusal tests), `tests/harness.js`
+  (exports), `sw.js` + `tests/pwa.test.js` (cache v24), `README.md` (save version note).
+- **Fix**: `afterimage.bests`, `.daily` and `.profile` write `version: 1`. Loaders accept
+  legacy versionless saves as v1; an unsupported or malformed version blocks that key so no
+  later write can overwrite it.
+- **Visual proof** (same future-version profile/bests, same 1440x900 viewport):
+  - before: `shots/afterimage/cycle20/before-future-save-menu.png` (sha256 CB513191041CBC3D…)
+    shows `EYE LV 10 · 99 CLEARS · 99 RUNS` and `BEST 9,999 · CLEARED`.
+  - after: `shots/afterimage/cycle20/after-future-save-menu.png` (sha256 67472D2B6B989631…)
+    shows `EYE LV 1 · 0 CLEARS · 0 RUNS` with no best, while the raw save is untouched.
+- **Played run**: start Focus, press H (a profile-saving hint). Before: raw profile loses
+  `version: 2` and is overwritten with `hintsUsed: 8`. After: in-memory `hintsUsed` becomes 1
+  but `afterimage.profile` and `afterimage.bests` remain byte-identical version-2 JSON; zero
+  console errors. Logs: `before-log.json` / `after-log.json`.
+- **Gate results**: `node --test tests` 81/81 pass; `python aikit.py check afterimage` 5/5 pass.

@@ -715,6 +715,73 @@ test('loadProfile defaults wins per mode to zero', () => {
   }
 });
 
+test('structured saves carry format version 1 and legacy saves still load', () => {
+  const map = new Map([
+    ['afterimage.profile', JSON.stringify({ runs: 7, clears: 3, wins: { focus: 2 } })],
+    ['afterimage.bests', JSON.stringify({ focus: 1234 })]
+  ]);
+  const storage = {
+    getItem: (key) => (map.has(key) ? map.get(key) : null),
+    setItem: (key, value) => map.set(key, value),
+    removeItem: (key) => map.delete(key),
+    clear: () => map.clear()
+  };
+  const h = createHarness({ storage });
+
+  assert.strictEqual(h.SAVE_VERSION, 1);
+  assert.strictEqual(h.loadProfile().runs, 7, 'legacy profile loads');
+  assert.strictEqual(h.loadBests().focus, 1234, 'legacy bests load');
+
+  h.saveProfile();
+  h.state.bests.focus = 0;
+  h.saveBest('focus', 1234);
+  h.saveDaily();
+
+  for (const key of ['afterimage.profile', 'afterimage.bests', 'afterimage.daily']) {
+    const parsed = JSON.parse(map.get(key));
+    assert.strictEqual(parsed.version, 1, `${key} must stamp version 1`);
+  }
+  assert.strictEqual(JSON.parse(map.get('afterimage.profile')).runs, 7);
+  assert.strictEqual(JSON.parse(map.get('afterimage.bests')).focus, 1234);
+});
+
+test('future save versions are refused and never overwritten', () => {
+  const raw = {
+    'afterimage.profile': JSON.stringify({
+      version: 2, runs: 99, clears: 99, bestStreak: 12, hintsUsed: 7, freezes: 1,
+      wins: { focus: 9, blitz: 2, zen: 1, nightmare: 1, daily: 1, onslaught: 1 }
+    }),
+    'afterimage.bests': JSON.stringify({ version: 2, focus: 9999, blitz: 9999 }),
+    'afterimage.daily': JSON.stringify({ version: 2, last: '2026-11-08', streak: 9, result: null })
+  };
+  const map = new Map(Object.entries(raw));
+  const storage = {
+    getItem: (key) => (map.has(key) ? map.get(key) : null),
+    setItem: (key, value) => map.set(key, value),
+    removeItem: (key) => map.delete(key),
+    clear: () => map.clear()
+  };
+  const h = createHarness({ storage });
+
+  assert.strictEqual(h.state.profile.runs, 0, 'future profile is not adopted');
+  assert.strictEqual(h.state.bests.focus, 0, 'future bests are not adopted');
+  assert.strictEqual(h.loadProfile().runs, 0);
+  assert.strictEqual(h.loadBests().focus, 0);
+  assert.strictEqual(h.loadDaily().last, '');
+  assert.strictEqual(h.isStorageBlocked('afterimage.profile'), true);
+  assert.strictEqual(h.isStorageBlocked('afterimage.bests'), true);
+  assert.strictEqual(h.isStorageBlocked('afterimage.daily'), true);
+
+  h.store.set('afterimage.profile', '{"version":3}');
+  h.saveProfile();
+  h.saveBest('focus', 1);
+  h.saveDaily();
+
+  for (const [key, value] of Object.entries(raw)) {
+    assert.strictEqual(map.get(key), value, `${key} must remain byte-identical`);
+  }
+});
+
 test('onslaught script is a tight surge-heavy gauntlet', () => {
   const { SCRIPTS } = createHarness();
 

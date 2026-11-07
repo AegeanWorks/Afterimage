@@ -141,6 +141,8 @@ const WIN_TITLES = {
 const BESTS_KEY = "afterimage.bests";
 const DAILY_KEY = "afterimage.daily";
 const PROFILE_KEY = "afterimage.profile";
+const SAVE_VERSION = 1;
+const blockedKeys = new Set();
 const HUES = [198, 214, 246, 268, 292, 330, 12, 38, 154, 174];
 const TAU = Math.PI * 2;
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -155,6 +157,7 @@ const store = {
     }
   },
   set(key, value) {
+    if (blockedKeys.has(key)) return;
     try {
       localStorage.setItem(key, value);
     } catch {
@@ -163,14 +166,30 @@ const store = {
   }
 };
 
-function loadBests() {
+function isStorageBlocked(key) {
+  return blockedKeys.has(key);
+}
+
+function parseStoredObject(key) {
   let saved = {};
   try {
-    saved = JSON.parse(store.get(BESTS_KEY, "{}")) || {};
+    saved = JSON.parse(store.get(key, "{}")) || {};
   } catch {
-    saved = {};
+    return {};
   }
+  if (!saved || typeof saved !== "object" || Array.isArray(saved)) return {};
+  if (saved.version !== undefined) {
+    const version = Number(saved.version);
+    if (!Number.isInteger(version) || version < 1 || version > SAVE_VERSION) {
+      blockedKeys.add(key);
+      return {};
+    }
+  }
+  return saved;
+}
 
+function loadBests() {
+  const saved = parseStoredObject(BESTS_KEY);
   const bests = { focus: 0, blitz: 0, nightmare: 0, onslaught: 0 };
   Object.keys(bests).forEach((mode) => {
     const value = Number(saved[mode]);
@@ -272,12 +291,7 @@ function sanitizeDailyResult(value) {
 }
 
 function loadDaily() {
-  let saved = {};
-  try {
-    saved = JSON.parse(store.get(DAILY_KEY, "{}")) || {};
-  } catch {
-    saved = {};
-  }
+  const saved = parseStoredObject(DAILY_KEY);
   return {
     last: isValidDateKey(saved.last) ? saved.last : "",
     streak: Number(saved.streak) > 0 ? Math.floor(Number(saved.streak)) : 0,
@@ -286,16 +300,11 @@ function loadDaily() {
 }
 
 function saveDaily() {
-  store.set(DAILY_KEY, JSON.stringify(state.daily));
+  store.set(DAILY_KEY, JSON.stringify({ ...state.daily, version: SAVE_VERSION }));
 }
 
 function loadProfile() {
-  let saved = {};
-  try {
-    saved = JSON.parse(store.get(PROFILE_KEY, "{}")) || {};
-  } catch {
-    saved = {};
-  }
+  const saved = parseStoredObject(PROFILE_KEY);
   const num = (value) => (Number.isFinite(Number(value)) && Number(value) > 0 ? Math.floor(Number(value)) : 0);
   const wins = {};
   for (const mode of ["focus", "blitz", "zen", "nightmare", "daily", "onslaught"]) {
@@ -312,7 +321,7 @@ function loadProfile() {
 }
 
 function saveProfile() {
-  store.set(PROFILE_KEY, JSON.stringify(state.profile));
+  store.set(PROFILE_KEY, JSON.stringify({ ...state.profile, version: SAVE_VERSION }));
 }
 
 function eyeLevel(clears) {
@@ -1370,7 +1379,7 @@ function saveBest(mode, score) {
   if (!MODES[mode] || !MODES[mode].best) return false;
   if (score <= (state.bests[mode] || 0)) return false;
   state.bests[mode] = score;
-  store.set(BESTS_KEY, JSON.stringify(state.bests));
+  store.set(BESTS_KEY, JSON.stringify({ ...state.bests, version: SAVE_VERSION }));
   return true;
 }
 
