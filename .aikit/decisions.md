@@ -121,3 +121,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: At 390x844 the Focus play screen overflowed horizontally (`scrollWidth` 449). The desktop topbar put brand, five HUD values and SOUND on one line, so the sound control left the viewport and the streak value clipped on the installed-PWA form factor.
 - **Decision**: At 640px and below, wrap the topbar: brand and sound share the first row; the HUD takes a full-width second row with left-aligned stats, lives pushed right, and the sound control pinned via auto margin. Bump the service-worker cache to `afterimage-v8` because shell assets changed in cycles 2–4.
 - **Consequences**: 60 tests pass (59 prior + 1 failing-first CSS contract; cache pin updated to v8). Measured at 390x844: `scrollWidth` 449→390, HUD right 354→374, sound right 374 (inside), stage remains 358px. A mobile Focus run (level 02, 270, two lives) kept every value and control inside the viewport with zero console errors. Desktop layout is unchanged above 640px; `python aikit.py check afterimage` green.
+
+### ADR-018: Keep the SURGE bonus visible for the whole board
+- **Date**: 2026-11-07
+- **Status**: Accepted
+- **Context**: SURGE 1.5× was announced only in the opening status line. A wrong pick replaced that line with "Not that one", so Daily board 4 still paid 1.5× while the screen no longer said so.
+- **Decision**: Add an aria-hidden `SURGE · 1.5×` pill inside the stage's top-left padding, driven by `def.surge` in `nextLevel`; hide it on normal boards and on start/finish/menu paths. Bump the service-worker cache to `afterimage-v9` for the changed shell.
+- **Consequences**: 61 tests pass (60 prior + 1 failing-first shell contract; cache pin v9). A played Daily #311 run showed the badge on exactly boards 4 and 8, hid it on the other eight and after the result, and still scored 10/10, 100%, 5,580 with zero console errors. Before/after frames are recorded in `.aikit/cycles.md` under `shots/afterimage/cycle5/`; `python aikit.py check afterimage` green.

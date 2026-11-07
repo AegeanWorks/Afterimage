@@ -37,6 +37,19 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('surge boards keep a persistent stage badge', () => {
+  const htmlText = html();
+  const cssText = css();
+  const jsText = js();
+  assert.ok(htmlText.includes('id="surgeBadge"'), 'index.html must carry the surge badge node');
+  assert.ok(htmlText.includes('class="surge-badge"'), 'surge badge must use its CSS hook');
+  assert.ok(cssText.includes('.surge-badge'), 'styles.css must style the surge badge');
+  assert.ok(jsText.includes('surge: document.getElementById("surgeBadge")'), 'game.js must look up the badge');
+  assert.ok(jsText.includes('ui.surge.hidden = !surge'), 'nextLevel must show/hide the badge by board');
+  const hides = jsText.match(/ui\.surge\.hidden = true/g) || [];
+  assert.ok(hides.length >= 2, 'start/menu/finish paths must clear the badge');
+});
+
 test('narrow play layout wraps the HUD instead of overflowing', () => {
   const cssText = css();
   const mobile = /@media \(max-width: 640px\) \{([\s\S]*?)\n\}/.exec(cssText);

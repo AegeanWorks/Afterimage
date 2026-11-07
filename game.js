@@ -338,6 +338,7 @@ function currentStreak() {
 const ui = {
   stage: document.getElementById("stage"),
   canvas: document.getElementById("board"),
+  surge: document.getElementById("surgeBadge"),
   cells: document.getElementById("cells"),
   timer: document.getElementById("timer"),
   timerFill: document.getElementById("timerFill"),
@@ -935,6 +936,7 @@ function startRun(mode) {
   ui.over.hidden = true;
   ui.skip.hidden = mode !== "zen";
   ui.quit.hidden = false;
+  if (ui.surge) ui.surge.hidden = true;
   ui.cells.classList.remove("off");
 
   ensureAudio();
@@ -974,6 +976,7 @@ function nextLevel() {
   paint();
   ui.cells.classList.remove("off");
   const surge = Boolean(def.surge);
+  if (ui.surge) ui.surge.hidden = !surge;
   const assisted = ease > 1 ? " · assisted" : "";
   const tip = firstRunTip(state.profile.runs, state.level, state.hints);
   const beat = progressBeat(state.level, state.levels.length);
@@ -1351,6 +1354,7 @@ function finish(won) {
   ui.skip.hidden = true;
   ui.quit.hidden = true;
   if (ui.hint) ui.hint.hidden = true;
+  if (ui.surge) ui.surge.hidden = true;
 
   state.profile.runs += 1;
   state.profile.clears += state.cleared;
@@ -1470,6 +1474,7 @@ function showMenu() {
   ui.skip.hidden = true;
   ui.quit.hidden = true;
   if (ui.hint) ui.hint.hidden = true;
+  if (ui.surge) ui.surge.hidden = true;
   renderBests();
   renderDaily();
 }
@@ -1973,6 +1978,7 @@ ui.over.hidden = true;
 ui.veil.hidden = false;
 ui.hud.hidden = true;
 if (ui.hint) ui.hint.hidden = true;
+if (ui.surge) ui.surge.hidden = true;
 
 const requestedMode = new URLSearchParams(window.location.search).get("mode");
 if (requestedMode && Object.prototype.hasOwnProperty.call(MODES, requestedMode)) {

@@ -194,6 +194,23 @@ body.zen .hud-item.lives { display: none; }
   30%, 50%, 70% { transform: translateX(-4px); }
   40%, 60% { transform: translateX(4px); }
 }
+.surge-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 212, 121, 0.55);
+  border-radius: 999px;
+  background: rgba(255, 212, 121, 0.12);
+  box-shadow: 0 0 18px rgba(255, 212, 121, 0.15);
+  color: #ffd479;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
 
 canvas {
   position: absolute;

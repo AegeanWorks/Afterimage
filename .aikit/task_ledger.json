@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle4-mobile-hud",
+    "task_id": "afterimage-cycle5-surge-badge",
     "last_phase": "phase 4",
     "active_phase": 4,
     "status": "in_progress",
-    "updated_at": 1794081529.2244947,
+    "updated_at": 1794082135.8983428,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
     "continuations": []
@@ -182,6 +182,45 @@
       "status": "in_progress",
       "timestamp": 1794081529.2244947,
       "timestamp_str": "2026-11-07 22:58:49",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle4-mobile-hud",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle4-mobile-hud' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794081662.5917082,
+      "timestamp_str": "2026-11-07 23:01:02",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle5-surge-badge",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Keep SURGE 1.5x visible for the whole board with a persistent stage badge",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794081747.2360914,
+      "timestamp_str": "2026-11-07 23:02:27",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "SURGE context is announced only in the status line; any wrong pick replaces it with 'Not that one', leaving no visible sign that the board still pays 1.5x",
+        "benefits": "Players can see the bonus for the entire board, including after mistakes; level presentation matches the score opportunity",
+        "risks": "contract: one decorative DOM node inside the stage, aria-hidden; dependency: none; concurrency: none; state: none (visibility tied to def.surge)",
+        "mitigation": "Failing shell/CSS/JS contract test first; same-state before/after screenshots with a wrong pick on Daily board 4; scripted playthrough across surge and normal boards; full gates"
+      },
+      "plan_digest": "eb0b7d7e899920a696f1741ae33d7503ffa00884814c53fdf2fc66605ef74a01"
+    },
+    {
+      "task_id": "afterimage-cycle5-surge-badge",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Persistent SURGE stage badge, show/hide paths, cache v9 and a full Daily run verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794082135.8983428,
+      "timestamp_str": "2026-11-07 23:08:55",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

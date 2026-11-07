@@ -103,3 +103,26 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   the SOUND button inside 390px, no horizontal scroll, zero console errors. Full log:
   `shots/afterimage/cycle4/play.json`; screenshot `play-hud-active-390.png`.
 - **Gate results**: `node --test tests` 60/60 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 5 — Levels: persistent SURGE presentation
+
+- **Area**: levels / level presentation (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels).
+- **Defect (reproduced)**: SURGE 1.5× existed only in the opening status line. On Daily board 4
+  a wrong pick replaced it with `Not that one · 2 focus left`; the board still paid 1.5× but
+  nothing on screen said so.
+- **Files**: `index.html` (badge node), `styles.css` (gold stage badge), `game.js` (ui lookup
+  and show/hide paths), `tests/web-shell.test.js` (failing-first contract), `sw.js` +
+  `tests/pwa.test.js` (cache v9), `README.md` (surge bullet).
+- **Fix**: an aria-hidden `SURGE · 1.5×` pill sits in the stage's top-left padding for the whole
+  surge board, is hidden for normal boards, and is cleared on start/finish/menu.
+- **Visual proof** (same 1440x900 viewport, same seeded Daily #311, same wrong pick on board 4):
+  - before: `shots/afterimage/cycle5/before-surge-board.png` (sha256 6B0A03BB9FA8148C…) has
+    no surge marker after the miss.
+  - after: `shots/afterimage/cycle5/after-surge-board.png` (sha256 ABD10F3AFFB20695…) keeps
+    the gold `SURGE · 1.5×` badge visible above the board.
+- **Played run (scripted pointer input, Daily #311)**: badge visible exactly on boards 4 and 8
+  (`sat` and `hue`, both `surge: true`), hidden on all eight normal boards and after the run;
+  final `Daily cleared.`, 5,580, 10/10, 100%, zero console errors. Full log:
+  `shots/afterimage/cycle5/play.json`.
+- **Gate results**: `node --test tests` 61/61 pass; `python aikit.py check afterimage` 5/5 pass.
