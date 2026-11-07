@@ -1362,6 +1362,10 @@ function rateRun(won, cleared, total, accuracy, mode) {
   };
 }
 
+function bestEligible(won, timed, best) {
+  return Boolean(won) && Boolean(timed) && Boolean(best);
+}
+
 function saveBest(mode, score) {
   if (!MODES[mode] || !MODES[mode].best) return false;
   if (score <= (state.bests[mode] || 0)) return false;
@@ -1476,7 +1480,7 @@ function finish(won) {
     const record = recordDaily(won, accuracy, info.rating);
     isBest = won && record.isBest && state.score > 0;
   } else {
-    isBest = Boolean(state.timed && config.best && saveBest(state.mode, state.score));
+    isBest = bestEligible(won, state.timed, config.best) && saveBest(state.mode, state.score);
   }
   const freezeEarned = isDaily && state.hintsUsedRun === 0 && earnFreeze(won, accuracy);
 

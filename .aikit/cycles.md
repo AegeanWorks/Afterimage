@@ -524,3 +524,31 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   then Tab wraps to Copy result. All focus stays inside the active dialog, zero console errors.
   Logs: `before-log.json` / `after-log.json`.
 - **Gate results**: `node --test tests` 78/78 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 19 — Mode bests: a failed run is not a personal best
+
+- **Area**: Blitz/Nightmare/Focus mode bests and result flow (covered: progression/saves, UI
+  readability, graphics/effects, responsive layout, levels, save resilience, failure feedback,
+  audio cues, debrief copy, boss presentation, daily-best results, save-card fallback, copy
+  fallback, menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal
+  containment, mode bests).
+- **Defect (reproduced)**: clearing one board then losing set a personal best and showed
+  `NEW BEST` for Blitz (320, 1/10, 33%), Nightmare (650, 1/8, 50%) and Focus (270, 1/10, 25%).
+  A failed attempt could outrank a later completed run.
+- **Files**: `game.js` (pure `bestEligible`, gate on `saveBest`), `tests/game.test.js`
+  (failing-first test), `tests/harness.js` (export), `sw.js` + `tests/pwa.test.js` (cache v23),
+  `README.md` (completed-run wording).
+- **Fix**: `bestEligible(won, timed, best)` requires a completed run, a timed mode and a
+  best-bearing mode; only then does `finish` call `saveBest` and show `NEW BEST`. Existing
+  saved bests are untouched.
+- **Visual proof** (same deterministic Blitz run, same 1440x900 viewport, same 1-clear loss at
+  320):
+  - before: `shots/afterimage/cycle19/before-blitz-loss.png` (sha256 BCC8B7613E084E8B…)
+    shows `NEW BEST` on `FOCUS LOST`.
+  - after: `shots/afterimage/cycle19/after-blitz-loss.png` (sha256 74223AA8A0E142C8…)
+    shows the same loss with no badge and `bests.blitz: 0`.
+- **Played run**: after the loss, a replay cleared 10/10 Blitz boards at 100% for 7,040,
+  showed `NEW BEST`, and stored `bests.blitz: 7040`; the loss did not save. The mode audit
+  confirms Blitz, Nightmare and Focus losses all leave `newBestHidden: true` and bests at zero.
+  Logs: `before-log.json` / `after-log.json` / `mode-loss-audit-after.json`; zero console errors.
+- **Gate results**: `node --test tests` 79/79 pass; `python aikit.py check afterimage` 5/5 pass.

@@ -666,6 +666,16 @@ test('earnFreeze grants one freeze for a perfect daily win', () => {
   assert.strictEqual(second.earnFreeze(true, 99), false);
 });
 
+test('only completed timed best modes can save a personal best', () => {
+  const { bestEligible } = createHarness();
+
+  assert.strictEqual(bestEligible(true, true, true), true);
+  assert.strictEqual(bestEligible(false, true, true), false, 'a loss must not set a best');
+  assert.strictEqual(bestEligible(true, false, true), false, 'Zen has no best');
+  assert.strictEqual(bestEligible(true, true, false), false);
+  assert.strictEqual(bestEligible(false, false, false), false);
+});
+
 test('bestLine combines best score and cleared badge', () => {
   const { bestLine } = createHarness();
 

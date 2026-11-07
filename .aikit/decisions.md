@@ -219,3 +219,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: The veil declares `aria-modal="true"`, but Shift+Tab from the Daily card or from the result card moved focus to the SOUND button behind the overlay. Keyboard focus left the dialog entirely.
 - **Decision**: Add `trapDialogFocus` on document keydown: while the veil is open, choose the visible card (`#over` or `#menu`), collect its visible focusable controls, and wrap Tab/Shift+Tab at the ends. Focus on the card itself or outside the card is redirected to the first/last control. Add visible `.btn`/`.copy` focus rings. Bump the service-worker cache to `afterimage-v22`.
 - **Consequences**: 78 tests pass (77 prior + 1 failing-first trap contract). The before log shows `SOUND ON` outside both dialogs; the after log shows Onslaught inside the menu and Change mode inside the result, with Tab wrapping to Copy result. The keyboard run starts Daily, loses three lives, and navigates the result with zero console errors. Evidence is under `shots/afterimage/cycle18/`; `python aikit.py check afterimage` green.
+
+### ADR-032: Only completed runs can set a mode personal best
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: A Blitz/Nightmare/Focus run that cleared one board then lost set a personal best and showed `NEW BEST` (320 / 650 / 270). A failed attempt could outrank a later completed run, mirroring the daily-best defect fixed in ADR-024.
+- **Decision**: Add pure `bestEligible(won, timed, best)` and call `saveBest` / show `NEW BEST` only for a completed run in a timed best-bearing mode. Existing saved best values are left untouched, and no storage schema changes. Bump the service-worker cache to `afterimage-v23`.
+- **Consequences**: 79 tests pass (78 prior + 1 failing-first test). The deterministic Blitz loss at 320 leaves `bests.blitz: 0` and hides the badge; a replay win at 7,040 saves the best and shows `NEW BEST`. Nightmare and Focus loss audits also hide the badge. Evidence is under `shots/afterimage/cycle19/`; `python aikit.py check afterimage` green.
