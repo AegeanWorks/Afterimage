@@ -277,7 +277,10 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   - `node "$env:TEMP\afterimage-tools\mode-best-probe.mjs" before` / `after` (cycle 19);
     `Page.addScriptToEvaluateOnNewDocument` fixes `Math.random` so the Blitz boards and score
     match across builds. `node "$env:TEMP\afterimage-tools\mode-loss-audit.mjs"` audits
-    Blitz/Nightmare/Focus losses.`
+    Blitz/Nightmare/Focus losses.
+  - `node "$env:TEMP\afterimage-tools\onslaught-persistence.mjs"` (cycle 20 dead end) and
+    `node "$env:TEMP\afterimage-tools\save-version-probe.mjs" before` / `after` (cycle 20);
+    the latter seeds version-2 profile/bests then presses H to trigger a profile save.`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
