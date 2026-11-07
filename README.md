@@ -79,6 +79,7 @@ Every result can be saved as a **1200 × 630 PNG**, drawn on a second canvas: sc
 - **Rebalanced curve**: the final classic boards now tighten monotonically (6×6/15 → 6×6/15° → 7×7/13) instead of loosening at the end.
 - **Shareable proof**: copied results and score cards carry the best combo (`BLAZE ×10`) and perfect-board count, so skilled runs advertise themselves.
 - **Near-miss feedback**: a wrong pick orthogonally next to the odd tile says so ("So close — it was next door") instead of a flat rejection, keeping unlucky runs warm.
+- **Fair reveal**: a fatal miss dims the board and marks the odd tile for a beat before the result, matching the timeout reveal so every lost run teaches the answer.
 - **First-run coach**: the very first board of a new player's first run names the `H` hint; the last three clock seconds tick audibly.
 - **Goal-gradient beats**: level callouts mark "halfway", "two left" and "final board" so the end pulls players forward.
 - **Weakest-link debrief**: misses are tracked per puzzle type and the result blurb names the costliest one ("Angle boards cost you most — Zen is a good place to study them"), turning failure into a practice plan. The menu also shows lifetime runs next to EYE LV.

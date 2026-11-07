@@ -448,6 +448,15 @@ test('freezeRepair forgives exactly one missed day', () => {
   assert.strictEqual(freezeRepair(null, '2026-11-01'), false);
 });
 
+test('shouldRevealMiss only reveals a timed fatal miss', () => {
+  const { shouldRevealMiss } = createHarness();
+
+  assert.strictEqual(shouldRevealMiss(true, 0), true);
+  assert.strictEqual(shouldRevealMiss(true, 1), false);
+  assert.strictEqual(shouldRevealMiss(false, 0), false, 'Zen has no fatal misses');
+  assert.strictEqual(shouldRevealMiss(true, NaN), false);
+});
+
 test('sanitizeDailyResult rejects malformed records and clamps valid ones', () => {
   const { sanitizeDailyResult } = createHarness();
   const day = '2026-11-07';

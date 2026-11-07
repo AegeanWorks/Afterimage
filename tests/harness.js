@@ -86,7 +86,7 @@ function createHarness(options = {}) {
   vm.createContext(sandbox);
 
   const exported = vm.runInContext(
-    code + '\n;({ SCRIPTS, MODES, WIN_TITLES, TYPE_LABEL, BOARD_CLASS, localDateKey, isValidDateKey, previousDateKey, dailyNumber, dailyDateLabel, hashString, mulberry32, makeRound, scoreFor, rateRun, buildShareText, comboTier, assistEase, easedDelta, loadProfile, loadDaily, sanitizeDailyResult, eyeLevel, profileLine, sparkColor, scorePopText, isAdjacent, firstRunTip, progressBeat, weakestType, bonusHints, onBestPace, hiddenPenalty, freezeRepair, dailyStreakAfter, earnFreeze, bestLine, ensureAudio })',
+    code + '\n;({ SCRIPTS, MODES, WIN_TITLES, TYPE_LABEL, BOARD_CLASS, localDateKey, isValidDateKey, previousDateKey, dailyNumber, dailyDateLabel, hashString, mulberry32, makeRound, scoreFor, rateRun, buildShareText, comboTier, assistEase, easedDelta, loadProfile, loadDaily, sanitizeDailyResult, eyeLevel, profileLine, sparkColor, scorePopText, shouldRevealMiss, isAdjacent, firstRunTip, progressBeat, weakestType, bonusHints, onBestPace, hiddenPenalty, freezeRepair, dailyStreakAfter, earnFreeze, bestLine, ensureAudio })',
     sandbox
   );
 

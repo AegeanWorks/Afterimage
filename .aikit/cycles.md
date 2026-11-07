@@ -152,3 +152,27 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   with zero console errors. Full log: `shots/afterimage/cycle6/after-log.json`; result frame
   `recovered-result.png`.
 - **Gate results**: `node --test tests` 63/63 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 7 — Combat feel: fair reveal on a fatal miss
+
+- **Area**: combat feel / failure feedback (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback).
+- **Defect (reproduced)**: a wrong pick that took the last life went to the result after 640ms
+  with only `Out of focus`; unlike a timeout it never revealed the odd tile, so the player could
+  not learn the answer from the loss.
+- **Files**: `game.js` (pure `shouldRevealMiss`; fatal branch sets `state.reveal`, extends the
+  beat to 1150ms and paints immediately), `tests/harness.js` (export), `tests/game.test.js`
+  (failing-first test), `sw.js` + `tests/pwa.test.js` (cache v11), `README.md` (fair reveal).
+- **Fix**: any timed fatal miss now reuses the timeout reveal overlay, dims the board, marks the
+  odd tile, says `Out of focus — it was there`, and holds for 1150ms before the result. Nonfatal
+  misses and Zen wrong picks keep the existing 640/400ms rhythm and no reveal.
+- **Visual proof** (same 1440x900 viewport, same seeded Daily #311, third wrong pick at 180ms):
+  - before: `shots/afterimage/cycle7/before-fatal-miss.png` (sha256 90D7F9BE47AD8A21…) shows
+    the plain board with the wrong tile flashing and no answer marker.
+  - after: `shots/afterimage/cycle7/after-fatal-miss.png` (sha256 28F4FBF1DED2E09B…) shows the
+    dimmed board, the odd tile ringed, status `Out of focus — it was there`.
+- **Played run (scripted pointer input, Daily #311)**: three wrong picks ended the run at
+  0/10, 0%, `So close.`, one red board; `state.reveal` was true with lives 0, and the result
+  carried no console errors. Full logs: `shots/afterimage/cycle7/before-log.json` /
+  `after-log.json`; result frames `before-result.png` / `after-result.png`.
+- **Gate results**: `node --test tests` 64/64 pass; `python aikit.py check afterimage` 5/5 pass.

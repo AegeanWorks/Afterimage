@@ -1,43 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle6-corrupt-daily",
+    "task_id": "afterimage-cycle7-fatal-reveal",
     "last_phase": "phase 4",
     "active_phase": 4,
     "status": "in_progress",
-    "updated_at": 1794082616.6809995,
+    "updated_at": 1794083347.9778266,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
     "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "publish-standards-v1",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "Implement publish standards, AGL-1.1 license, and test suite (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1793445650.922743,
-      "timestamp_str": "2026-10-31 14:20:50",
-      "agent": "antigravity:1",
-      "impact_assessment": {
-        "why": "Afterimage was not aligned with AIKit publish standards",
-        "benefits": "Full publish readiness, 100% test pass gate, automated verification",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none",
-        "mitigation": "All tests self-contained in memory, zero external dependencies"
-      }
-    },
-    {
-      "task_id": "publish-standards-v1",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'publish-standards-v1' completed successfully.",
-      "status": "completed",
-      "timestamp": 1793445664.7692306,
-      "timestamp_str": "2026-10-31 14:21:04",
-      "agent": "antigravity:1"
-    },
     {
       "task_id": "afterimage-cycle1-daily-streak",
       "phase": "phase 2",
@@ -260,6 +233,45 @@
       "status": "in_progress",
       "timestamp": 1794082616.6809995,
       "timestamp_str": "2026-11-07 23:16:56",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle6-corrupt-daily",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle6-corrupt-daily' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794082708.227021,
+      "timestamp_str": "2026-11-07 23:18:28",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle7-fatal-reveal",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Reveal the odd tile briefly on the fatal miss before the result screen",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794082798.8951497,
+      "timestamp_str": "2026-11-07 23:19:58",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "A wrong pick that ends the run goes straight to the result after 640ms; the player never learns which tile was odd, unlike the timeout path which reveals it for 1150ms",
+        "benefits": "Every failed run teaches the answer; fatal misses and timeouts give the same fair reveal; the result no longer feels arbitrary",
+        "risks": "contract: only the fatal timed-miss path extends from 640ms to 1150ms and sets reveal; dependency: none; concurrency: none; state: reuses existing state.reveal overlay",
+        "mitigation": "Pure shouldRevealMiss test first; deterministic Daily three-miss screenshot pair at the fatal moment; played run logs reveal, status, result and board strip; full gates"
+      },
+      "plan_digest": "6996500a120400e44bd3f571c9504b4e5afe8b0e2fff0ceae452258ce97da7d7"
+    },
+    {
+      "task_id": "afterimage-cycle7-fatal-reveal",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Fatal-miss reveal, 1150ms beat, cache v11 and a three-miss Daily run verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794083347.9778266,
+      "timestamp_str": "2026-11-07 23:29:07",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

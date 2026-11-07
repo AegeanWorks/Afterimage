@@ -1104,12 +1104,18 @@ function pick(index) {
   } else {
     say("Not that one — scan again");
   }
+  const fatal = shouldRevealMiss(state.timed, state.lives);
+  if (fatal) {
+    state.reveal = true;
+    say("Out of focus — it was there");
+  }
   renderHud();
+  paint();
 
   window.setTimeout(() => {
     if (runId !== state.runId) return;
     state.wrongFlash = -1;
-    if (state.timed && state.lives <= 0) {
+    if (fatal) {
       state.boards.push("🟥");
       finish(false);
       return;
@@ -1118,7 +1124,7 @@ function pick(index) {
     ui.cells.classList.remove("off");
     state.lastFrame = performance.now();
     ensureLoop();
-  }, REDUCED ? 400 : 640);
+  }, fatal ? 1150 : (REDUCED ? 400 : 640));
 }
 
 function timeout() {
@@ -1172,6 +1178,10 @@ function comboTier(streak) {
 
 function assistEase(slump) {
   return slump >= 2 ? 1.3 : 1;
+}
+
+function shouldRevealMiss(timed, lives) {
+  return Boolean(timed) && Number(lives) <= 0;
 }
 
 function sparkColor(def, oddColor) {

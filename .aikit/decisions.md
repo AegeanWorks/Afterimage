@@ -135,3 +135,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: A persisted daily result with a valid date but no score threw inside `renderDaily` during boot, so `/?mode=daily` stayed on the menu and never called `startRun`. The loader trusted any object stored under `afterimage.daily`.
 - **Decision**: Add pure `sanitizeDailyResult`: accept only a valid date and finite non-negative score; default totals to 10, cap cleared at total, accuracy at 100, fall back to `WARMING UP` for non-string ratings, and coerce `won`. `loadDaily` uses it and also validates `last`; malformed records become `null` without touching unrelated saves. Bump the service-worker cache to `afterimage-v10`.
 - **Consequences**: 63 tests pass (61 prior + 2 failing-first tests: sanitizer and loader). A corrupt save followed by `/?mode=daily` now starts and clears a full Daily #311 (5,570, 10/10, 100%, EAGLE EYE), repairs the record to a 4-day streak, and logs zero console errors. Before/after frames are recorded in `.aikit/cycles.md` under `shots/afterimage/cycle6/`; `python aikit.py check afterimage` green.
+
+### ADR-020: Reveal the odd tile on a fatal miss
+- **Date**: 2026-11-07
+- **Status**: Accepted
+- **Context**: A wrong pick that spent the last life finished the run after 640ms with only `Out of focus`; unlike a timeout, it never showed the odd tile. A loss therefore taught the player nothing about the answer.
+- **Decision**: Add pure `shouldRevealMiss(timed, lives)`; when it is true, reuse the timeout reveal overlay, paint immediately, say `Out of focus — it was there`, and hold the beat for 1150ms before the result. Nonfatal misses and untimed wrong picks keep the existing rhythm and no reveal. Bump the service-worker cache to `afterimage-v11`.
+- **Consequences**: 64 tests pass (63 prior + 1 failing-first test with 4 assertions). A scripted three-miss Daily #311 run shows the reveal at 180ms (lives 0, reveal true), then ends at 0/10, 0%, `So close.` with one red board and zero console errors. Before/after frames are recorded in `.aikit/cycles.md` under `shots/afterimage/cycle7/`; `python aikit.py check afterimage` green.
