@@ -1353,6 +1353,15 @@ function saveBest(mode, score) {
   return true;
 }
 
+function dailyResultBeats(prior, score, won) {
+  const value = Number(score);
+  if (!Number.isFinite(value) || value < 0) return false;
+  if (!prior) return true;
+  const priorWon = Boolean(prior.won);
+  if (Boolean(won) !== priorWon) return Boolean(won);
+  return value > (Number(prior.score) || 0);
+}
+
 function recordDaily(won, accuracy, rating) {
   const day = state.dailyKey || localDateKey();
   const next = dailyStreakAfter(state.daily.last, state.daily.streak, state.profile.freezes, day, won);
@@ -1364,7 +1373,7 @@ function recordDaily(won, accuracy, rating) {
   state.daily.streak = next.streak;
 
   const prior = state.daily.result && state.daily.result.date === day ? state.daily.result : null;
-  const isBest = !prior || state.score > prior.score;
+  const isBest = dailyResultBeats(prior, state.score, won);
   if (isBest) {
     state.daily.result = {
       date: day,
@@ -1448,7 +1457,7 @@ function finish(won) {
 
   if (isDaily) {
     const record = recordDaily(won, accuracy, info.rating);
-    isBest = record.isBest && state.score > 0;
+    isBest = won && record.isBest && state.score > 0;
   } else {
     isBest = Boolean(state.timed && config.best && saveBest(state.mode, state.score));
   }

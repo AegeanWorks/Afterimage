@@ -163,3 +163,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: The last board of every run looked identical to every other board; only the transient status line said "final board", so the climax had no persistent visual identity.
 - **Decision**: Add pure `isFinalBoard(level, total)`; the last level toggles a `.stage.finale` gold border/glow and an aria-hidden `FINAL BOARD` badge, while start/finish/menu/boot clear both. Bump the service-worker cache to `afterimage-v14`.
 - **Consequences**: 68 tests pass (66 prior + 2 failing-first contracts: pure boundary test and shell/CSS/JS test). The same seeded Daily board-10 state (score 4,890) gains only the badge and glow in the after frame. A scripted 10-board run showed the badge and `finale` class only on board 10, cleared both on the result, and scored 10/10, 100%, 5,580 with zero console errors. Evidence is under `shots/afterimage/cycle10/`; `python aikit.py check afterimage` green.
+
+### ADR-024: Rank daily results by completion before score
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: A Daily run that cleared one board then lost showed `NEW DAILY BEST` at 270 points. The lost attempt became the stored benchmark, and a later lower-scoring win could not replace it, so a failure looked like the day's achievement.
+- **Decision**: Add pure `dailyResultBeats(prior, score, won)`: no prior result always stores; a completed run outranks a loss regardless of score; within the same completion status the higher score wins; malformed scores never beat anything. `recordDaily` uses it, and the `NEW DAILY BEST` callout is gated on `won`. Bump the service-worker cache to `afterimage-v15`.
+- **Consequences**: 69 tests pass (68 prior + 1 failing-first test with 8 assertions). The same Daily #312 loss (270, 1/10, 25%) no longer shows the badge; an immediate replay win at 5,580 shows it and replaces the stored result with `won: true`. The menu now prefers a completed run over a higher-scoring loss. Evidence is under `shots/afterimage/cycle11/`; `python aikit.py check afterimage` green.

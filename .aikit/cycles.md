@@ -282,3 +282,28 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   (`stage`, badge hidden). Final result `Daily cleared.`, 5,580, 10/10, 100%, zero console
   errors. Full log: `shots/afterimage/cycle10/played-daily.json`; frame `played-result.png`.
 - **Gate results**: `node --test tests` 68/68 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 11 — Daily best: a loss is not a benchmark
+
+- **Area**: result card / daily save edge case (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results).
+- **Defect (reproduced)**: clearing one board then losing all three lives produced a Daily
+  result of 270 with `NEW DAILY BEST` visible. The failed attempt was stored as the day's
+  benchmark, so a later lower-scoring win could not replace it.
+- **Files**: `game.js` (pure `dailyResultBeats`; win-first replacement; badge gated on `won`),
+  `tests/harness.js` (export), `tests/game.test.js` (failing-first 8-assertion test), `sw.js` +
+  `tests/pwa.test.js` (cache v15), `README.md` (daily-best semantics).
+- **Fix**: a completed run always outranks a loss regardless of score; within the same
+  completion status the higher score wins; `NEW DAILY BEST` is gated on `won`.
+- **Visual proof** (same seeded Daily #312, same 1440x900 viewport, same one-clear-then-loss
+  state, score 270):
+  - before: `shots/afterimage/cycle11/before-loss-result.png` (sha256 A097FB221750C750…)
+    shows `NEW DAILY BEST` on a `RUN OVER`.
+  - after: `shots/afterimage/cycle11/after-loss-result.png` (sha256 996A9E31457C9E45…)
+    shows the same result without the badge.
+- **Played run**: loss result 270, 1/10, 25%, no badge; immediate replay cleared 10/10 at
+  100% for 5,580, showed `NEW DAILY BEST`, and stored `won: true` in `afterimage.daily`.
+  Both result screens are in `shots/afterimage/cycle11/` (`before-win-result.png` /
+  `after-win-result.png`); logs `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 69/69 pass; `python aikit.py check afterimage` 5/5 pass.

@@ -577,6 +577,19 @@ test('loadDaily drops an invalid result and malformed last key', () => {
   assert.strictEqual(daily.result, null, 'result without a score is discarded');
 });
 
+test('dailyResultBeats prefers wins, then higher scores', () => {
+  const { dailyResultBeats } = createHarness();
+
+  assert.strictEqual(dailyResultBeats(null, 270, false), true);
+  assert.strictEqual(dailyResultBeats({ won: false, score: 270 }, 100, true), true, 'a win outranks a loss');
+  assert.strictEqual(dailyResultBeats({ won: true, score: 500 }, 900, false), false, 'a loss never beats a win');
+  assert.strictEqual(dailyResultBeats({ won: true, score: 500 }, 600, true), true);
+  assert.strictEqual(dailyResultBeats({ won: true, score: 500 }, 400, true), false);
+  assert.strictEqual(dailyResultBeats({ won: false, score: 270 }, 400, false), true);
+  assert.strictEqual(dailyResultBeats({ won: false, score: 270 }, 100, false), false);
+  assert.strictEqual(dailyResultBeats({ won: false, score: 270 }, NaN, true), false);
+});
+
 test('daily streak advances only when the daily is completed', () => {
   const { dailyStreakAfter } = createHarness();
   const day = '2026-11-07';
