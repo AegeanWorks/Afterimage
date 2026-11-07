@@ -262,7 +262,11 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   - `node "$env:TEMP\afterimage-tools\menu-focus-probe.mjs" before` / `after` (cycle 14);
     real CDP `Tab` key events walk the result actions before Change mode is activated.
   - `node "$env:TEMP\afterimage-tools\result-entry-probe.mjs" before` / `after` (cycle 15);
-    both a loss result and a full won replay are captured.`
+    both a loss result and a full won replay are captured.
+  - `node "$env:TEMP\afterimage-tools\offline-probe.mjs" probe` and
+    `node "$env:TEMP\afterimage-tools\offline-cold-probe.mjs"` (cycle 16 offline dead end).
+  - `node "$env:TEMP\afterimage-tools\wrong-focus-probe.mjs" before` / `after` (cycle 16
+    in-grid focus); real CDP Enter/arrow events drive the wrong pick and recovery.`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
