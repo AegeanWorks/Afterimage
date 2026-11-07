@@ -37,6 +37,19 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('the result card takes focus when it opens', () => {
+  const htmlText = html();
+  const jsText = js();
+  const overTag = /<section class="card" id="over"[^>]*>/.exec(htmlText);
+  assert.ok(overTag, 'index.html must keep the result card');
+  assert.ok(/tabindex="-1"/.test(overTag[0]), 'the result card must be programmatically focusable');
+  const finishBody = jsText.slice(jsText.indexOf('function finish('), jsText.indexOf('function showMenu('));
+  assert.ok(finishBody.includes('ui.over.focus'), 'finish must focus the result card');
+  assert.ok(finishBody.includes('setAttribute("aria-labelledby", "resultTitle")'), 'the dialog label must switch to the result title');
+  const menuBody = jsText.slice(jsText.indexOf('function showMenu('), jsText.indexOf('function shake('));
+  assert.ok(menuBody.includes('setAttribute("aria-labelledby", "title")'), 'the dialog label must switch back to the menu title');
+});
+
 test('returning to the menu restores focus to the daily card', () => {
   const match = /function showMenu\(\) \{([\s\S]*?)\n\}/.exec(js());
   assert.ok(match, 'game.js must keep showMenu');

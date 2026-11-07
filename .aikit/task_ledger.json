@@ -1,38 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle14-menu-focus",
+    "task_id": "afterimage-cycle15-result-focus",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794088247.4865503,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794089191.3744924,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": [],
-    "completed_at": 1794088293.0617943
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle8-audio-cues",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Distinct timeout/win/loss cues, oscillator capture, real-Chromium tone logs, cache v12 and played Daily/Zen runs verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794083945.7869809,
-      "timestamp_str": "2026-11-07 23:39:05",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle8-audio-cues",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle8-audio-cues' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794084028.081709,
-      "timestamp_str": "2026-11-07 23:40:28",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle9-debrief-copy",
       "phase": "phase 2",
@@ -265,6 +243,35 @@
       "status": "completed",
       "timestamp": 1794088293.061797,
       "timestamp_str": "2026-11-08 00:51:33",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle15-result-focus",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Move focus into the result card when a run ends and relabel the dialog for the result",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794088840.9435978,
+      "timestamp_str": "2026-11-08 01:00:40",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "Both loss and win result screens open with document.activeElement on BODY and the veil still labelled by the hidden menu heading; keyboard and screen-reader users are not placed at the result",
+        "benefits": "The result card takes focus and announces its own title, with a visible glow; the dialog label follows the visible card; menu return still restores Daily focus",
+        "risks": "contract: focus and aria-labelledby only, no scoring/layout/state changes; dependency: none; concurrency: none; state: none",
+        "mitigation": "Failing shell/DOM contract first; same loss and win result states before/after; activeElement, veil label and focus-glow screenshots logged; full gates"
+      },
+      "plan_digest": "ffaf5436f2adcc4ee5314edee9f3823b652fefd1b3b197617b3ab0484e2a3cc3"
+    },
+    {
+      "task_id": "afterimage-cycle15-result-focus",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Result-card focus, dialog label swap, loss/win focus logs, focus-glow screenshots, cache v19 and gates verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794089191.3744924,
+      "timestamp_str": "2026-11-08 01:06:31",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

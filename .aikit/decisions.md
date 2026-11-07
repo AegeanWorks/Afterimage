@@ -191,3 +191,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: After keyboard activation of Change mode, the result overlay hid the focused button and the menu opened with `document.activeElement` on `BODY`. Keyboard users had to restart tabbing from the top of the page.
 - **Decision**: `showMenu` focuses `#dailyBtn` with `preventScroll` after the menu content is rendered, covering both Change mode and Quit run. This is a focus-only change; no layout, copy or persisted state changes. Bump the service-worker cache to `afterimage-v18`.
 - **Consequences**: 74 tests pass (73 prior + 1 failing-first shell contract). The played keyboard flow (four Tabs to Change mode, activate) now lands on `#dailyBtn` with `:focus-visible` true; the before log lands on `BODY` with no focus. Evidence is under `shots/afterimage/cycle14/`; `python aikit.py check afterimage` green.
+
+### ADR-028: Move focus and the dialog label into the result card
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: Both loss and win result screens opened with `document.activeElement` on `BODY`, and the result veil kept `aria-labelledby="title"` while that menu heading was hidden. Keyboard focus and the dialog label both pointed away from the result.
+- **Decision**: Make `#over` programmatically focusable (`tabindex="-1"`), focus it in `finish` with `preventScroll`, and set the veil label to `resultTitle`; `showMenu` restores `title`. The focused result card gets a purple border/glow so sighted keyboard users can see the active region. Bump the service-worker cache to `afterimage-v19`.
+- **Consequences**: 75 tests pass (74 prior + 1 failing-first shell/DOM contract). Loss and won replay results both land on `#over` with `veilLabel: resultTitle`; the after frame shows the purple focus glow while the before frame is ordinary. Evidence is under `shots/afterimage/cycle15/`; `python aikit.py check afterimage` green.

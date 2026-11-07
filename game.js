@@ -1541,6 +1541,12 @@ function finish(won) {
   ui.menu.hidden = true;
   ui.over.hidden = false;
   ui.veil.hidden = false;
+  ui.veil.setAttribute("aria-labelledby", "resultTitle");
+  try {
+    ui.over.focus({ preventScroll: true });
+  } catch {
+    /* non-DOM harnesses ignore focus */
+  }
   if (won && state.cleared > 0) soundWin();
   else soundLose();
 }
@@ -1553,6 +1559,7 @@ function showMenu() {
   document.body.classList.remove("playing", "zen");
   ui.cells.classList.add("off");
   ui.veil.hidden = false;
+  ui.veil.setAttribute("aria-labelledby", "title");
   ui.menu.hidden = false;
   ui.over.hidden = true;
   ui.hud.hidden = true;

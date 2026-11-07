@@ -334,6 +334,15 @@ kbd {
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
   animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+#over:focus {
+  outline: none;
+  border-color: rgba(139, 124, 255, 0.62);
+  box-shadow:
+    0 0 0 3px rgba(139, 124, 255, 0.16),
+    0 0 60px -12px rgba(139, 124, 255, 0.5),
+    0 60px 140px -40px #000,
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
 @keyframes rise {
   from { opacity: 0; transform: translateY(14px) scale(0.985); }
   to { opacity: 1; transform: none; }

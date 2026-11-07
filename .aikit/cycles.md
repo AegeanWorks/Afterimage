@@ -398,3 +398,29 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   Play again → Save card → Change mode), Change mode returned to the menu with focus on
   Today's board. Logs: `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 74/74 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 15 — Keyboard focus: result entry and dialog label
+
+- **Area**: keyboard focus / result entry (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus).
+- **Defect (reproduced)**: both the loss and the won replay opened the result screen with
+  `document.activeElement` on `BODY`, while `#veil` kept `aria-labelledby="title"` pointing at
+  the hidden menu heading. Keyboard and screen-reader users were not placed at the result.
+- **Files**: `game.js` (focus the result card and swap the dialog label), `index.html`
+  (`#over tabindex="-1"`), `styles.css` (result focus glow), `tests/web-shell.test.js`
+  (failing-first contract), `sw.js` + `tests/pwa.test.js` (cache v19), `README.md` (keyboard
+  result note).
+- **Fix**: `finish` points the veil at `resultTitle`, focuses `#over`, and `showMenu` restores
+  the menu label. The focused result card gets a purple border/glow.
+- **Visual proof** (same seeded Daily #312 loss result, same 1440x900 viewport):
+  - before: `shots/afterimage/cycle15/before-loss-result.png` (sha256 E45A189B4BADE3FC…)
+    shows an ordinary result card with `activeId: ""`.
+  - after: `shots/afterimage/cycle15/after-loss-result.png` (sha256 33B3C90A47CAF265…)
+    shows the focused card’s purple glow with `activeId: "over"`.
+- **Played run**: a three-miss loss and a full 10-board winning replay both landed focus on
+  `#over`, both set the veil label to `resultTitle`; the win result read `Daily cleared.`,
+  5,580, 10/10. Frames `before-win-result.png` / `after-win-result.png`; logs
+  `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 75/75 pass; `python aikit.py check afterimage` 5/5 pass.
