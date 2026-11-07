@@ -494,3 +494,30 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   initial state (`started: null`). Logs: `before-log.json` / `after-log.json`; zero console
   errors.
 - **Gate results**: `node --test tests` 77/77 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 18 — Modal focus containment
+
+- **Area**: modal keyboard containment (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment).
+- **Defect (reproduced)**: the veil declares `aria-modal="true"` but Tab was not contained.
+  Shift+Tab from the Daily card focused `SOUND ON` behind the menu, and Shift+Tab from the
+  result card did the same; the before log shows `inMenu: false, inOver: false` for both.
+- **Files**: `game.js` (`trapDialogFocus` on document keydown), `styles.css` (visible
+  `.btn`/`.copy` focus rings), `tests/web-shell.test.js` (failing-first trap contract), `sw.js`
+  + `tests/pwa.test.js` (cache v22), `README.md` (keyboard note).
+- **Fix**: while the veil is open, Tab and Shift+Tab wrap among the visible focusable controls
+  of the active card (`#menu` or `#over`), including the copy fallback when open; focus that
+  starts on the card or outside it is redirected to the first/last control.
+- **Visual proof** (same seeded Daily #312, same 1440x900 viewport, keyboard Shift+Tab):
+  - before: `shots/afterimage/cycle18/before-menu-shift-tab.png` (sha256 FE9E55DED442C91B…)
+    shows no focus ring in the dialog; focus is on the hidden SOUND button.
+  - after: `shots/afterimage/cycle18/after-menu-shift-tab.png` (sha256 2B95E0D638A0D73F…)
+    shows the Onslaught card ring; focus stays in the menu. Result pair:
+    `before-result-shift-tab.png` / `after-result-shift-tab.png`.
+- **Played run (keyboard only)**: Shift+Tab from Daily wraps to Onslaught; Enter starts the
+  Daily run; three Enter misses end at 0/10; Shift+Tab from the result focuses Change mode,
+  then Tab wraps to Copy result. All focus stays inside the active dialog, zero console errors.
+  Logs: `before-log.json` / `after-log.json`.
+- **Gate results**: `node --test tests` 78/78 pass; `python aikit.py check afterimage` 5/5 pass.

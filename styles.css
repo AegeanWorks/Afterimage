@@ -539,6 +539,7 @@ h1 em {
   background: rgba(255, 255, 255, 0.045);
 }
 .btn:active { transform: translateY(0); }
+.btn:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.85); outline-offset: 3px; }
 
 .meta {
   display: grid;
@@ -682,6 +683,7 @@ h1 em {
   white-space: nowrap;
 }
 .copy:hover { color: var(--ink); }
+.copy:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.75); outline-offset: 3px; border-radius: 4px; }
 .copy:disabled { color: var(--faint); cursor: default; text-decoration: none; }
 .copy-fallback {
   display: grid;

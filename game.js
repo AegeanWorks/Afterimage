@@ -2084,6 +2084,34 @@ if (ui.hint) ui.hint.addEventListener("click", () => {
   useHint();
 });
 
+function trapDialogFocus(event) {
+  if (event.key !== "Tab" || ui.veil.hidden) return;
+  const container = ui.over.hidden ? ui.menu : ui.over;
+  if (!container) return;
+  const focusables = Array.from(container.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )).filter((element) => !element.hidden && element.getClientRects().length > 0);
+  if (!focusables.length) return;
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+  if (active === container || !container.contains(active)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+    return;
+  }
+  if (event.shiftKey && active === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && active === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
+document.addEventListener("keydown", trapDialogFocus);
+
 document.addEventListener("keydown", (event) => {
   if ((event.key === "h" || event.key === "H") && !event.metaKey && !event.ctrlKey) {
     const tag = (document.activeElement && document.activeElement.tagName) || "";

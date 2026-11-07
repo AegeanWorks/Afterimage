@@ -37,6 +37,14 @@ test('veil is a dialog and timer is not aria-hidden without alternative', () => 
   assert.ok(!htmlText.includes('<div class="timer" id="timer" aria-hidden="true">'), 'timer must expose a text alternative instead of aria-hidden');
 });
 
+test('the modal dialog contains Tab focus', () => {
+  const jsText = js();
+  assert.ok(jsText.includes('function trapDialogFocus('), 'game.js must define the dialog Tab trap');
+  assert.ok(jsText.includes('event.key !== "Tab"'), 'the trap must only handle Tab');
+  assert.ok(jsText.includes('ui.over.hidden ? ui.menu : ui.over'), 'the trap must pick the visible dialog card');
+  assert.ok(jsText.includes('trapDialogFocus'), 'the trap must be registered');
+});
+
 test('first load focuses the menu daily card', () => {
   const jsText = js();
   const bootStart = jsText.lastIndexOf('renderBests();');
