@@ -1,38 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle25-timer-label",
+    "task_id": "afterimage-cycle26-lives-text",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794098335.8915448,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794099062.3369753,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": [],
-    "completed_at": 1794098384.8990836
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle19-mode-best",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Completed-run mode bests, deterministic Blitz loss/win, three-mode loss audit, cache v23 and gates verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794093880.984388,
-      "timestamp_str": "2026-11-08 02:24:40",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle19-mode-best",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle19-mode-best' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794093937.2041664,
-      "timestamp_str": "2026-11-08 02:25:37",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle20-save-version",
       "phase": "phase 2",
@@ -265,6 +243,35 @@
       "status": "completed",
       "timestamp": 1794098384.8990858,
       "timestamp_str": "2026-11-08 03:39:44",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle26-lives-text",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Give the Focus lives dots a visible count and an accessible N-of-M label",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794098659.382185,
+      "timestamp_str": "2026-11-08 03:44:19",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "The lives HUD is three unlabeled dots: sighted players must count them and assistive tech gets only the word Focus, with no lives value",
+        "benefits": "A visible numeric count sits beside the dots, and the dots expose '2 of 3 focus remaining' through ARIA, updating after every loss",
+        "risks": "contract: HUD value/ARIA only, no lives logic/timing changes; dependency: none; concurrency: none; state: no persistence changes",
+        "mitigation": "Failing livesLabel and shell contract tests; same HUD crop before/after and after a wrong pick; played wrong-pick run; full gates"
+      },
+      "plan_digest": "4598688a1ae1c442506929cd573545e3fa5734ff352a5e09ae333f905d1caf69"
+    },
+    {
+      "task_id": "afterimage-cycle26-lives-text",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Lives count/ARIA, HUD crop pair, 3-to-2 wrong-pick run, cache v30 and gates verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794099062.3369753,
+      "timestamp_str": "2026-11-08 03:51:02",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

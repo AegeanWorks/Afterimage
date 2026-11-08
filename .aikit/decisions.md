@@ -268,3 +268,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: The only clock was a 3px bar with `aria-label="Time remaining"` and no value. Players could only estimate the remaining slice, and assistive technology had no current value.
 - **Decision**: Add pure `timerLabel` and update a right-edge `data-time` readout plus `aria-label` only when the whole second changes. Untimed Zen clears both; the fill gets a radius so the bar can stop clipping the readout. Bump the service-worker cache to `afterimage-v29`.
 - **Consequences**: 87 tests pass (85 prior + 2 failing-first tests: label formatting and shell/value contract). At 12,000ms the timer shows `12s` and an ARIA value of 12 seconds, then `11s` after a second; a wrong pick drops lives while the clock stays live. Evidence is under `shots/afterimage/cycle25/`; `python aikit.py check afterimage` green.
+
+### ADR-039: Give the lives dots a visible count and an accessible value
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: The Focus lives HUD was three unlabeled dots. Sighted players had to count 7px dots, and assistive technology received only the word “Focus” with no value.
+- **Decision**: Add pure `livesLabel(timed, lives, maxLives)`; render a visible numeric count beside the dots and set the dots' ARIA label to `N of M focus remaining` (or `No focus limit` in Zen). Update both in `renderHud`. Bump the service-worker cache to `afterimage-v30`.
+- **Consequences**: 89 tests pass (87 prior + 2 failing-first tests: label formatting and HUD contract). Focus starts at `Focus 3` / `3 of 3 focus remaining`; a wrong pick drops to `Focus 2` / `2 of 3 focus remaining` with two lit dots. Evidence is under `shots/afterimage/cycle26/`; `python aikit.py check afterimage` green.

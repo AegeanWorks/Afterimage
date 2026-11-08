@@ -746,3 +746,30 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   11 seconds; a wrong pick drops Focus to 2 while the readout stays live. Logs:
   `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 87/87 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 26 — HUD readability: counted lives
+
+- **Area**: HUD readability / lives accessibility (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics, blocked-best honesty, blocked-daily honesty,
+  blocked-profile honesty, timer readability, lives readability).
+- **Defect (reproduced)**: the lives HUD was three unlabeled dots. The before log shows
+  `text: "Focus"`, no `lifeCount`, and no `aria-label`; sighted players had to count 7px dots
+  and assistive tech received no value.
+- **Files**: `index.html` (count span + labelled dots), `styles.css` (`.life-count`),
+  `game.js` (pure `livesLabel`, count/ARIA updates), `tests/game.test.js` (failing-first label
+  test), `tests/web-shell.test.js` (HUD contract), `sw.js` + `tests/pwa.test.js` (cache v30),
+  `README.md` (lives note).
+- **Fix**: a visible numeric count sits after the dots; the dots expose an ARIA label such as
+  `3 of 3 focus remaining`; untimed Zen reports `No focus limit`. Both update after every loss.
+- **Visual proof** (same deterministic Focus start, same 1440x900 viewport, fixed HUD crop):
+  - before: `shots/afterimage/cycle26/before-lives-3.png` (sha256 2F4E3853DA730F57…)
+    shows three dots and no count.
+  - after: `shots/afterimage/cycle26/after-lives-3.png` (sha256 E1BD211AF7A7CC8C…)
+    shows the same dots with a visible `3`.
+- **Played run**: a wrong pick drops the HUD from `Focus 3` / `3 of 3 focus remaining` to
+  `Focus 2` / `2 of 3 focus remaining`; two dots remain lit. Crop
+  `after-lives-2.png`; logs `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 89/89 pass; `python aikit.py check afterimage` 5/5 pass.

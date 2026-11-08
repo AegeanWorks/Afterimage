@@ -53,6 +53,16 @@ test('first load focuses the menu daily card', () => {
   assert.ok(jsText.slice(bootStart, bootEnd).includes('ui.dailyBtn.focus'), 'boot must focus the primary Daily action');
 });
 
+test('the lives HUD exposes a visible count and value', () => {
+  const htmlText = html();
+  const cssText = css();
+  const jsText = js();
+  assert.ok(htmlText.includes('id="lifeCount"'), 'index.html must carry the visible lives count');
+  assert.ok(cssText.includes('.life-count'), 'styles.css must style the lives count');
+  assert.ok(jsText.includes('livesLabel'), 'game.js must format the lives value');
+  assert.ok(jsText.includes('aria-label'), 'the lives dots must expose their value');
+});
+
 test('the timer exposes a second-by-second readout and value', () => {
   const cssText = css();
   const jsText = js();

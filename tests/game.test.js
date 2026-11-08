@@ -137,6 +137,17 @@ test('timeout, win and lose cues are distinct from the wrong buzz', () => {
   assert.ok(lose[0] > lose[lose.length - 1], 'lose cue descends');
 });
 
+test('livesLabel describes timed and untimed focus', () => {
+  const { livesLabel } = createHarness();
+
+  assert.strictEqual(livesLabel(true, 3, 3), '3 of 3 focus remaining');
+  assert.strictEqual(livesLabel(true, 2, 3), '2 of 3 focus remaining');
+  assert.strictEqual(livesLabel(true, 0, 1), '0 of 1 focus remaining');
+  assert.strictEqual(livesLabel(false, Infinity, Infinity), 'No focus limit');
+  assert.strictEqual(livesLabel(true, NaN, 3), '0 of 3 focus remaining');
+  assert.strictEqual(livesLabel(true, 3, 0), '3 of 3 focus remaining');
+});
+
 test('timerLabel rounds up and clamps the remaining clock', () => {
   const { timerLabel } = createHarness();
 

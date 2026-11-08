@@ -111,7 +111,15 @@ body {
 .hud-item.mode-item .v { font-size: 12px; letter-spacing: 0.03em; }
 .dim { color: var(--faint); font-size: 10px; font-weight: 500; margin-left: 1px; }
 
+.lives-wrap { display: flex; align-items: center; gap: 5px; }
 .lives { display: flex; align-items: center; gap: 4px; height: 14px; }
+.life-count {
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
 .life {
   width: 7px;
   height: 7px;

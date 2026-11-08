@@ -393,6 +393,7 @@ const ui = {
   levelTotal: document.getElementById("levelTotal"),
   score: document.getElementById("scoreNum"),
   lives: document.getElementById("livesNum"),
+  lifeCount: document.getElementById("lifeCount"),
   streak: document.getElementById("streakNum"),
   sound: document.getElementById("soundBtn"),
   veil: document.getElementById("veil"),
@@ -870,6 +871,7 @@ function renderHud() {
   ui.streak.textContent = tier.name ? `${state.streak} ${tier.name}` : String(state.streak);
   if (ui.streakItem) ui.streakItem.classList.toggle("hot", state.streak >= 3);
   ui.lives.textContent = "";
+  if (ui.lifeCount) ui.lifeCount.textContent = "";
 
   if (ui.hint) {
     ui.hint.hidden = false;
@@ -877,7 +879,12 @@ function renderHud() {
     ui.hint.textContent = state.hints > 0 ? `Hint (${state.hints}) [H]` : "No hints";
   }
 
-  if (!state.timed) return;
+  if (!state.timed) {
+    ui.lives.setAttribute("aria-label", livesLabel(false, state.lives, state.maxLives));
+    return;
+  }
+  ui.lives.setAttribute("aria-label", livesLabel(true, state.lives, state.maxLives));
+  if (ui.lifeCount) ui.lifeCount.textContent = String(Math.max(0, state.lives));
   for (let i = 0; i < state.maxLives; i += 1) {
     const dot = document.createElement("i");
     dot.className = i < state.lives ? "life" : "life off";
@@ -1326,6 +1333,13 @@ function onBestPace(score, boardsDone, total, best) {
   if (!(best > 0) || !(score > 0)) return false;
   if (!(total > 0) || !(boardsDone >= 0) || boardsDone > total) return false;
   return score >= best * (boardsDone / total);
+}
+
+function livesLabel(timed, lives, maxLives) {
+  if (!timed) return "No focus limit";
+  const current = Number.isFinite(Number(lives)) && Number(lives) > 0 ? Math.floor(Number(lives)) : 0;
+  const max = Number.isFinite(Number(maxLives)) && Number(maxLives) > 0 ? Math.floor(Number(maxLives)) : current;
+  return `${current} of ${max} focus remaining`;
 }
 
 function timerLabel(remaining) {

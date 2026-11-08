@@ -128,7 +128,7 @@ The run caught two real bugs that the screenshots made obvious: burst particles 
 - Vanilla HTML, CSS and JavaScript. One render canvas, one favicon, no game assets.
 - Five mode configs plus the daily challenge drive three level scripts; Nightmare's script runs from 8×8 to 10×10.
 - `game.js` holds the palette generator, seeded PRNG, DPR-aware renderer, hit-testing, scoring and WebAudio blips.
-- The clock bar adds a whole-second readout at its right edge and an ARIA label with the same value; both update only when the second changes.
+- The clock bar adds a whole-second readout at its right edge and an ARIA label with the same value; both update only when the second changes. The Focus lives dots carry a visible numeric count and an ARIA label such as “2 of 3 focus remaining”.
 - Daily puzzles use mulberry32 seeded from the local date; the daily result and streak live under `afterimage.daily`, and saved results are validated on load so malformed records cannot break the menu or a daily deep link.
 - Each board logs green/gold/red/skip/dark for the result strip and copied text; the clipboard uses the async API with a textarea fallback.
 - A service worker caches the shell; navigations are network-first with a cached-index fallback on failure **or non-OK responses**, assets are cache-first with a background refresh.
