@@ -136,6 +136,7 @@ The run caught two real bugs that the screenshots made obvious: burst particles 
 - Per-mode bests are stored as JSON, with the old single best migrated. Structured saves (`afterimage.bests`, `.daily`, `.profile`) carry `version: 1`; legacy saves load as v1, a newer unsupported version is refused without overwriting it, and the session never claims a best, daily streak, freeze or first-clear award it cannot persist.
 - A run token (`runId`) guards late `setTimeout` callbacks after quitting; particles are cleared between boards.
 - Respects `prefers-reduced-motion`; storage and audio failures are non-fatal.
+- While the menu or result dialog is open, the game shell is `inert` and hidden from the accessibility tree, so only the dialog is focusable and announced.
 - On phones the topbar wraps: brand and sound share the first row, all five labelled HUD values share the second, and play never scrolls sideways.
 
 ## 📦 What's Inside

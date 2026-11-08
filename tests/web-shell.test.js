@@ -147,6 +147,15 @@ test('surge boards keep a persistent stage badge', () => {
   assert.ok(hides.length >= 2, 'start/menu/finish paths must clear the badge');
 });
 
+test('the game shell leaves the accessibility tree while a dialog is open', () => {
+  const jsText = js();
+  assert.ok(jsText.includes('setShellInert'), 'game.js must toggle shell inertness');
+  assert.ok(jsText.includes('shell.setAttribute("inert"'), 'the shell must be inert while a dialog is open');
+  assert.ok(jsText.includes('shell.setAttribute("aria-hidden"'), 'the shell must be hidden from the accessibility tree');
+  assert.ok(jsText.includes('setShellInert(true)'), 'menu/result paths must inert the shell');
+  assert.ok(jsText.includes('setShellInert(false)'), 'starting a run must restore the shell');
+});
+
 test('narrow HUD keeps the focus lives label visible', () => {
   const cssText = css();
   const mobile = /@media \(max-width: 640px\) \{([\s\S]*?)\n\}/.exec(cssText);

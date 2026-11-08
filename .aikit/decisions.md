@@ -289,3 +289,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: At 390x844 the lives block was dots + `3` with no Focus label, while Mode, Level, Score and Streak kept labels. The last unlabeled HUD value was ambiguous after the lives count was added.
 - **Decision**: Remove the <=440px rule that hid `.hud-item.lives .k`. The dots + count are wider than the label, so the item width does not grow; only the missing label row is restored. Bump the service-worker cache to `afterimage-v32`.
 - **Consequences**: 91 tests pass (90 prior + 1 failing-first mobile label contract). Normal and stressed HUDs at 390px and 320px stay within the viewport; a played Focus clear shows both `Focus 3` and `Streak 1` with no horizontal scroll. Evidence is under `shots/afterimage/cycle28/`; `python aikit.py check afterimage` green.
+
+### ADR-042: Remove the game shell from the accessibility tree while a dialog is open
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: Keyboard Tab was trapped inside the menu/result dialog, but the accessibility tree still exposed the background brand link, SOUND ON, timer and status line. Screen-reader browse mode could leave the dialog. The 390x844 result-card layout with both fallback panels was a dead end: it fit at 44..800 with `scrollWidth: 390`, and short 390x667 screens kept the card top visible and scrollable.
+- **Decision**: Add `setShellInert(value)`: menu, result and boot set `.shell` `inert` plus `aria-hidden="true"`; starting a run removes both. Focus moves into the dialog before the shell is hidden. Bump the service-worker cache to `afterimage-v33`.
+- **Consequences**: 92 tests pass (91 prior + 1 failing-first shell contract). The menu and result AX trees no longer contain the background link, sound button, timer or status; play restores `shellInert: false`; visuals remain byte-identical at the menu. Evidence is under `shots/afterimage/cycle29/`; `python aikit.py check afterimage` green.

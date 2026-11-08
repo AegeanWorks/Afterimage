@@ -53,6 +53,7 @@ function createHarness(options = {}) {
     },
     addEventListener() {},
     setAttribute() {},
+    removeAttribute() {},
     hidden: false,
     getContext: makeCtx
   });
@@ -60,6 +61,7 @@ function createHarness(options = {}) {
   const sandbox = {
     document: {
       getElementById: (id) => makeEl(id),
+      querySelector: (selector) => makeEl(selector),
       querySelectorAll: () => [],
       addEventListener() {}
     },

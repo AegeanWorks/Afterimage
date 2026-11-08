@@ -379,6 +379,7 @@ function currentStreak() {
 }
 
 const ui = {
+  shell: document.querySelector(".shell"),
   stage: document.getElementById("stage"),
   canvas: document.getElementById("board"),
   surge: document.getElementById("surgeBadge"),
@@ -972,6 +973,17 @@ function renderSound() {
 
 /* ------------------------------------------------------------------ flow */
 
+function setShellInert(value) {
+  if (!ui.shell) return;
+  if (value) {
+    ui.shell.setAttribute("inert", "");
+    ui.shell.setAttribute("aria-hidden", "true");
+  } else {
+    ui.shell.removeAttribute("inert");
+    ui.shell.removeAttribute("aria-hidden");
+  }
+}
+
 function startRun(mode) {
   const config = MODES[mode];
   if (!config) return;
@@ -1031,6 +1043,7 @@ function startRun(mode) {
   if (ui.final) ui.final.hidden = true;
   if (ui.stage) ui.stage.classList.remove("finale");
   ui.cells.classList.remove("off");
+  setShellInert(false);
 
   ensureAudio();
   nextLevel();
@@ -1627,6 +1640,7 @@ function finish(won) {
   } catch {
     /* non-DOM harnesses ignore focus */
   }
+  setShellInert(true);
   if (won && state.cleared > 0) soundWin();
   else soundLose();
 }
@@ -1675,6 +1689,7 @@ function showMenu() {
   } catch {
     /* non-DOM harnesses ignore focus */
   }
+  setShellInert(true);
 }
 
 function shake() {
@@ -2280,6 +2295,7 @@ try {
 } catch {
   /* non-DOM harnesses ignore focus */
 }
+setShellInert(true);
 
 const requestedMode = new URLSearchParams(window.location.search).get("mode");
 if (requestedMode && Object.prototype.hasOwnProperty.call(MODES, requestedMode)) {

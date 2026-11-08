@@ -836,3 +836,38 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   270 points, streak 1 with `Focus` and `Streak` both labelled and no horizontal scroll.
   Log: `play.json`; zero console errors.
 - **Gate results**: `node --test tests` 91/91 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 29 — Modal accessibility: isolate the shell
+
+- **Dead end (recorded, no change)**: 390x844 result-card layout with the Copy fallback and Save failure
+  open together. The card measured 44..800 inside an 844px veil, `scrollWidth: 390`, and all
+  panels/actions/status were visible; at 390x667 the card top stayed visible and the veil
+  scrolled, so no overflow fix was warranted. Evidence:
+  `shots/afterimage/cycle29/dead-end-layout-390x844.json` / `.png` and
+  `dead-end-layout-390x667.json` / `.png`.
+- **Area**: modal accessibility / shell isolation (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics, blocked-best honesty, blocked-daily honesty,
+  blocked-profile honesty, timer readability, lives readability, mobile labels, modal shell
+  isolation).
+- **Defect (reproduced)**: the accessibility tree still exposed the background brand link,
+  `SOUND ON`, timer and status line while the menu/result dialog was open, even though keyboard
+  Tab was trapped. The before AX log lists those nodes; a screen reader's browse mode could
+  leave the dialog.
+- **Files**: `game.js` (`setShellInert` on menu/result/play), `tests/harness.js` (DOM stubs),
+  `tests/web-shell.test.js` (failing-first shell contract), `sw.js` + `tests/pwa.test.js`
+  (cache v33), `README.md` (accessibility note).
+- **Fix**: menu, result and boot set `.shell` `inert` + `aria-hidden="true"`; starting a run
+  removes both. Focus is moved into the dialog before the shell is hidden.
+- **Evidence** (same 1440x900 menu/result states; visual parity plus AX tree):
+  - menu screenshots are byte-identical before/after (`before-menu.png` / `after-menu.png`,
+    sha256 7A68D4550C809E3C…) because inertness is not visual.
+  - before AX includes `link AFTERIMAGE VISUAL PERCEPTION`, `button SOUND ON`, `timer` and
+    `Pick a mode to begin`; after both menu and result AX lists are empty (`menuAx: []`,
+    `resultAx: []`). Logs: `before-log.json` / `after-log.json`.
+- **Played run**: boot menu `shellInert: true`; Enter starts Daily with `shellInert: false`;
+  three misses produce a result with `shellInert: true` and focus on `#over`; Change mode
+  returns to a menu with `shellInert: true`. Zero console errors.
+- **Gate results**: `node --test tests` 92/92 pass; `python aikit.py check afterimage` 5/5 pass.
