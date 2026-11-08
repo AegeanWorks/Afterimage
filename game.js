@@ -1295,7 +1295,9 @@ function timeout() {
 function advance() {
   state.level += 1;
   if (state.level >= state.levels.length) {
-    finish(true);
+    // Passing the last board is only a win when it was actually cleared; a
+    // timeout on the final board advances the level with a red board.
+    finish(runWon(state.cleared, state.levels.length));
     return;
   }
   nextLevel();
@@ -1410,6 +1412,13 @@ function decidedOutcome(phase, pending) {
   if (pending !== "win" && pending !== "loss") return "";
   if (phase !== "pause" && phase !== "reveal") return "";
   return pending;
+}
+
+function runWon(cleared, total) {
+  const done = Number(cleared);
+  const count = Number(total);
+  if (!Number.isInteger(done) || !Number.isInteger(count) || count <= 0) return false;
+  return done === count;
 }
 
 function timeoutOutcome(timed, lives) {

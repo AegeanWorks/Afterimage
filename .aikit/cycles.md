@@ -317,6 +317,9 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   - `node "$env:TEMP\afterimage-tools\timeout-quit-probe.mjs" before` / `after` (cycle 35);
     forces a 250ms clock, waits for the non-fatal reveal, then quits.
     `node "$env:TEMP\afterimage-tools\fatal-timeout-probe.mjs" after` covers Nightmare's last life.
+  - `node "$env:TEMP\afterimage-tools\final-timeout-probe.mjs" before` / `after` (cycle 36);
+    clears nine daily boards, forces a 200ms clock on the final board, then waits for the result.
+    The same cycle's audit used `audit-probe.mjs`, `sweep-probe.mjs` and `streak-hint-probe.mjs`.
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
@@ -1077,3 +1080,38 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   its result with the red board intact; zero console errors on both builds. Logs
   `before-log.json` / `after-log.json` / `after-fatal-log.json`.
 - **Gate results**: `node --test tests` 101/101 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 36 — Result integrity: a final-board timeout is not a win
+
+- **Dead end (recorded, no change)**: hint-gated freeze, all-skip Zen, the streak-earned daily
+  bonus hint, and a full five-mode sweep. A one-hint perfect daily recorded `hintsUsed: 1`,
+  `freezes: 0` and no freeze line; all-skip Zen ended `Run finished.` with `cleared: 0`,
+  `wins.zen: 0` and no best; the daily bonus hint appeared only from streak 3 (1 → 2 hints) and
+  stayed 2 at streak 7; Blitz/Nightmare/Onslaught/Focus/Daily all cleared with the expected
+  badges (surge on 3/7, 3, 1/4/6; final on the last board), ratings, bests, wins and menu reload.
+  Evidence: `shots/afterimage/cycle36/audit-log.json`, `streak-log.json`,
+  `sweep-sweep-log.json` and the `sweep-*-result.png` frames.
+- **Area**: result integrity / run completion (covered: all prior areas plus final-board outcome).
+- **Defect (reproduced)**: `timeout()` pushes its red board and then calls `advance()`; `advance()`
+  bumped the level and called `finish(true)` whenever the level passed the last board. Timing out
+  on the final board therefore ended the run as a win. The before probe cleared nine Daily boards,
+  then timed out on board 10: the result read `DAILY #312 · COMPLETE`, `won: true`, `9/10`, with
+  `NEW DAILY BEST`, `wins.daily: 1` and `daily.streak: 1` — all minted from an uncleared board.
+- **Files**: `game.js` (pure `runWon(cleared, total)`; `advance` finishes on it), `tests/harness.js`
+  (export), `tests/game.test.js` (failing-first win-derivation test), `tests/web-shell.test.js`
+  (advance contract), `sw.js` + `tests/pwa.test.js` (cache v39), `README.md` (completion note).
+- **Fix**: `advance` finishes with `runWon(state.cleared, state.levels.length)` instead of a
+  hardcoded `true`, so the level overflow is only a win when every board was cleared. A cleared
+  final board still wins; a timed-out or wrong-pick final board ends as `RUN OVER`.
+- **Visual proof** (same 1440x900 viewport, same seeded Daily #312, nine clears then a forced
+  200ms final clock):
+  - before: `shots/afterimage/cycle36/before-final-timeout-result.png` (sha256 A59811EE44C9C692…)
+    reads `DAILY #312 · COMPLETE` with `NEW DAILY BEST` and a red final strip cell.
+  - after: `shots/afterimage/cycle36/after-final-timeout-result.png` (sha256 084222FDB2AE266F…)
+    reads `DAILY #312 · RUN OVER`, `CLEAR VISION`, no best badge, and the reloaded menu keeps
+    `Day one` with `daily.result.won: false`.
+- **Played run**: the reopened sweep still wins all five modes at full clear (`Fast eyes.`,
+  `Nightmare cleared.`, `Onslaught cleared.`, `Nice eyes.`, `Daily cleared.`), so the fix only
+  changes the uncleared-final case. Logs `before-final-timeout-log.json` /
+  `after-final-timeout-log.json` / `sweep-after-sweep-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 103/103 pass; `python aikit.py check afterimage` 5/5 pass.

@@ -221,6 +221,15 @@ test('quitting a decided run lands on its result instead of the menu', () => {
   );
 });
 
+test('advancing past the last board only wins when it was cleared', () => {
+  const jsText = js();
+  assert.ok(jsText.includes('function runWon('), 'game.js must derive the win from cleared vs total');
+  const advanceBody = /function advance\(\) \{([\s\S]*?)\n\}/.exec(jsText);
+  assert.ok(advanceBody, 'game.js must keep advance');
+  assert.ok(advanceBody[1].includes('runWon('), 'advance must not assume a win when the level overflows');
+  assert.ok(!/finish\(true\)/.test(advanceBody[1]), 'advance must not hardcode a winning finish');
+});
+
 test('a hide that spans pause or reveal charges the next timed board', () => {
   const jsText = js();
   assert.ok(jsText.includes('function tracksHiddenTime('), 'game.js must decide which active phases count as hidden time');

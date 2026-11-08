@@ -205,6 +205,20 @@ test('only a timeout that spends the last life decides the run', () => {
   assert.strictEqual(timeoutOutcome(undefined, undefined), '');
 });
 
+test('a finished run is only won when every board was cleared', () => {
+  const { runWon } = createHarness();
+
+  assert.strictEqual(runWon(10, 10), true);
+  assert.strictEqual(runWon(9, 10), false);
+  assert.strictEqual(runWon(0, 10), false);
+  assert.strictEqual(runWon(0, 8), false);
+  assert.strictEqual(runWon(8, 8), true);
+  assert.strictEqual(runWon(10, 10), true);
+  assert.strictEqual(runWon(11, 10), false);
+  assert.strictEqual(runWon(null, 10), false);
+  assert.strictEqual(runWon(10, undefined), false);
+});
+
 test('a rejected write is not claimed as persisted', () => {
   let deny = false;
   const storage = {
