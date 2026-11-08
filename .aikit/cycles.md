@@ -874,3 +874,24 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   three misses produce a result with `shellInert: true` and focus on `#over`; Change mode
   returns to a menu with `shellInert: true`. Zero console errors.
 - **Gate results**: `node --test tests` 92/92 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 30 — Performance audit: 10x10 Nightmare (zero findings)
+
+- **Area**: cold-start and frame health for the 10x10 final Nightmare board (covered: all prior
+  areas plus performance).
+- **Audit**: a scripted Nightmare run cleared seven boards and stopped on the final 10x10 rotate
+  board (100 tiles, 32s). Evidence frame:
+  `shots/afterimage/cycle30/before-nightmare-10x10.png` (sha256 5EABE8E93FC9C43E…).
+- **Measurements**:
+  - cold start from navigation to first playable board: 383ms (`cold-log.json`);
+  - 10x10 board ready 57ms after `enterAt`; 100 hit areas built;
+  - 2.5s steady sample: 151 frames, avg 16.56ms, p95 16.7ms, max 16.8ms, 0 frames over
+    50ms, 0 long tasks;
+  - TaskDuration +0.334s, ScriptDuration +0.063s, LayoutDuration +0.0003s over the sample.
+- **Finding**: no reproducible defect. The frame budget is healthy on the hardest board, so no
+  code or asset change was made. Logs: `perf-log.json` / `cold-log.json`.
+- **Played run**: Nightmare, seven scripted clears then the final 10x10 board; the run stayed
+  playable with the timer/readout and final-board badge intact; zero console errors.
+- **Gate results**: `node --test tests` 92/92 pass; `python aikit.py check afterimage` 5/5 pass.
+- **Stop condition**: this full cycle found zero verified improvements, so the continuous goal
+  is complete under its own rule.

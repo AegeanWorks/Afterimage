@@ -296,3 +296,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: Keyboard Tab was trapped inside the menu/result dialog, but the accessibility tree still exposed the background brand link, SOUND ON, timer and status line. Screen-reader browse mode could leave the dialog. The 390x844 result-card layout with both fallback panels was a dead end: it fit at 44..800 with `scrollWidth: 390`, and short 390x667 screens kept the card top visible and scrollable.
 - **Decision**: Add `setShellInert(value)`: menu, result and boot set `.shell` `inert` plus `aria-hidden="true"`; starting a run removes both. Focus moves into the dialog before the shell is hidden. Bump the service-worker cache to `afterimage-v33`.
 - **Consequences**: 92 tests pass (91 prior + 1 failing-first shell contract). The menu and result AX trees no longer contain the background link, sound button, timer or status; play restores `shellInert: false`; visuals remain byte-identical at the menu. Evidence is under `shots/afterimage/cycle29/`; `python aikit.py check afterimage` green.
+
+### ADR-043: Leave the healthy 10x10 Nightmare render path unchanged
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: The final Nightmare board renders 100 gradient tiles per frame. A cold-start/frame-health audit measured 383ms to first playable board, 57ms for the 10x10 board build, and 151 frames over 2.5s at 16.56ms average (p95 16.7ms, max 16.8ms), with zero frames over 50ms and zero long tasks.
+- **Decision**: Do not optimize the per-frame gradient path; it remains within the frame budget on the hardest board. Revisit only if a future measurement shows a reproducible regression.
+- **Consequences**: No code or asset changes; 92 tests and 5/5 gates stay green. The audit evidence is under `shots/afterimage/cycle30/`. This zero-finding cycle satisfies the continuous goal's stop condition.
