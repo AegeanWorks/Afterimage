@@ -214,7 +214,11 @@ test('quitting a decided run lands on its result instead of the menu', () => {
   const pickBody = jsText.slice(jsText.indexOf('function pick('), jsText.indexOf('function timeout('));
   assert.ok(pickBody.includes('state.pendingOutcome'), 'pick must mark a last-board win or a fatal miss');
   const timeoutBody = jsText.slice(jsText.indexOf('function timeout('), jsText.indexOf('function advance('));
-  assert.ok(timeoutBody.includes('state.pendingOutcome'), 'timeout must mark a lost run');
+  assert.ok(timeoutBody.includes('timeoutOutcome('), 'a timeout must decide only when the last life is spent');
+  assert.ok(
+    !/state\.pendingOutcome = "loss";/.test(timeoutBody),
+    'a non-fatal timeout must not mark the run as decided'
+  );
 });
 
 test('a hide that spans pause or reveal charges the next timed board', () => {

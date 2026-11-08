@@ -1269,12 +1269,14 @@ function timeout() {
   state.typeMisses[missType] = (state.typeMisses[missType] || 0) + 1;
   state.reveal = true;
   state.hover = -1;
-  state.pendingOutcome = "loss";
   ui.cells.classList.add("off");
   soundTimeout();
 
   if (state.timed) {
     state.lives = Math.max(0, state.lives - 1);
+    // Only a timeout that spends the last life ends the run; a life left means
+    // the board is still live, so quitting it stays an abandoned run.
+    state.pendingOutcome = timeoutOutcome(state.timed, state.lives);
     say(state.lives > 0 ? "Time — here it was" : "Time — out of focus");
   }
   renderHud();
@@ -1408,6 +1410,13 @@ function decidedOutcome(phase, pending) {
   if (pending !== "win" && pending !== "loss") return "";
   if (phase !== "pause" && phase !== "reveal") return "";
   return pending;
+}
+
+function timeoutOutcome(timed, lives) {
+  if (!timed) return "";
+  const left = Number(lives);
+  if (!Number.isFinite(left)) return "";
+  return left <= 0 ? "loss" : "";
 }
 
 function focusedCellIndex(rawIndex, cellCount) {

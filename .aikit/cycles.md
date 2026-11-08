@@ -314,6 +314,9 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   - `node "$env:TEMP\afterimage-tools\write-honesty-probe.mjs" before` / `after` (cycle 34),
     plus `node "$env:TEMP\afterimage-tools\write-honesty-normal.mjs" after`; the denied mode
     replaces `localStorage.setItem` with a `QuotaExceededError` throw.
+  - `node "$env:TEMP\afterimage-tools\timeout-quit-probe.mjs" before` / `after` (cycle 35);
+    forces a 250ms clock, waits for the non-fatal reveal, then quits.
+    `node "$env:TEMP\afterimage-tools\fatal-timeout-probe.mjs" after` covers Nightmare's last life.
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
@@ -1045,3 +1048,32 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   (`phase: play`, `timer: 15s`) and cleared its first board (270, streak 1). Log:
   `final-pwa-log.json`; frame `final-offline-play.png`.
 - **Gate results**: `node --test tests` 100/100 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 35 — Quit run: only a lost life decides the run
+
+- **Area**: abandoned-run accounting / regression from cycle 32 (covered: all prior areas plus
+  non-fatal timeout quits).
+- **Defect (reproduced)**: cycle 32 marked every timeout as a decided loss, but a timeout that
+  leaves a life keeps the run alive. Quitting inside that reveal therefore recorded a `FOCUS LOST`
+  result (0/8 or 0/10) instead of abandoning the attempt. The before probe shows a Focus timeout
+  at `lives: 2` with `pending: "loss"`; after Quit the result screen read `won: false,
+  cleared: 0` rather than returning to the menu.
+- **Files**: `game.js` (pure `timeoutOutcome(timed, lives)`; `timeout` marks the run only when the
+  last life is spent), `tests/harness.js` (export), `tests/game.test.js` (failing-first outcome
+  test), `tests/web-shell.test.js` (the non-fatal path must not mark a loss), `sw.js` +
+  `tests/pwa.test.js` (cache v38), `README.md` (Quit run note).
+- **Fix**: `timeout` assigns `state.pendingOutcome = timeoutOutcome(state.timed, state.lives)`
+  after dropping the life, so only `lives <= 0` marks a loss. A timeout with a life left leaves
+  the outcome empty and `quitRun` falls through to the abandoned-run totals.
+- **Visual proof** (same 1440x900 viewport, same Focus start, same forced 250ms clock, quit inside
+  the reveal):
+  - before: `shots/afterimage/cycle35/before-after-quit.png` shows the `FOCUS LOST` result card
+    (`won: false, cleared: 0`) for a run that still had two lives.
+  - after: `shots/afterimage/cycle35/after-after-quit.png` shows the menu with
+    `EYE LV 1 · 0 clears · 1 run`, the abandoned attempt kept and no result card.
+  - fatal parity: `after-fatal-reveal.png` / `after-fatal-result.png` on Nightmare (1 life) still
+    read `FOCUS LOST`, `0/8`, `🟥⬛⬛⬛⬛⬛⬛⬛`, so cycle 32's guarantee holds.
+- **Played run**: the non-fatal path quits to the menu and keeps one run; the fatal path reaches
+  its result with the red board intact; zero console errors on both builds. Logs
+  `before-log.json` / `after-log.json` / `after-fatal-log.json`.
+- **Gate results**: `node --test tests` 101/101 pass; `python aikit.py check afterimage` 5/5 pass.

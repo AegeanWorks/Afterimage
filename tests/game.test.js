@@ -194,6 +194,17 @@ test('a decided run is recognised inside its closing beat', () => {
   assert.strictEqual(decidedOutcome(undefined, undefined), '');
 });
 
+test('only a timeout that spends the last life decides the run', () => {
+  const { timeoutOutcome } = createHarness();
+
+  assert.strictEqual(timeoutOutcome(true, 0), 'loss');
+  assert.strictEqual(timeoutOutcome(true, 2), '');
+  assert.strictEqual(timeoutOutcome(true, 1), '');
+  assert.strictEqual(timeoutOutcome(false, 0), '');
+  assert.strictEqual(timeoutOutcome(true, -1), 'loss');
+  assert.strictEqual(timeoutOutcome(undefined, undefined), '');
+});
+
 test('a rejected write is not claimed as persisted', () => {
   let deny = false;
   const storage = {
