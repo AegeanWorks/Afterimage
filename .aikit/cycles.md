@@ -677,3 +677,38 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   result: null}`, the raw version-2 daily stayed identical, and the reloaded menu showed a
   fresh daily. Logs: `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 84/84 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 24 — Profile honesty: no unpersisted freeze/clear claims
+
+- **Dead end (recorded, no change)**: daily streak-freeze earn/consume end to end. A win after
+  yesterday advanced the streak and armed one freeze; a win after one missed day with a
+  non-perfect run consumed the freeze and advanced the streak; a gap of two missed days reset
+  the streak and kept the freeze. Evidence: `shots/afterimage/cycle24/dead-end-freeze-audit.json`.
+- **Area**: blocked profile-save honesty (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics, blocked-best honesty, blocked-daily honesty,
+  blocked-profile honesty).
+- **Defect (reproduced)**: with a future-format `afterimage.profile`, a perfect daily win
+  added “Streak freeze earned — one missed day forgiven. First Daily clear!” and in-memory
+  `freezes:1`/`wins.daily:1`, while the raw profile stayed version 2; reloading lost all of it.
+- **Files**: `game.js` (blocked profile guards in `finish`, `quitRun`, `useHint`, `earnFreeze`),
+  `tests/game.test.js` (failing-first blocked-freeze test), `sw.js` + `tests/pwa.test.js`
+  (cache v28), `README.md` (save note).
+- **Fix**: a blocked profile is read-only for the session. `finish` skips profile
+  runs/clears/bestStreak/wins updates and saves; `quitRun`, `useHint` and `earnFreeze` also
+  refuse to mutate a blocked profile. The daily save remains independent and still records its
+  own result.
+- **Visual proof** (same future profile, same perfect daily win at 5,580, same 1440x900
+  viewport):
+  - before: `shots/afterimage/cycle24/before-daily-win.png` (sha256 A83D96F27E2ACAF7…)
+    includes the freeze-earned and first-clear sentences.
+  - after: `shots/afterimage/cycle24/after-daily-win.png` (sha256 D22B5151C8A1DBE3…)
+    has neither sentence; the daily result itself remains.
+- **Played run**: full Daily 10/10 at 100% for 5,580. Before, in-memory profile became
+  `{runs:1, clears:10, freezes:1, wins.daily:1}` while raw stayed version 2; after it stayed
+  all zeros, raw stayed version 2, and the daily still saved `{last: 2026-11-08, streak: 3,
+  result: 5580}`. Reloaded menu showed the 3-day streak without a freeze. Logs:
+  `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 85/85 pass; `python aikit.py check afterimage` 5/5 pass.

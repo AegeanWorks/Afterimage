@@ -655,6 +655,26 @@ test('daily streak advances only when the daily is completed', () => {
   assert.strictEqual(first.freezes, 0);
 });
 
+test('blocked profiles cannot earn or claim a freeze', () => {
+  const raw = JSON.stringify({
+    version: 2, runs: 3, clears: 20, bestStreak: 3, hintsUsed: 0, freezes: 0,
+    wins: { focus: 0, blitz: 0, zen: 0, nightmare: 0, daily: 3, onslaught: 0 }
+  });
+  const map = new Map([['afterimage.profile', raw]]);
+  const storage = {
+    getItem: (key) => (map.has(key) ? map.get(key) : null),
+    setItem: (key, value) => map.set(key, value),
+    removeItem: (key) => map.delete(key),
+    clear: () => map.clear()
+  };
+  const h = createHarness({ storage });
+
+  assert.strictEqual(h.isStorageBlocked('afterimage.profile'), true);
+  assert.strictEqual(h.earnFreeze(true, 100), false, 'a blocked profile cannot earn a freeze');
+  assert.strictEqual(h.state.profile.freezes, 0, 'no unpersisted freeze is armed');
+  assert.strictEqual(map.get('afterimage.profile'), raw, 'the future profile stays byte-identical');
+});
+
 test('earnFreeze grants one freeze for a perfect daily win', () => {
   const first = createHarness();
 

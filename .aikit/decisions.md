@@ -254,3 +254,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: With a future-format `afterimage.daily`, a full daily win showed `NEW DAILY BEST` and updated the in-memory daily result/streak while the raw version-2 file stayed untouched. Reloading lost the result, so the game had claimed daily progress it could not persist.
 - **Decision**: `recordDaily` returns early with `{isBest:false}` when `afterimage.daily` is blocked, leaving daily last/streak/result untouched and showing no daily-best callout. The future save is never written. Bump the service-worker cache to `afterimage-v27`.
 - **Consequences**: 84 tests pass (83 prior + 1 failing-first test). The deterministic daily win at 5,580 hides `NEW DAILY BEST`, leaves `state.daily` at its defaults, keeps the version-2 raw file byte-identical, and reloads to a fresh daily. Evidence is under `shots/afterimage/cycle23/`; `python aikit.py check afterimage` green.
+
+### ADR-037: A blocked profile save is read-only for the session
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: With a future-format `afterimage.profile`, a perfect daily win added “Streak freeze earned” and “First Daily clear!” and mutated in-memory freezes/runs/wins while the raw profile stayed version 2. Reloading lost the claims. The freeze earn/consume end-to-end audit itself was a dead end; the defect was the blocked-profile claim.
+- **Decision**: Gate profile mutations on the key being writable: `finish` skips runs/clears/bestStreak/wins updates and the save, `quitRun` skips abandoned-run totals, `useHint` skips hintsUsed, and `earnFreeze` refuses before arming. The daily and bests saves remain independent. Bump the service-worker cache to `afterimage-v28`.
+- **Consequences**: 85 tests pass (84 prior + 1 failing-first blocked-freeze test). With a version-2 profile, the perfect daily win hides the freeze and first-clear sentences, leaves the profile at defaults, keeps the raw profile byte-identical, and still records the valid daily result and 3-day streak. Evidence is under `shots/afterimage/cycle24/`; `python aikit.py check afterimage` green.

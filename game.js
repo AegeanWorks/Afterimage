@@ -1434,6 +1434,7 @@ function recordDaily(won, accuracy, rating) {
 }
 
 function earnFreeze(won, accuracy) {
+  if (isStorageBlocked(PROFILE_KEY)) return false;
   if (!won || accuracy < 100 || state.profile.freezes > 0) return false;
   state.profile.freezes = 1;
   saveProfile();
@@ -1449,8 +1450,10 @@ function useHint() {
   state.hintActive = 1;
   state.levelMistakes += 1;
   state.streak = 0;
-  state.profile.hintsUsed += 1;
-  saveProfile();
+  if (!isStorageBlocked(PROFILE_KEY)) {
+    state.profile.hintsUsed += 1;
+    saveProfile();
+  }
   soundHint();
   say("Hint — follow the pulse. Streak reset, but the board is still scorable.");
   renderHud();
@@ -1475,15 +1478,17 @@ function finish(won) {
   if (ui.final) ui.final.hidden = true;
   if (ui.stage) ui.stage.classList.remove("finale");
 
-  state.profile.runs += 1;
-  state.profile.clears += state.cleared;
-  state.profile.bestStreak = Math.max(state.profile.bestStreak, state.bestStreak);
   let firstClear = false;
-  if (won && state.cleared > 0) {
-    state.profile.wins[state.mode] = (state.profile.wins[state.mode] || 0) + 1;
-    firstClear = state.profile.wins[state.mode] === 1;
+  if (!isStorageBlocked(PROFILE_KEY)) {
+    state.profile.runs += 1;
+    state.profile.clears += state.cleared;
+    state.profile.bestStreak = Math.max(state.profile.bestStreak, state.bestStreak);
+    if (won && state.cleared > 0) {
+      state.profile.wins[state.mode] = (state.profile.wins[state.mode] || 0) + 1;
+      firstClear = state.profile.wins[state.mode] === 1;
+    }
+    saveProfile();
   }
-  saveProfile();
 
   const total = state.levels.length;
   const attempts = Math.max(1, state.attempts);
@@ -1590,7 +1595,7 @@ function finish(won) {
 }
 
 function quitRun() {
-  if (state.phase === "play" || state.phase === "pause" || state.phase === "reveal") {
+  if (!isStorageBlocked(PROFILE_KEY) && (state.phase === "play" || state.phase === "pause" || state.phase === "reveal")) {
     const totals = abandonedTotals(
       state.profile.runs,
       state.profile.clears,
