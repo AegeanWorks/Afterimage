@@ -291,7 +291,9 @@ input sequence from the HEAD build (before) and the working-tree build (after).
     seeds version-2 profile, wins the daily, then reloads. The freeze earn/consume dead end used
     `node "$env:TEMP\afterimage-tools\freeze-audit.mjs"`.
   - `node "$env:TEMP\afterimage-tools\timer-label-probe.mjs" before` / `after` (cycle 25);
-    forces 12,000ms, crops the timer, advances a second, then drops a life with a wrong pick.`
+    forces 12,000ms, crops the timer, advances a second, then drops a life with a wrong pick.
+  - `node "$env:TEMP\afterimage-tools\lives-hud-probe.mjs" before2` / `after` (cycle 26);
+    fixed HUD crop at three lives, then a wrong pick at two lives.`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
