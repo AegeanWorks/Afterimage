@@ -301,7 +301,9 @@ input sequence from the HEAD build (before) and the working-tree build (after).
     `after320 320` (cycle 28); the same probe measures the restored Focus label and stress fit.
   - `node "$env:TEMP\afterimage-tools\mobile-result-panels.mjs" layout 390 844` / `short 390 667`
     (cycle 29 layout dead end) and `node "$env:TEMP\afterimage-tools\inert-probe.mjs" before` /
-    `after` (cycle 29 AX isolation).`
+    `after` (cycle 29 AX isolation).
+  - `node "$env:TEMP\afterimage-tools\nightmare-perf.mjs" before` and
+    `node "$env:TEMP\afterimage-tools\nightmare-cold.mjs"` (cycle 30 10x10 audit).`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
