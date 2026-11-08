@@ -159,7 +159,8 @@ afterimage/
 ├── index.html                <- game markup, HUD and modal templates
 ├── manifest.json             <- Web App Manifest for PWA installation
 ├── pwa.js                    <- standalone service-worker registration
-├── live/pwa.js               <- static no-op used by the AegeanWorks live build
+├── live/                     <- overrides for the hosted AegeanWorks build
+│   └── pwa.js                <- static no-op that replaces the worker registration
 ├── styles.css                <- responsive styling and layout
 ├── sw.js                     <- service worker for offline shell caching
 ├── tests/                    <- automated behavioral and regression tests

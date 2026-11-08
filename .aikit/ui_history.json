@@ -1,0 +1,16 @@
+[
+  {
+    "schema": 1,
+    "surface": "app",
+    "baseline_commit": "64677e9e82d7858480fc8a72f7fd785723490034",
+    "contract_hash": "b661e204809abd48d2cb2fb082b5a2a4de97aacbe1bd932d043c7d5949409ce3",
+    "started_at": 1794108773.5975854,
+    "finished_at": 1794108793.1021276,
+    "strikes": 0,
+    "reviewer": "opencode:deepseek-v4.1-flash (browser run: menu + Zen board, no console errors)",
+    "allowed_removals": [],
+    "final_snapshot_digest": "",
+    "final_snapshot_entries": 0,
+    "surface_digest": "5be90c6a9f8dda9395532282c4510eba71f73b80cfa0ced10d9b8892f2a7ae72"
+  }
+]
