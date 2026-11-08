@@ -180,6 +180,37 @@ test('visibility handler does not credit hidden time', () => {
   assert.ok(src.includes('hiddenAt != null'), 'hidden restore must use null-safe check, not truthiness');
 });
 
+test('hidden time spans the pause and reveal transitions', () => {
+  const { tracksHiddenTime, hiddenReturn } = createHarness();
+
+  assert.strictEqual(tracksHiddenTime(true, 'play'), true);
+  assert.strictEqual(tracksHiddenTime(true, 'pause'), true);
+  assert.strictEqual(tracksHiddenTime(true, 'reveal'), true);
+  assert.strictEqual(tracksHiddenTime(true, 'menu'), false);
+  assert.strictEqual(tracksHiddenTime(true, 'over'), false);
+  assert.strictEqual(tracksHiddenTime(false, 'play'), false);
+
+  const visible = hiddenReturn(15000, 3700, true, 'play');
+  assert.strictEqual(visible.remaining, 11300);
+  assert.strictEqual(visible.pending, 0);
+
+  const paused = hiddenReturn(15000, 3700, true, 'pause');
+  assert.strictEqual(paused.remaining, 15000);
+  assert.strictEqual(paused.pending, 3700);
+
+  const revealed = hiddenReturn(15000, 3700, true, 'reveal');
+  assert.strictEqual(revealed.remaining, 15000);
+  assert.strictEqual(revealed.pending, 3700);
+
+  const untimed = hiddenReturn(15000, 3700, false, 'play');
+  assert.strictEqual(untimed.remaining, 15000);
+  assert.strictEqual(untimed.pending, 0);
+
+  const idle = hiddenReturn(15000, 0, true, 'pause');
+  assert.strictEqual(idle.remaining, 15000);
+  assert.strictEqual(idle.pending, 0);
+});
+
 test('isValidDateKey accepts real calendar dates only', () => {
   const { isValidDateKey } = createHarness();
 

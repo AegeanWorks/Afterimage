@@ -1,56 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle30-perf-audit",
+    "task_id": "afterimage-cycle31-hidden-pause",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794101809.1899178,
-    "owner": "opencode:deepseek-v4.1-flash",
-    "started_by": "opencode:deepseek-v4.1-flash",
+    "updated_at": 1794154188.007128,
+    "owner": "commandcode:goal",
+    "started_by": "commandcode:goal",
     "continuations": [],
-    "completed_at": 1794101840.2230387
+    "completed_at": 1794154191.134379
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle24-blocked-profile",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Blocked profile guards, perfect-daily freeze/first-clear check, cache v28 and freeze-audit dead end verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794097367.9418073,
-      "timestamp_str": "2026-11-08 03:22:47",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle24-blocked-profile",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle24-blocked-profile' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794097415.977354,
-      "timestamp_str": "2026-11-08 03:23:35",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle25-timer-label",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Add a visible seconds readout and live accessible value to the timer bar",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794097929.472896,
-      "timestamp_str": "2026-11-08 03:32:09",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "The only clock is a 3px bar with aria-label 'Time remaining' and no value; players cannot read exact seconds and screen readers cannot hear the remaining time",
-        "benefits": "A right-aligned 12s-style readout updates once per second, and the timer's aria-label carries the current value for assistive tech",
-        "risks": "contract: timer visual/ARIA only, no timing/score changes; dependency: none; concurrency: none; state: data-time updated only when the whole second changes",
-        "mitigation": "Failing timerLabel and shell contract tests; same Focus 12s crop before/after; played run checks 12s-to-11s and a wrong-pick life loss; full gates"
-      },
-      "plan_digest": "ff5ac383b812e1c46e61fb9a35e367c5aa779262d6e174a1a746160d2740f5ef"
-    },
     {
       "task_id": "afterimage-cycle25-timer-label",
       "phase": "phase 4",
@@ -266,6 +227,45 @@
       "timestamp": 1794101840.2230413,
       "timestamp_str": "2026-11-08 04:37:20",
       "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle31-hidden-pause",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/2] Charge wall-clock hides that span pause/reveal into the next timed board",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794153998.5584078,
+      "timestamp_str": "2026-11-08 19:06:38",
+      "agent": "commandcode:goal",
+      "impact_assessment": {
+        "why": "A timed run that hides during the 680ms post-correct pause or the 1150ms timeout reveal starts the next board while hidden; the hide handler records hiddenAt only in phase play, so returning charges nothing. Reproduced: 3.7s hidden, next board still 15000ms, full run scored 5580.",
+        "benefits": "Hiding at any point in an active timed run charges wall-clock time to the board the player returns to, closing the pause/reveal clock dodge while menu/result hides stay free.",
+        "risks": "contract: timer charging only, no scoring/script/storage changes; dependency: none; concurrency: the pending charge applies once on the next play frame; state: two transient run fields reset on start/quit/result.",
+        "mitigation": "Failing-first pure and shell-contract tests; real Chromium probe with 3.0s hidden during the pause; same 10-board played run; full gates."
+      },
+      "plan_digest": "d4c94294808ed3cadea03e5455b1e079fa02ea6e75ee3c363d7f05439ff37cd2"
+    },
+    {
+      "task_id": "afterimage-cycle31-hidden-pause",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[2/2] Pause/reveal hidden charge, 15s-to-11s probe, 10/10 played run, cache v34 and 5/5 gates (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794154188.007128,
+      "timestamp_str": "2026-11-08 19:09:48",
+      "agent": "commandcode:goal"
+    },
+    {
+      "task_id": "afterimage-cycle31-hidden-pause",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle31-hidden-pause' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794154191.1343813,
+      "timestamp_str": "2026-11-08 19:09:51",
+      "agent": "commandcode:goal"
     }
   ]
 }

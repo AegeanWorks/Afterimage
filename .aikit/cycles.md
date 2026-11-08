@@ -304,6 +304,8 @@ input sequence from the HEAD build (before) and the working-tree build (after).
     `after` (cycle 29 AX isolation).
   - `node "$env:TEMP\afterimage-tools\nightmare-perf.mjs" before` and
     `node "$env:TEMP\afterimage-tools\nightmare-cold.mjs"` (cycle 30 10x10 audit).`
+  - `node "$env:TEMP\afterimage-tools\hidden-pause-probe.mjs" before` / `after` (cycle 31);
+    hides during the 680ms post-correct pause, waits 3s, returns, then clears the run.
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
@@ -897,3 +899,37 @@ input sequence from the HEAD build (before) and the working-tree build (after).
 - **Gate results**: `node --test tests` 92/92 pass; `python aikit.py check afterimage` 5/5 pass.
 - **Stop condition**: this full cycle found zero verified improvements, so the continuous goal
   is complete under its own rule.
+
+## Cycle 31 — Timed runs: a hide through the pause cannot freeze the next clock
+
+- **Area**: timed-run clock integrity / hidden-tab charging (covered: all prior areas plus
+  pause/reveal hidden time).
+- **Defect (reproduced)**: the hide handler recorded `hiddenAt` only while the phase was
+  `play`. A hide that began during the 680ms post-correct pause (or the 1150ms timeout reveal)
+  therefore started the next board while hidden with no hidden start recorded; returning
+  charged only the first visible frame. The before probe hid for 3,705ms during the pause, then
+  read `remaining: 15000`, `label: "15s"`, and `chargedMs: 206` after returning; the full Focus
+  run still scored 5,580.
+- **Files**: `game.js` (transient `pendingHidden`, pure `tracksHiddenTime`/`hiddenReturn`, pending
+  charge in `nextLevel`, resets on start/finish/menu), `tests/harness.js` (exports),
+  `tests/game.test.js` (failing-first phase/charge test), `tests/web-shell.test.js`
+  (hide-charge contract), `sw.js` + `tests/pwa.test.js` (cache v34), `README.md` (hidden-time
+  note).
+- **Fix**: the hide path now records hidden time in `play`, `pause` and `reveal`. Returning
+  during play charges immediately; returning during pause/reveal carries the interval as
+  `pendingHidden`, which the next board subtracts from its clock. Hides on the menu or result
+  stay free, and start/finish/menu clear the transient fields.
+- **Visual proof** (same 1440x900 viewport, same `?mode=focus` start, same correct first pick,
+  hide during the 680ms pause, 3.0s hidden, then return, timer crop):
+  - before: `shots/afterimage/cycle31/before-timer-visible.png` (sha256
+    3F28B0E05858C0C7…) shows `15S` and a full bar after returning; the 3.7s hidden interval
+    cost 206ms.
+  - after: `shots/afterimage/cycle31/after-timer-visible.png` (sha256 F8342318FD10EAAC…) shows
+    `11S` and a consumed bar; 4,138ms was charged end-to-end, including the hidden 3.7s.
+  - hidden-state pair: `before-timer-hidden.png` / `after-timer-hidden.png` are byte-identical
+    (sha256 B5CF9238008C2359…), both `15S`, proving the same mid-hide starting point.
+- **Played run**: the same scripted run cleared all 10 Focus boards at 100% (`Nice eyes.`,
+  EAGLE EYE) after the charge; the before run scored 5,580 with a full clock, the after run
+  5,540 with the 4.1s charge reflected in the speed bonus; zero console errors. Logs
+  `before-log.json` / `after-log.json`; frames `before-result.png` / `after-result.png`.
+- **Gate results**: `node --test tests` 95/95 pass; `python aikit.py check afterimage` 5/5 pass.

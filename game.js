@@ -468,6 +468,7 @@ const state = {
   hints: 1,
   hintsUsedRun: 0,
   hiddenAt: null,
+  pendingHidden: 0,
   slump: 0,
   paceCalled: false,
   perfectBoards: 0,
@@ -1020,6 +1021,7 @@ function startRun(mode) {
   state.hints = mode === "zen" ? 3 : 1 + (daily ? bonusHints(currentStreak()) : 0);
   state.hintsUsedRun = 0;
   state.hiddenAt = null;
+  state.pendingHidden = 0;
   state.paceCalled = false;
   state.slump = 0;
   state.perfectBoards = 0;
@@ -1065,6 +1067,10 @@ function nextLevel() {
   state.odd = state.data.odd;
   state.timeLimit = seconds * 1000;
   state.remaining = state.timeLimit;
+  if (state.pendingHidden > 0) {
+    state.remaining = hiddenPenalty(state.remaining, state.pendingHidden);
+    state.pendingHidden = 0;
+  }
   state.phase = "play";
   state.hover = -1;
   state.wrongFlash = -1;
@@ -1366,6 +1372,23 @@ function hiddenPenalty(remaining, hiddenMs) {
   return Math.max(0, remaining - hiddenMs);
 }
 
+function tracksHiddenTime(timed, phase) {
+  return Boolean(timed) && (phase === "play" || phase === "pause" || phase === "reveal");
+}
+
+function hiddenReturn(remaining, hiddenMs, timed, phase) {
+  const current = Number(remaining);
+  const safe = Number.isFinite(current) && current > 0 ? current : 0;
+  const hidden = Number(hiddenMs);
+  if (!tracksHiddenTime(timed, phase) || !(hidden > 0)) {
+    return { remaining: safe, pending: 0 };
+  }
+  if (phase === "play") {
+    return { remaining: hiddenPenalty(safe, hidden), pending: 0 };
+  }
+  return { remaining: safe, pending: hidden };
+}
+
 function easedDelta(def, ease) {
   if (!ease || ease <= 1) return def.delta;
   const caps = { hue: 40, light: 18, sat: 35, size: 25, rotate: 40 };
@@ -1518,6 +1541,8 @@ function useHint() {
 function finish(won) {
   state.runId += 1;
   state.phase = "over";
+  state.hiddenAt = null;
+  state.pendingHidden = 0;
   document.body.classList.remove("playing");
   ui.cells.classList.add("off");
   ui.hud.hidden = true;
@@ -1667,6 +1692,8 @@ function showMenu() {
   state.phase = "menu";
   state.data = null;
   state.result = null;
+  state.hiddenAt = null;
+  state.pendingHidden = 0;
   document.body.classList.remove("playing", "zen");
   ui.cells.classList.add("off");
   ui.veil.hidden = false;
@@ -2246,18 +2273,18 @@ ui.sound.addEventListener("click", () => {
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    if (state.phase === "play" && state.timed) state.hiddenAt = performance.now();
+    if (tracksHiddenTime(state.timed, state.phase)) state.hiddenAt = performance.now();
   } else {
     if (state.hiddenAt != null) {
       const hiddenMs = performance.now() - state.hiddenAt;
       state.hiddenAt = null;
-      if (state.phase === "play" && state.timed && hiddenMs > 0) {
-        state.remaining = hiddenPenalty(state.remaining, hiddenMs);
-        if (state.remaining <= 0) {
-          state.remaining = 0;
-          updateTimer();
-          timeout();
-        }
+      const charged = hiddenReturn(state.remaining, hiddenMs, state.timed, state.phase);
+      state.pendingHidden += charged.pending;
+      state.remaining = charged.remaining;
+      if (state.timed && state.phase === "play" && state.remaining <= 0) {
+        state.remaining = 0;
+        updateTimer();
+        timeout();
       }
     }
     state.lastFrame = performance.now();

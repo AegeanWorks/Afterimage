@@ -193,3 +193,18 @@ test('keyboard contract stays discoverable and canvas stays hidden from AT', () 
   assert.ok(htmlText.includes('id="board"') && htmlText.includes('aria-hidden="true"'), '#board canvas must be aria-hidden (cells are the interface)');
   assert.ok(htmlText.includes('id="cells"') && /id="cells"[^>]*aria-label=/.test(htmlText), '#cells group must carry an aria-label');
 });
+
+test('a hide that spans pause or reveal charges the next timed board', () => {
+  const jsText = js();
+  assert.ok(jsText.includes('function tracksHiddenTime('), 'game.js must decide which active phases count as hidden time');
+  assert.ok(jsText.includes('function hiddenReturn('), 'game.js must split immediate and pending hidden charges');
+  const hideHandler = jsText.slice(
+    jsText.indexOf('document.addEventListener("visibilitychange"'),
+    jsText.indexOf('let resizeTimer')
+  );
+  assert.ok(hideHandler.includes('tracksHiddenTime(state.timed, state.phase)'), 'the hide path must track play, pause and reveal');
+  assert.ok(hideHandler.includes('hiddenReturn(state.remaining, hiddenMs, state.timed, state.phase)'), 'the show path must charge the hidden interval');
+  assert.ok(hideHandler.includes('state.pendingHidden'), 'a pause/reveal hide must be carried to the next board');
+  const nextLevelBody = jsText.slice(jsText.indexOf('function nextLevel('), jsText.indexOf('function pick('));
+  assert.ok(nextLevelBody.includes('state.pendingHidden'), 'nextLevel must apply the pending hidden charge');
+});
