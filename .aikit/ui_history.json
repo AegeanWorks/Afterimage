@@ -12,5 +12,19 @@
     "final_snapshot_digest": "",
     "final_snapshot_entries": 0,
     "surface_digest": "5be90c6a9f8dda9395532282c4510eba71f73b80cfa0ced10d9b8892f2a7ae72"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "baseline_commit": "8555c6553bcab91ff43493859f98b17429d5b441",
+    "contract_hash": "b661e204809abd48d2cb2fb082b5a2a4de97aacbe1bd932d043c7d5949409ce3",
+    "started_at": 1794161415.4306595,
+    "finished_at": 1794161503.7112997,
+    "strikes": 0,
+    "reviewer": "commandcode:goal (Chromium run: menu + Focus 10/10 result, no console errors)",
+    "allowed_removals": [],
+    "final_snapshot_digest": "",
+    "final_snapshot_entries": 0,
+    "surface_digest": "9ae5c7aede15ac66630329b4c6ea4b5bed59c8bd4229dccd12b20f57ba94d5e7"
   }
 ]
