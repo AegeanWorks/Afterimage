@@ -275,3 +275,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: The Focus lives HUD was three unlabeled dots. Sighted players had to count 7px dots, and assistive technology received only the word “Focus” with no value.
 - **Decision**: Add pure `livesLabel(timed, lives, maxLives)`; render a visible numeric count beside the dots and set the dots' ARIA label to `N of M focus remaining` (or `No focus limit` in Zen). Update both in `renderHud`. Bump the service-worker cache to `afterimage-v30`.
 - **Consequences**: 89 tests pass (87 prior + 2 failing-first tests: label formatting and HUD contract). Focus starts at `Focus 3` / `3 of 3 focus remaining`; a wrong pick drops to `Focus 2` / `2 of 3 focus remaining` with two lit dots. Evidence is under `shots/afterimage/cycle26/`; `python aikit.py check afterimage` green.
+
+### ADR-040: Keep the Streak label on narrow HUDs
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: At 390x844 the HUD hid the Streak label, leaving a bare trailing `0` after the new lives count. Players could not tell which value the number represented.
+- **Decision**: Remove the narrow-screen rule that hides `.hud-item.streak .k`, so all five HUD values retain their labels on phones. No HUD logic or state changes; bump the service-worker cache to `afterimage-v31`.
+- **Consequences**: 90 tests pass (89 prior + 1 failing-first mobile label contract). The 390px normal and stressed (`12,345` / `12 BLAZE`) HUDs both stay at `scrollWidth: 390`; a played Focus clear shows `Streak 1` with no horizontal scroll. Evidence is under `shots/afterimage/cycle27/`; `python aikit.py check afterimage` green.

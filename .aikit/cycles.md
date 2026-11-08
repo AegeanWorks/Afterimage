@@ -775,3 +775,30 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   `Focus 2` / `2 of 3 focus remaining`; two dots remain lit. Crop
   `after-lives-2.png`; logs `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 89/89 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 27 — Mobile HUD: the streak keeps its label
+
+- **Area**: HUD readability / narrow-screen labels (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics, blocked-best honesty, blocked-daily honesty,
+  blocked-profile honesty, timer readability, lives readability, mobile streak label).
+- **Defect (reproduced)**: at 390x844 the HUD hid the Streak label, leaving a bare trailing
+  `0` after the new lives count. The before crop shows Mode/Level/Score, dots + `3`, then an
+  unlabeled `0`; players cannot tell which value it is.
+- **Files**: `styles.css` (remove the narrow-screen streak-label hide), `tests/web-shell.test.js`
+  (failing-first mobile label contract), `sw.js` + `tests/pwa.test.js` (cache v31), `README.md`
+  (mobile note).
+- **Fix**: the 640px breakpoint no longer hides `.hud-item.streak .k`; the existing HUD keeps
+  its five labels on phones.
+- **Visual proof** (same Focus start, same 390x844 viewport):
+  - before: `shots/afterimage/cycle27/before-hud-390.png` (sha256 5B3CF452C586E1C1…)
+    shows the unlabeled trailing `0`.
+  - after: `shots/afterimage/cycle27/after-hud-390.png` (sha256 80FF69AF2A7162B0…)
+    shows `Streak 0` at the same position, with `scrollWidth: 390`.
+- **Fit/played run**: normal and stressed (`12,345` score, `12 BLAZE` streak) both stay at
+  `scrollWidth: 390`; the stressed crop is `after-hud-stressed-390.png`. A played Focus clear
+  moves to level 02, 270 points, streak 1; the HUD reads `Streak 1` and the 390px view still
+  has no horizontal scroll. Log: `play.json`; zero console errors.
+- **Gate results**: `node --test tests` 90/90 pass; `python aikit.py check afterimage` 5/5 pass.
