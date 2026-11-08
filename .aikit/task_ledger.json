@@ -1,56 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle31-hidden-pause",
+    "task_id": "afterimage-cycle32-decided-quit",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794154188.007128,
+    "updated_at": 1794155267.562936,
     "owner": "commandcode:goal",
     "started_by": "commandcode:goal",
     "continuations": [],
-    "completed_at": 1794154191.134379
+    "completed_at": 1794155268.4430103
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle25-timer-label",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Timer readout/ARIA, same-12s crop pair, 12-to-11s played check, cache v29 and gates verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794098335.8915448,
-      "timestamp_str": "2026-11-08 03:38:55",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle25-timer-label",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle25-timer-label' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794098384.8990858,
-      "timestamp_str": "2026-11-08 03:39:44",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle26-lives-text",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Give the Focus lives dots a visible count and an accessible N-of-M label",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794098659.382185,
-      "timestamp_str": "2026-11-08 03:44:19",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "The lives HUD is three unlabeled dots: sighted players must count them and assistive tech gets only the word Focus, with no lives value",
-        "benefits": "A visible numeric count sits beside the dots, and the dots expose '2 of 3 focus remaining' through ARIA, updating after every loss",
-        "risks": "contract: HUD value/ARIA only, no lives logic/timing changes; dependency: none; concurrency: none; state: no persistence changes",
-        "mitigation": "Failing livesLabel and shell contract tests; same HUD crop before/after and after a wrong pick; played wrong-pick run; full gates"
-      },
-      "plan_digest": "4598688a1ae1c442506929cd573545e3fa5734ff352a5e09ae333f905d1caf69"
-    },
     {
       "task_id": "afterimage-cycle26-lives-text",
       "phase": "phase 4",
@@ -265,6 +226,45 @@
       "status": "completed",
       "timestamp": 1794154191.1343813,
       "timestamp_str": "2026-11-08 19:09:51",
+      "agent": "commandcode:goal"
+    },
+    {
+      "task_id": "afterimage-cycle32-decided-quit",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/2] Record the outcome when Quit run lands on a decided timed run (loss reveal or last board pause)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794154588.3218443,
+      "timestamp_str": "2026-11-08 19:16:28",
+      "agent": "commandcode:goal",
+      "impact_assessment": {
+        "why": "Quit run is enabled during the 1150ms fatal/timeout reveal and the 680ms post-final-pick pause. The run is already decided there (lives 0 or all boards cleared), but quitRun only adds abandoned totals, so the daily result, streak and win are erased. Reproduced: daily one clear plus three wrong picks, quit during the reveal, raw afterimage.daily stayed null and the menu read 'A fresh seeded set'.",
+        "benefits": "A decided run always lands on its result screen with the daily record, streak and win awards intact, so the 1.1s beat can no longer erase a loss or a cleared daily.",
+        "risks": "contract: quit routing only, no scoring/script/storage-schema changes; dependency: none; concurrency: the queued finish callback is neutralized by runId; state: no new saved fields.",
+        "mitigation": "Failing-first pure outcome test plus a quit-routing shell contract; real Chromium probe for the loss beat and the final-board pause; full gates."
+      },
+      "plan_digest": "7ed6adf164b707154eda1c4dfab9992bd8323887362d0ecf36b1f8e73d5666f3"
+    },
+    {
+      "task_id": "afterimage-cycle32-decided-quit",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[2/2] Decided-outcome quit routing, loss/win before-after probe, cache v35 and 5/5 gates (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794155267.562936,
+      "timestamp_str": "2026-11-08 19:27:47",
+      "agent": "commandcode:goal"
+    },
+    {
+      "task_id": "afterimage-cycle32-decided-quit",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle32-decided-quit' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794155268.4430127,
+      "timestamp_str": "2026-11-08 19:27:48",
       "agent": "commandcode:goal"
     }
   ]

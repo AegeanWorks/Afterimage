@@ -462,6 +462,7 @@ const state = {
   wrongFlash: -1,
   reveal: false,
   hintActive: 0,
+  pendingOutcome: "",
   enterAt: 0,
   lastTickSec: 0,
   typeMisses: {},
@@ -1022,6 +1023,7 @@ function startRun(mode) {
   state.hintsUsedRun = 0;
   state.hiddenAt = null;
   state.pendingHidden = 0;
+  state.pendingOutcome = "";
   state.paceCalled = false;
   state.slump = 0;
   state.perfectBoards = 0;
@@ -1076,6 +1078,7 @@ function nextLevel() {
   state.wrongFlash = -1;
   state.reveal = false;
   state.hintActive = 0;
+  state.pendingOutcome = "";
   state.levelMistakes = 0;
   state.lastTickSec = 0;
   state.particles = [];
@@ -1133,6 +1136,7 @@ function pick(index) {
     const gain = scoreFor(state.remaining, state.streak, perfect, surge);
     state.score += gain;
     state.phase = "pause";
+    state.pendingOutcome = state.level + 1 >= state.levels.length ? "win" : "";
     ui.cells.classList.add("off");
 
     const tile = state.rects[index];
@@ -1197,6 +1201,7 @@ function pick(index) {
   const fatal = shouldRevealMiss(state.timed, state.lives);
   if (fatal) {
     state.reveal = true;
+    state.pendingOutcome = "loss";
     say("Out of focus — it was there");
   }
   renderHud();
@@ -1242,6 +1247,7 @@ function timeout() {
   state.typeMisses[missType] = (state.typeMisses[missType] || 0) + 1;
   state.reveal = true;
   state.hover = -1;
+  state.pendingOutcome = "loss";
   ui.cells.classList.add("off");
   soundTimeout();
 
@@ -1374,6 +1380,12 @@ function hiddenPenalty(remaining, hiddenMs) {
 
 function tracksHiddenTime(timed, phase) {
   return Boolean(timed) && (phase === "play" || phase === "pause" || phase === "reveal");
+}
+
+function decidedOutcome(phase, pending) {
+  if (pending !== "win" && pending !== "loss") return "";
+  if (phase !== "pause" && phase !== "reveal") return "";
+  return pending;
 }
 
 function hiddenReturn(remaining, hiddenMs, timed, phase) {
@@ -1671,6 +1683,14 @@ function finish(won) {
 }
 
 function quitRun() {
+  const decided = decidedOutcome(state.phase, state.pendingOutcome);
+  if (decided) {
+    // A fatal miss records its red board only after the reveal beat; quitting
+    // inside that beat must not drop it from the result strip.
+    if (decided === "loss" && state.phase === "pause") state.boards.push("🟥");
+    finish(decided === "win");
+    return;
+  }
   if (!isStorageBlocked(PROFILE_KEY) && (state.phase === "play" || state.phase === "pause" || state.phase === "reveal")) {
     const totals = abandonedTotals(
       state.profile.runs,

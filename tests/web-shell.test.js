@@ -194,6 +194,20 @@ test('keyboard contract stays discoverable and canvas stays hidden from AT', () 
   assert.ok(htmlText.includes('id="cells"') && /id="cells"[^>]*aria-label=/.test(htmlText), '#cells group must carry an aria-label');
 });
 
+test('quitting a decided run lands on its result instead of the menu', () => {
+  const jsText = js();
+  assert.ok(jsText.includes('function decidedOutcome('), 'game.js must identify a decided run');
+  const quitBody = /function quitRun\(\) \{([\s\S]*?)\n\}/.exec(jsText);
+  assert.ok(quitBody, 'game.js must keep quitRun');
+  assert.ok(quitBody[1].includes('decidedOutcome(state.phase, state.pendingOutcome)'), 'quit must check the pending outcome');
+  assert.ok(quitBody[1].includes('finish('), 'a decided quit must hand off to finish so the result is recorded');
+  assert.ok(quitBody[1].includes('state.boards.push("🟥")'), 'a fatal-miss quit must keep its red board');
+  const pickBody = jsText.slice(jsText.indexOf('function pick('), jsText.indexOf('function timeout('));
+  assert.ok(pickBody.includes('state.pendingOutcome'), 'pick must mark a last-board win or a fatal miss');
+  const timeoutBody = jsText.slice(jsText.indexOf('function timeout('), jsText.indexOf('function advance('));
+  assert.ok(timeoutBody.includes('state.pendingOutcome'), 'timeout must mark a lost run');
+});
+
 test('a hide that spans pause or reveal charges the next timed board', () => {
   const jsText = js();
   assert.ok(jsText.includes('function tracksHiddenTime('), 'game.js must decide which active phases count as hidden time');

@@ -306,6 +306,8 @@ input sequence from the HEAD build (before) and the working-tree build (after).
     `node "$env:TEMP\afterimage-tools\nightmare-cold.mjs"` (cycle 30 10x10 audit).`
   - `node "$env:TEMP\afterimage-tools\hidden-pause-probe.mjs" before` / `after` (cycle 31);
     hides during the 680ms post-correct pause, waits 3s, returns, then clears the run.
+  - `node "$env:TEMP\afterimage-tools\decided-quit-probe.mjs" before` / `after` (cycle 32);
+    a daily loss quit inside the fatal reveal, then a Zen 10/10 quit inside the final pause.
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
@@ -933,3 +935,37 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   5,540 with the 4.1s charge reflected in the speed bonus; zero console errors. Logs
   `before-log.json` / `after-log.json`; frames `before-result.png` / `after-result.png`.
 - **Gate results**: `node --test tests` 95/95 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 32 — Abandoned runs: a decided run cannot be erased by Quit run
+
+- **Area**: abandoned-run accounting / result integrity (covered: all prior areas plus decided-run
+  quit).
+- **Defect (reproduced)**: `Quit run` stays enabled during the 1150ms fatal/timeout reveal and the
+  680ms post-final-pick pause, but `quitRun` only added abandoned totals and opened the menu. The
+  run was already decided in both windows, so quitting erased the outcome. The before probe shows a
+  Daily with one clear plus three wrong picks: quit inside the reveal left `rawDaily: null`, the
+  menu at `A fresh seeded set`, and `dailySub` unchanged; a Zen run cleared 10/10 and quit inside
+  the final pause recorded `runs: 1, clears: 10` but `wins.zen: 0` with no result screen.
+- **Files**: `game.js` (transient `pendingOutcome`, pure `decidedOutcome`, marks on the final
+  correct pick, the fatal miss and a timeout, decided routing in `quitRun`), `tests/harness.js`
+  (export), `tests/game.test.js` (failing-first outcome test), `tests/web-shell.test.js`
+  (quit-routing contract), `sw.js` + `tests/pwa.test.js` (cache v35), `README.md` (Quit run note).
+- **Fix**: the final correct pick marks `pendingOutcome: "win"` and a fatal miss or timeout marks
+  `"loss"`. `quitRun` asks `decidedOutcome(state.phase, state.pendingOutcome)`: inside pause/reveal
+  it hands off to `finish`, so the result, daily record, streak and win awards are written exactly
+  as a normal ending; a fatal-miss quit also keeps its red board in the strip. Quitting a run that
+  is still in play keeps the abandoned-run totals from cycle 21.
+- **Visual proof** (same 1440x900 viewport, same seeded Daily #312 and Zen runs, same click
+  sequences, quit from the same beat):
+  - before: `shots/afterimage/cycle32/before-loss-reloaded.png` (sha256 910128A430F24575…)
+    reads `A fresh seeded set` with `PLAY →`; `rawDaily` is `null`.
+  - after: `shots/afterimage/cycle32/after-loss-result.png` (sha256 5095689024AF1D97…) shows the
+    `DAILY #312 · RUN OVER` result (270, 1/10, `🟩🟥`); `after-loss-reloaded.png` (sha256
+    BC93D90E49A8C439…) reads `Played today · 270 · WARMING UP` with `REPLAY →`.
+  - win pair: `before-final-beat.png` (sha256 612C53678BF359A6…) / `after-win-result.png`
+    (sha256 E0F92C9D12DBB784…); the after screen reads `Zen complete.` 4,210, 10/10, 100%, and the
+    profile stores `wins.zen: 1`.
+- **Played run**: the scripted Daily loss and the 10-board Zen win both reach their result screens
+  from a Quit click inside the closing beat, with the daily record and win persisted; zero console
+  errors on both builds. Logs `before-log.json` / `after-log.json`.
+- **Gate results**: `node --test tests` 97/97 pass; `python aikit.py check afterimage` 5/5 pass.

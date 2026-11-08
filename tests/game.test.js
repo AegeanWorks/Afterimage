@@ -180,6 +180,20 @@ test('visibility handler does not credit hidden time', () => {
   assert.ok(src.includes('hiddenAt != null'), 'hidden restore must use null-safe check, not truthiness');
 });
 
+test('a decided run is recognised inside its closing beat', () => {
+  const { decidedOutcome } = createHarness();
+
+  assert.strictEqual(decidedOutcome('pause', 'win'), 'win');
+  assert.strictEqual(decidedOutcome('reveal', 'loss'), 'loss');
+  assert.strictEqual(decidedOutcome('pause', 'loss'), 'loss');
+  assert.strictEqual(decidedOutcome('play', 'win'), '');
+  assert.strictEqual(decidedOutcome('pause', ''), '');
+  assert.strictEqual(decidedOutcome('menu', 'win'), '');
+  assert.strictEqual(decidedOutcome('over', 'loss'), '');
+  assert.strictEqual(decidedOutcome('pause', 'nonsense'), '');
+  assert.strictEqual(decidedOutcome(undefined, undefined), '');
+});
+
 test('hidden time spans the pause and reveal transitions', () => {
   const { tracksHiddenTime, hiddenReturn } = createHarness();
 
