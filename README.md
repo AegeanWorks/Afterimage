@@ -158,6 +158,8 @@ afterimage/
 ├── icons/                    <- PWA application icons
 ├── index.html                <- game markup, HUD and modal templates
 ├── manifest.json             <- Web App Manifest for PWA installation
+├── pwa.js                    <- standalone service-worker registration
+├── live/pwa.js               <- static no-op used by the AegeanWorks live build
 ├── styles.css                <- responsive styling and layout
 ├── sw.js                     <- service worker for offline shell caching
 ├── tests/                    <- automated behavioral and regression tests

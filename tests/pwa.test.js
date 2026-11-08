@@ -42,6 +42,21 @@ test('manifest icons and shortcuts match install contract', () => {
   assert.deepStrictEqual(urls, ['./?mode=daily', './?mode=nightmare', './?mode=onslaught']);
 });
 
+test('registration is isolated so the live build can omit the service worker', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.ok(index.includes('<script src="pwa.js"></script>'), 'index.html must load pwa.js');
+  const register = fs.readFileSync(path.join(__dirname, '..', 'pwa.js'), 'utf8');
+  assert.ok(
+    register.includes('navigator.serviceWorker.register("./sw.js")'),
+    'pwa.js must register the standalone worker'
+  );
+  const live = fs.readFileSync(path.join(__dirname, '..', 'live', 'pwa.js'), 'utf8');
+  assert.ok(
+    !/\bserviceWorker\b|fetch\(/.test(live),
+    'the live build registration must stay inside the static contract'
+  );
+});
+
 test('PLAY.bat serves 8139 on loopback from its own dir', () => {
   const bat = fs.readFileSync(path.join(__dirname, '..', 'PLAY.bat'), 'utf8');
   assert.match(bat, /cd \/d "%~dp0"/);

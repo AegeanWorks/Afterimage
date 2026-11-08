@@ -2301,11 +2301,3 @@ const requestedMode = new URLSearchParams(window.location.search).get("mode");
 if (requestedMode && Object.prototype.hasOwnProperty.call(MODES, requestedMode)) {
   startRun(requestedMode);
 }
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {
-      /* the game runs fine without offline support */
-    });
-  });
-}
