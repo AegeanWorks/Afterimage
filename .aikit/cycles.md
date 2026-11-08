@@ -308,6 +308,9 @@ input sequence from the HEAD build (before) and the working-tree build (after).
     hides during the 680ms post-correct pause, waits 3s, returns, then clears the run.
   - `node "$env:TEMP\afterimage-tools\decided-quit-probe.mjs" before` / `after` (cycle 32);
     a daily loss quit inside the fatal reveal, then a Zen 10/10 quit inside the final pause.
+  - `node "$env:TEMP\afterimage-tools\resize-focus-probe.mjs" before` / `after` (cycle 33)
+    and `node "$env:TEMP\afterimage-tools\keyboard-run-probe.mjs" after`; both use
+    `Emulation.setFocusEmulationEnabled` so the programmatic focus ring is visible.
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
@@ -969,3 +972,33 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   from a Quit click inside the closing beat, with the daily record and win persisted; zero console
   errors on both builds. Logs `before-log.json` / `after-log.json`.
 - **Gate results**: `node --test tests` 97/97 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 33 — Keyboard play: a grid rebuild keeps the focused cell
+
+- **Area**: keyboard focus / layout rebuild (covered: all prior areas plus resize focus).
+- **Defect (reproduced)**: `computeLayout` emptied `#cells` and rebuilt every tile button, which
+  drops the focused element to `BODY`. The debounced ResizeObserver fires ~60ms after a board
+  starts and on every window resize, so a fresh board lost keyboard focus almost immediately.
+  The before log shows `activeTag: BUTTON, inCells: true` at board start and then
+  `activeTag: BODY, inCells: false`; Enter and ArrowRight leave `attempts: 0` forever, and the
+  same happens after a resize.
+- **Files**: `game.js` (pure `focusedCellIndex`, focus capture and restore in `computeLayout`),
+  `tests/harness.js` (export), `tests/game.test.js` (failing-first index test),
+  `tests/web-shell.test.js` (rebuild contract), `sw.js` + `tests/pwa.test.js` (cache v36),
+  `README.md` (resize focus note).
+- **Fix**: `computeLayout` reads the focused `.cell` index before clearing the grid, keeps that
+  index (or cell 0) as the tab stop, and refocuses the rebuilt button with `preventScroll`. The
+  index is validated by pure `focusedCellIndex`, so a stale cell from a previous board size is
+  ignored.
+- **Visual proof** (same 1440x900 viewport, same Zen start, focus emulation enabled):
+  - before: `shots/afterimage/cycle33/before-grid-at-start.png` (sha256 FC45611DE125FE7F…)
+    shows no focus ring after layout; the log reads `BODY` and `attempts: 0` after Enter.
+  - after: `shots/afterimage/cycle33/after-grid-at-start.png` (sha256 20C8B75407251A49…) shows
+    the white ring on the top-left cell after layout, with the log still on `BUTTON`/cell 0.
+  - keys pair: `before-after-keys.png` / `after-after-keys.png`; the after log shows
+    `attempts: 1` after Enter and cell 1 focused after ArrowRight, and survives a resize.
+- **Played run (keyboard only)**: from the boot menu, three Tabs reach Zen, Enter starts it, and
+  three boards are cleared by arrows plus Enter (190 → 430 → 710, streak `3 COMBO`, HUD `04`),
+  with focus intact across every board transition. Log: `after-keyboard-log.json`; frames
+  `after-keyboard-board1.png` / `after-keyboard-cleared.png`; zero console errors.
+- **Gate results**: `node --test tests` 99/99 pass; `python aikit.py check afterimage` 5/5 pass.

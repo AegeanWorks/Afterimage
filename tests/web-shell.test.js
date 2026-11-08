@@ -194,6 +194,15 @@ test('keyboard contract stays discoverable and canvas stays hidden from AT', () 
   assert.ok(htmlText.includes('id="cells"') && /id="cells"[^>]*aria-label=/.test(htmlText), '#cells group must carry an aria-label');
 });
 
+test('a grid rebuild restores the focused cell', () => {
+  const jsText = js();
+  assert.ok(jsText.includes('function focusedCellIndex('), 'game.js must resolve the focused cell index');
+  const layoutBody = /function computeLayout\(\) \{([\s\S]*?)\n\}/.exec(jsText);
+  assert.ok(layoutBody, 'game.js must keep computeLayout');
+  assert.ok(layoutBody[1].includes('focusedCellIndex('), 'the rebuild must read the focused cell before clearing the grid');
+  assert.ok(layoutBody[1].includes('.focus('), 'the rebuilt grid must restore focus to that cell');
+});
+
 test('quitting a decided run lands on its result instead of the menu', () => {
   const jsText = js();
   assert.ok(jsText.includes('function decidedOutcome('), 'game.js must identify a decided run');

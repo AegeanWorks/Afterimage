@@ -194,6 +194,21 @@ test('a decided run is recognised inside its closing beat', () => {
   assert.strictEqual(decidedOutcome(undefined, undefined), '');
 });
 
+test('a rebuilt grid keeps the focused cell', () => {
+  const { focusedCellIndex } = createHarness();
+
+  assert.strictEqual(focusedCellIndex(4, 9), 4);
+  assert.strictEqual(focusedCellIndex(0, 9), 0);
+  assert.strictEqual(focusedCellIndex(8, 9), 8);
+  assert.strictEqual(focusedCellIndex(null, 9), null);
+  assert.strictEqual(focusedCellIndex(-1, 9), null);
+  assert.strictEqual(focusedCellIndex(9, 9), null);
+  assert.strictEqual(focusedCellIndex(4, 0), null);
+  assert.strictEqual(focusedCellIndex('4', 9), 4);
+  assert.strictEqual(focusedCellIndex('x', 9), null);
+  assert.strictEqual(focusedCellIndex(4.5, 9), null);
+});
+
 test('hidden time spans the pause and reveal transitions', () => {
   const { tracksHiddenTime, hiddenReturn } = createHarness();
 

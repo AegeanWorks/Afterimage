@@ -663,6 +663,14 @@ function computeLayout() {
   }
   state.rects = rects;
 
+  // Rebuilding the grid destroys the focused button; remember it so keyboard
+  // play survives the layout pass that runs right after a board starts.
+  const active = document.activeElement;
+  const keepFocus = focusedCellIndex(
+    active && active.classList && active.classList.contains("cell") ? active.dataset.i : null,
+    rects.length
+  );
+
   ui.cells.textContent = "";
   rects.forEach((tile, index) => {
     const button = document.createElement("button");
@@ -677,7 +685,7 @@ function computeLayout() {
       "aria-label",
       `Row ${Math.floor(index / n) + 1}, column ${(index % n) + 1}`
     );
-    button.tabIndex = index === 0 ? 0 : -1;
+    button.tabIndex = index === 0 || index === keepFocus ? 0 : -1;
     button.addEventListener("click", () => pick(index));
     button.addEventListener("mouseenter", () => {
       state.hover = index;
@@ -693,6 +701,14 @@ function computeLayout() {
     });
     ui.cells.appendChild(button);
   });
+
+  if (keepFocus !== null) {
+    try {
+      ui.cells.children[keepFocus].focus({ preventScroll: true });
+    } catch {
+      /* non-DOM harnesses ignore focus */
+    }
+  }
 }
 
 /* --------------------------------------------------------------- painting */
@@ -1386,6 +1402,15 @@ function decidedOutcome(phase, pending) {
   if (pending !== "win" && pending !== "loss") return "";
   if (phase !== "pause" && phase !== "reveal") return "";
   return pending;
+}
+
+function focusedCellIndex(rawIndex, cellCount) {
+  const index = Number(rawIndex);
+  const count = Number(cellCount);
+  if (rawIndex === null || rawIndex === undefined || rawIndex === "") return null;
+  if (!Number.isInteger(index) || !Number.isInteger(count) || count <= 0) return null;
+  if (index < 0 || index >= count) return null;
+  return index;
 }
 
 function hiddenReturn(remaining, hiddenMs, timed, phase) {
