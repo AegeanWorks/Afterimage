@@ -1115,3 +1115,29 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   changes the uncleared-final case. Logs `before-final-timeout-log.json` /
   `after-final-timeout-log.json` / `sweep-after-sweep-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 103/103 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 37 — Zen: an unfinished run is not a loss
+
+- **Area**: result wording / no-fail promise (covered: all prior areas plus untimed run endings).
+- **Defect (reproduced)**: cycle 36 made `finish(won)` depend on every board being cleared, so a Zen
+  run that ended without clearing all ten boards fell into the timed loss branch. The probe shows a
+  Zen run that cleared nine boards and skipped the last one reporting `kicker: FOCUS LOST`,
+  `title: So close.`, and skipping every board also reporting `FOCUS LOST` — a contradiction of the
+  README's "Zen · no clock · no fail", plus the loss audio sting.
+- **Files**: `game.js` (pure `lostRun(won, timed)`; result kicker/title and the finish sting derive
+  from it), `tests/harness.js` (export), `tests/game.test.js` (failing-first loss-state test),
+  `tests/web-shell.test.js` (result-header contract), `sw.js` + `tests/pwa.test.js` (cache v40),
+  `README.md` (Zen ending note).
+- **Fix**: `lostRun(won, timed)` answers true only for an uncleared **timed** run. The result kicker
+  now reads `FOCUS LOST` for a timed loss and `RUN ENDED` for an untimed finish, the title reads
+  `So close.` only for a real loss and `Run finished.` otherwise, and `finish` plays the loss sting
+  only when the run was actually lost.
+- **Visual proof** (same 1280x860 viewport, same Zen run):
+  - before: `scratch/window-audit/head-zen-skip-all.png` shows the delayed Zen ending with a loss
+    header for a mode that cannot fail.
+  - after: `scratch/window-audit/fixed-zen-end.png` shows `RUN ENDED` / `Run finished.`, while
+    `fixed-focus-loss.png` keeps `FOCUS LOST` / `So close.` for the three-miss Focus run.
+- **Played run**: Focus three wrong picks → `FOCUS LOST`, `So close.` (unchanged); Zen skip-all →
+  `RUN ENDED`, `Run finished.` with `wins.zen: 0`; zero console errors. Logs
+  `head-zen-skip-log.json` / `fixed-timed-log.json`.
+- **Gate results**: `node --test tests` 105/105 pass; `python aikit.py check afterimage` 5/5 pass.

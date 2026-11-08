@@ -221,6 +221,22 @@ test('quitting a decided run lands on its result instead of the menu', () => {
   );
 });
 
+test('the result header never calls an untimed run a loss', () => {
+  const jsText = js();
+  assert.ok(jsText.includes('function lostRun('), 'game.js must separate a loss from an unfinished untimed run');
+  assert.ok(jsText.includes('lostRun(won, state.timed)'), 'the result path must use the derived loss state');
+  const finishBody = /function finish\(won\) \{([\s\S]*?)\n\}/.exec(jsText);
+  assert.ok(finishBody, 'game.js must keep finish');
+  assert.ok(
+    !/ui\.resultKicker\.textContent = isDaily[\s\S]{0,160}won \? "RUN COMPLETE" : "FOCUS LOST"/.test(finishBody[1]),
+    'the kicker must not key FOCUS LOST off won alone'
+  );
+  assert.ok(
+    !/if \(won && state\.cleared > 0\) soundWin\(\);\s*\n\s*else soundLose\(\)/.test(finishBody[1]),
+    'an untimed finish must not always play the loss sting'
+  );
+});
+
 test('advancing past the last board only wins when it was cleared', () => {
   const jsText = js();
   assert.ok(jsText.includes('function runWon('), 'game.js must derive the win from cleared vs total');

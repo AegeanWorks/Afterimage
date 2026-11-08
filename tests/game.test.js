@@ -205,6 +205,17 @@ test('only a timeout that spends the last life decides the run', () => {
   assert.strictEqual(timeoutOutcome(undefined, undefined), '');
 });
 
+test('an untimed run can finish without reading as a loss', () => {
+  const { lostRun } = createHarness();
+
+  assert.strictEqual(lostRun(false, true), true, 'an uncleared timed run is a loss');
+  assert.strictEqual(lostRun(true, true), false, 'a cleared timed run is not a loss');
+  assert.strictEqual(lostRun(false, false), false, 'an untimed run never fails');
+  assert.strictEqual(lostRun(true, false), false);
+  assert.strictEqual(lostRun(null, true), true);
+  assert.strictEqual(lostRun(undefined, undefined), false);
+});
+
 test('a finished run is only won when every board was cleared', () => {
   const { runWon } = createHarness();
 

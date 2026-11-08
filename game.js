@@ -1421,6 +1421,11 @@ function runWon(cleared, total) {
   return done === count;
 }
 
+// Zen has no fail state, so an unfinished untimed run must not read as a loss.
+function lostRun(won, timed) {
+  return !won && Boolean(timed);
+}
+
 function timeoutOutcome(timed, lives) {
   if (!timed) return "";
   const left = Number(lives);
@@ -1679,12 +1684,13 @@ function finish(won) {
       : null
   };
 
+  const lost = lostRun(won, state.timed);
   ui.resultKicker.textContent = isDaily
     ? `DAILY #${state.dailyNumber} · ${won ? "COMPLETE" : "RUN OVER"}`
-    : (won ? "RUN COMPLETE" : "FOCUS LOST");
+    : (won ? "RUN COMPLETE" : (lost ? "FOCUS LOST" : "RUN ENDED"));
   ui.resultTitle.textContent = won
     ? (clean ? WIN_TITLES[state.mode] : "Run finished.")
-    : "So close.";
+    : (lost ? "So close." : "Run finished.");
   ui.resultScore.textContent = state.score.toLocaleString("en-US");
   ui.resultRating.textContent = info.rating;
   let blurb = state.perfectBoards >= 5
@@ -1737,7 +1743,7 @@ function finish(won) {
   }
   setShellInert(true);
   if (won && state.cleared > 0) soundWin();
-  else soundLose();
+  else if (lost) soundLose();
 }
 
 function quitRun() {

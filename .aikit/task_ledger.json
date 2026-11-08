@@ -1,38 +1,23 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle36-final-timeout-win",
-    "last_phase": "phase 4",
+    "task_id": "afterimage-cycle37-zen-no-loss",
+    "last_phase": "phase 2",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794159552.2394037,
+    "updated_at": 1794162472.9212918,
     "owner": "commandcode:goal",
     "started_by": "commandcode:goal",
     "continuations": [],
-    "completed_at": 1794159552.8482285
+    "impact_assessment": {
+      "why": "Cycle 36 keyed the result header off won alone, so a Zen run ending with a skip showed FOCUS LOST and played the loss sting, contradicting the no-fail promise. Reproduced: Zen skip-last and skip-all both read FOCUS LOST / So close.",
+      "benefits": "Zen closes with RUN ENDED / Run finished and no loss sting, while timed uncleared runs keep FOCUS LOST / So close.",
+      "risks": "contract: result wording and sting only, no scoring/script/schema changes; dependency: none; concurrency: none; state: none new saved.",
+      "mitigation": "Failing-first loss-state test and result-header contract; browser probes for timed loss and Zen ending; full gates."
+    },
+    "completed_at": 1794162473.5340147
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle30-perf-audit",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[1/1] 10x10 Nightmare audit: 60fps, no long tasks, cold start 383ms; zero verified improvements, no code change (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794101809.1899178,
-      "timestamp_str": "2026-11-08 04:36:49",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle30-perf-audit",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle30-perf-audit' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794101840.2230413,
-      "timestamp_str": "2026-11-08 04:37:20",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle31-hidden-pause",
       "phase": "phase 2",
@@ -265,6 +250,34 @@
       "status": "completed",
       "timestamp": 1794159552.8482313,
       "timestamp_str": "2026-11-08 20:39:12",
+      "agent": "commandcode:goal"
+    },
+    {
+      "task_id": "afterimage-cycle37-zen-no-loss",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Finish an untimed run without reading as a loss",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794162472.9212918,
+      "timestamp_str": "2026-11-08 21:27:52",
+      "agent": "commandcode:goal",
+      "impact_assessment": {
+        "why": "Cycle 36 keyed the result header off won alone, so a Zen run ending with a skip showed FOCUS LOST and played the loss sting, contradicting the no-fail promise. Reproduced: Zen skip-last and skip-all both read FOCUS LOST / So close.",
+        "benefits": "Zen closes with RUN ENDED / Run finished and no loss sting, while timed uncleared runs keep FOCUS LOST / So close.",
+        "risks": "contract: result wording and sting only, no scoring/script/schema changes; dependency: none; concurrency: none; state: none new saved.",
+        "mitigation": "Failing-first loss-state test and result-header contract; browser probes for timed loss and Zen ending; full gates."
+      },
+      "plan_digest": "3435436e6f24f71ad2313be3a3ce6249be6049610a16d62a9acff48fd02fc24f"
+    },
+    {
+      "task_id": "afterimage-cycle37-zen-no-loss",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle37-zen-no-loss' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794162473.5340168,
+      "timestamp_str": "2026-11-08 21:27:53",
       "agent": "commandcode:goal"
     }
   ]
