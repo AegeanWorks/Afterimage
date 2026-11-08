@@ -286,7 +286,10 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   - `node "$env:TEMP\afterimage-tools\blocked-best-probe.mjs" before` / `after` (cycle 22);
     seeds version-2 bests, wins a deterministic Focus run, then reloads the menu.
   - `node "$env:TEMP\afterimage-tools\blocked-daily-best.mjs" before` / `after` (cycle 23);
-    seeds version-2 daily, wins the deterministic daily, then reloads the menu.`
+    seeds version-2 daily, wins the deterministic daily, then reloads the menu.
+  - `node "$env:TEMP\afterimage-tools\blocked-freeze-probe.mjs" before` / `after` (cycle 24);
+    seeds version-2 profile, wins the daily, then reloads. The freeze earn/consume dead end used
+    `node "$env:TEMP\afterimage-tools\freeze-audit.mjs"`.`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree

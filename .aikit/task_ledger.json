@@ -3,32 +3,15 @@
   "active_task": {
     "task_id": "afterimage-cycle24-blocked-profile",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794097367.9418073,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794097415.9773514
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle18-modal-trap",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Trap Tab focus inside the open menu/result dialog",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794092434.922553,
-      "timestamp_str": "2026-11-08 02:00:34",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "Shift+Tab from the Daily card or the result card jumps to SOUND ON behind the modal veil; the first Tab after that is outside the dialog, breaking aria-modal containment",
-        "benefits": "Tab and Shift+Tab cycle only visible controls inside the active dialog, including the copy fallback; focus cannot reach background controls while the veil is open",
-        "risks": "contract: keyboard handler only, no layout/state changes; dependency: none; concurrency: none; state: none",
-        "mitigation": "Failing trap contract first; same menu/result Shift+Tab before/after screenshots; keyboard run through menu, three misses and result navigation; full gates"
-      },
-      "plan_digest": "bbf8d9aa0b91ab22924d2bf45fe44c8a5a9434fb62d1fef2a6200bf3a0bbf626"
-    },
     {
       "task_id": "afterimage-cycle18-modal-trap",
       "phase": "phase 4",
@@ -272,6 +255,16 @@
       "status": "in_progress",
       "timestamp": 1794097367.9418073,
       "timestamp_str": "2026-11-08 03:22:47",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle24-blocked-profile",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle24-blocked-profile' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794097415.977354,
+      "timestamp_str": "2026-11-08 03:23:35",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]
