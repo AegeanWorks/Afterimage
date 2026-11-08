@@ -296,7 +296,9 @@ input sequence from the HEAD build (before) and the working-tree build (after).
     fixed HUD crop at three lives, then a wrong pick at two lives.
   - `node "$env:TEMP\afterimage-tools\hud-390-probe.mjs" before` / `after 390` (cycle 27);
     normal and stressed 390px HUD measurements. `node
-    "$env:TEMP\afterimage-tools\streak-play.mjs"` plays one 390px Focus clear.`
+    "$env:TEMP\afterimage-tools\streak-play.mjs"` plays one 390px Focus clear.
+  - `node "$env:TEMP\afterimage-tools\hud-390-probe.mjs" before 390` / `after 390` and
+    `after320 320` (cycle 28); the same probe measures the restored Focus label and stress fit.`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree

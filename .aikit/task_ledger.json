@@ -3,32 +3,15 @@
   "active_task": {
     "task_id": "afterimage-cycle28-focus-label",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794100346.371179,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794100379.094002
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle22-blocked-best",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Stop claiming NEW BEST when the bests save is a blocked future format",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794095864.155986,
-      "timestamp_str": "2026-11-08 02:57:44",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "With a version-2 afterimage.bests, a full Focus win updated the in-memory best to 5,580, showed NEW BEST, and left the raw file untouched; after reload the best was gone",
-        "benefits": "The result screen never celebrates a best that cannot be persisted; a future-format save stays byte-identical while the current session continues",
-        "risks": "contract: saveBest returns false on a blocked key, no save schema changes; dependency: none; concurrency: none; state: in-memory bests no longer update for blocked keys",
-        "mitigation": "Failing blocked-saveBest test; same future-bests full Focus win before/after screenshots; reload check; full gates"
-      },
-      "plan_digest": "7432a7c677b1953e89785113d2efdf80eef1cd5713a7eb65c0ca80602c6151f3"
-    },
     {
       "task_id": "afterimage-cycle22-blocked-best",
       "phase": "phase 4",
@@ -272,6 +255,16 @@
       "status": "in_progress",
       "timestamp": 1794100346.371179,
       "timestamp_str": "2026-11-08 04:12:26",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle28-focus-label",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle28-focus-label' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794100379.0940056,
+      "timestamp_str": "2026-11-08 04:12:59",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]
