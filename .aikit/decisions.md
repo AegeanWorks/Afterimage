@@ -247,3 +247,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: With a future-format `afterimage.bests`, a full Focus win mutated the in-memory best to 5,580 and showed `NEW BEST` while the raw file stayed version 2. After reload the best was gone, so the result screen had celebrated unpersisted data.
 - **Decision**: `saveBest` returns false when `afterimage.bests` is blocked, before it mutates `state.bests` or writes. No result badge is shown for a best that cannot persist, and the future save remains byte-identical. Bump the service-worker cache to `afterimage-v26`.
 - **Consequences**: 83 tests pass (82 prior + 1 failing-first test). The deterministic Focus win at 5,580 hides `NEW BEST`, leaves `state.bests.focus` at 0, keeps the version-2 raw file intact, and reloads to `CLEARED` only. Evidence is under `shots/afterimage/cycle22/`; `python aikit.py check afterimage` green.
+
+### ADR-036: Make a blocked daily save read-only for the session
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: With a future-format `afterimage.daily`, a full daily win showed `NEW DAILY BEST` and updated the in-memory daily result/streak while the raw version-2 file stayed untouched. Reloading lost the result, so the game had claimed daily progress it could not persist.
+- **Decision**: `recordDaily` returns early with `{isBest:false}` when `afterimage.daily` is blocked, leaving daily last/streak/result untouched and showing no daily-best callout. The future save is never written. Bump the service-worker cache to `afterimage-v27`.
+- **Consequences**: 84 tests pass (83 prior + 1 failing-first test). The deterministic daily win at 5,580 hides `NEW DAILY BEST`, leaves `state.daily` at its defaults, keeps the version-2 raw file byte-identical, and reloads to a fresh daily. Evidence is under `shots/afterimage/cycle23/`; `python aikit.py check afterimage` green.

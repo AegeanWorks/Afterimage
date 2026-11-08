@@ -648,3 +648,30 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   while raw stayed version 2; after it stayed 0, raw stayed version 2, and the reloaded menu
   showed only `CLEARED`. Logs: `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 83/83 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 23 — Daily save honesty: no unpersistable daily claims
+
+- **Area**: blocked daily-save result honesty (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics, blocked-best honesty, blocked-daily honesty).
+- **Defect (reproduced)**: with a future-format `afterimage.daily` (version 2, streak 9), a full
+  daily win showed `NEW DAILY BEST` and updated the in-memory daily to result 5,580/streak 1
+  while the raw file stayed untouched; reloading showed a fresh daily.
+- **Files**: `game.js` (`recordDaily` returns early when the daily key is blocked),
+  `tests/game.test.js` (failing-first blocked-daily test), `tests/harness.js` (export),
+  `sw.js` + `tests/pwa.test.js` (cache v27), `README.md` (save note).
+- **Fix**: a blocked `afterimage.daily` is read-only for the session: no daily last/streak/
+  result mutation, no `NEW DAILY BEST`, no write. The future file remains byte-identical.
+- **Visual proof** (same future daily, same deterministic full daily win at 5,580, same
+  1440x900 viewport):
+  - before: `shots/afterimage/cycle23/before-daily-win.png` (sha256 A83D96F27E2ACAF7…)
+    shows `EAGLE EYE` with `NEW DAILY BEST`.
+  - after: `shots/afterimage/cycle23/after-daily-win.png` (sha256 4A57F58F7EF62C53…)
+    shows the same win with only `EAGLE EYE`.
+- **Played run**: full Daily 10/10 at 100% for 5,580; before `state.daily` became
+  `{last: 2026-11-08, streak: 1, result: 5580}`, after it stayed `{last: "", streak: 0,
+  result: null}`, the raw version-2 daily stayed identical, and the reloaded menu showed a
+  fresh daily. Logs: `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 84/84 pass; `python aikit.py check afterimage` 5/5 pass.

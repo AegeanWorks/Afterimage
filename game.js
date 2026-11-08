@@ -1403,6 +1403,9 @@ function dailyResultBeats(prior, score, won) {
 }
 
 function recordDaily(won, accuracy, rating) {
+  if (isStorageBlocked(DAILY_KEY)) {
+    return { isBest: false, streak: state.daily.streak };
+  }
   const day = state.dailyKey || localDateKey();
   const next = dailyStreakAfter(state.daily.last, state.daily.streak, state.profile.freezes, day, won);
   if (next.freezes < state.profile.freezes) {

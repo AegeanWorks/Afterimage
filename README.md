@@ -132,7 +132,7 @@ The run caught two real bugs that the screenshots made obvious: burst particles 
 - Each board logs green/gold/red/skip/dark for the result strip and copied text; the clipboard uses the async API with a textarea fallback.
 - A service worker caches the shell; navigations are network-first with a cached-index fallback on failure **or non-OK responses**, assets are cache-first with a background refresh.
 - The manifest adds standalone display, maskable icons and Daily/Nightmare/Onslaught shortcuts.
-- Per-mode bests are stored as JSON, with the old single best migrated. Structured saves (`afterimage.bests`, `.daily`, `.profile`) carry `version: 1`; legacy saves load as v1, a newer unsupported version is refused without overwriting it, and the session never claims a best it cannot persist.
+- Per-mode bests are stored as JSON, with the old single best migrated. Structured saves (`afterimage.bests`, `.daily`, `.profile`) carry `version: 1`; legacy saves load as v1, a newer unsupported version is refused without overwriting it, and the session never claims a best or daily streak it cannot persist.
 - A run token (`runId`) guards late `setTimeout` callbacks after quitting; particles are cleared between boards.
 - Respects `prefers-reduced-motion`; storage and audio failures are non-fatal.
 - On phones the topbar wraps: brand and sound share the first row, all five HUD values share the second, and play never scrolls sideways.

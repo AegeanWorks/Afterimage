@@ -801,6 +801,34 @@ test('future save versions are refused and never overwritten', () => {
   }
 });
 
+test('blocked daily saves cannot claim a daily best or streak', () => {
+  const raw = JSON.stringify({
+    version: 2, last: '2026-11-08', streak: 9,
+    result: { date: '2026-11-08', score: 9999, cleared: 10, total: 10, accuracy: 100, rating: 'EAGLE EYE', won: true }
+  });
+  const map = new Map([['afterimage.daily', raw]]);
+  const storage = {
+    getItem: (key) => (map.has(key) ? map.get(key) : null),
+    setItem: (key, value) => map.set(key, value),
+    removeItem: (key) => map.delete(key),
+    clear: () => map.clear()
+  };
+  const h = createHarness({ storage });
+
+  assert.strictEqual(h.isStorageBlocked('afterimage.daily'), true);
+  h.state.dailyKey = '2026-11-08';
+  h.state.score = 5580;
+  h.state.cleared = 10;
+  h.state.levels = h.SCRIPTS.classic;
+
+  const record = h.recordDaily(true, 100, 'EAGLE EYE');
+  assert.strictEqual(record.isBest, false, 'a blocked daily cannot claim a new best');
+  assert.strictEqual(h.state.daily.result, null, 'no unpersisted daily result is stored');
+  assert.strictEqual(h.state.daily.last, '', 'no unpersisted completion day is stored');
+  assert.strictEqual(h.state.daily.streak, 0, 'no unpersisted streak is claimed');
+  assert.strictEqual(map.get('afterimage.daily'), raw, 'the future daily save stays byte-identical');
+});
+
 test('blocked bests cannot mint or claim a new best', () => {
   const raw = JSON.stringify({ version: 2, focus: 9999, blitz: 9999 });
   const map = new Map([['afterimage.bests', raw]]);
