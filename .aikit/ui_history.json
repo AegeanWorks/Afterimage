@@ -26,5 +26,19 @@
     "final_snapshot_digest": "",
     "final_snapshot_entries": 0,
     "surface_digest": "9ae5c7aede15ac66630329b4c6ea4b5bed59c8bd4229dccd12b20f57ba94d5e7"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "baseline_commit": "83f4775d7d6ecc0fdd61a320f0c031c504c9358e",
+    "contract_hash": "b661e204809abd48d2cb2fb082b5a2a4de97aacbe1bd932d043c7d5949409ce3",
+    "started_at": 1794162515.6289945,
+    "finished_at": 1794162527.5722775,
+    "strikes": 0,
+    "reviewer": "commandcode:goal (Chromium: Zen RUN ENDED + Focus FOCUS LOST, no console errors)",
+    "allowed_removals": [],
+    "final_snapshot_digest": "",
+    "final_snapshot_entries": 0,
+    "surface_digest": "fcdbbb4a709a24bf133d2b1c662bb634a1c9af649ee8cb517146eef28d89d394"
   }
 ]
