@@ -298,7 +298,10 @@ input sequence from the HEAD build (before) and the working-tree build (after).
     normal and stressed 390px HUD measurements. `node
     "$env:TEMP\afterimage-tools\streak-play.mjs"` plays one 390px Focus clear.
   - `node "$env:TEMP\afterimage-tools\hud-390-probe.mjs" before 390` / `after 390` and
-    `after320 320` (cycle 28); the same probe measures the restored Focus label and stress fit.`
+    `after320 320` (cycle 28); the same probe measures the restored Focus label and stress fit.
+  - `node "$env:TEMP\afterimage-tools\mobile-result-panels.mjs" layout 390 844` / `short 390 667`
+    (cycle 29 layout dead end) and `node "$env:TEMP\afterimage-tools\inert-probe.mjs" before` /
+    `after` (cycle 29 AX isolation).`
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree

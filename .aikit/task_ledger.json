@@ -3,32 +3,15 @@
   "active_task": {
     "task_id": "afterimage-cycle29-shell-inert",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794101281.4037306,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794101319.9570634
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle23-blocked-daily",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Suppress NEW DAILY BEST and in-memory daily progress when afterimage.daily is a blocked future format",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794096337.2252285,
-      "timestamp_str": "2026-11-08 03:05:37",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "With a version-2 afterimage.daily, a full daily win shows NEW DAILY BEST and updates the in-memory streak/result while the raw file stays untouched; reloading loses everything",
-        "benefits": "A blocked daily save behaves read-only: no best badge, no in-memory streak/result claim, and the future file stays byte-identical",
-        "risks": "contract: recordDaily returns early on a blocked key, valid saves unchanged; dependency: none; concurrency: none; state: daily last/streak/result not mutated for blocked keys",
-        "mitigation": "Failing recordDaily blocked test; same future-daily full win before/after screenshots; reload and raw-byte checks; full gates"
-      },
-      "plan_digest": "16eab35389f4726056abc6b8c09014d84e65580274900e2a0ceec5e10cd2d5ac"
-    },
     {
       "task_id": "afterimage-cycle23-blocked-daily",
       "phase": "phase 4",
@@ -272,6 +255,16 @@
       "status": "in_progress",
       "timestamp": 1794101281.4037306,
       "timestamp_str": "2026-11-08 04:28:01",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle29-shell-inert",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle29-shell-inert' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794101319.9570656,
+      "timestamp_str": "2026-11-08 04:28:39",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]
