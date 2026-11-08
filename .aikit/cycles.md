@@ -620,3 +620,29 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   (`runs:2, clears:3`), proving the finished path is not double-counted. Logs:
   `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 82/82 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 22 — Save honesty: no best that cannot persist
+
+- **Area**: blocked-save result honesty (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics, blocked-best honesty).
+- **Defect (reproduced)**: with a future-format `afterimage.bests` (version 2, focus 9,999),
+  a full Focus win updated the in-memory best to 5,580 and showed `NEW BEST` while the raw file
+  stayed untouched; after reload the best was gone (`CLEARED` only).
+- **Files**: `game.js` (`saveBest` refuses blocked keys before mutating), `tests/game.test.js`
+  (failing-first blocked-best test), `sw.js` + `tests/pwa.test.js` (cache v26), `README.md`
+  (save note).
+- **Fix**: `saveBest` returns false when `afterimage.bests` is a blocked future format, so no
+  in-memory best mutation and no `NEW BEST` callout. The future file remains byte-identical.
+- **Visual proof** (same future bests, same deterministic full Focus win at 5,580, same
+  1440x900 viewport):
+  - before: `shots/afterimage/cycle22/before-focus-win.png` (sha256 71A06BC44E613ACB…)
+    shows `EAGLE EYE` with `NEW BEST`.
+  - after: `shots/afterimage/cycle22/after-focus-win.png` (sha256 86EBC16B8C9BFF67…)
+    shows the same win with only `EAGLE EYE`.
+- **Played run**: full Focus 10/10 at 100% for 5,580; before `state.bests.focus` became 5,580
+  while raw stayed version 2; after it stayed 0, raw stayed version 2, and the reloaded menu
+  showed only `CLEARED`. Logs: `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 83/83 pass; `python aikit.py check afterimage` 5/5 pass.

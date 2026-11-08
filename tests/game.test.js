@@ -801,6 +801,23 @@ test('future save versions are refused and never overwritten', () => {
   }
 });
 
+test('blocked bests cannot mint or claim a new best', () => {
+  const raw = JSON.stringify({ version: 2, focus: 9999, blitz: 9999 });
+  const map = new Map([['afterimage.bests', raw]]);
+  const storage = {
+    getItem: (key) => (map.has(key) ? map.get(key) : null),
+    setItem: (key, value) => map.set(key, value),
+    removeItem: (key) => map.delete(key),
+    clear: () => map.clear()
+  };
+  const h = createHarness({ storage });
+
+  assert.strictEqual(h.isStorageBlocked('afterimage.bests'), true);
+  assert.strictEqual(h.saveBest('focus', 100), false, 'a blocked save must not report success');
+  assert.strictEqual(h.state.bests.focus, 0, 'a blocked save must not mutate the in-memory best');
+  assert.strictEqual(map.get('afterimage.bests'), raw, 'the future save stays byte-identical');
+});
+
 test('onslaught script is a tight surge-heavy gauntlet', () => {
   const { SCRIPTS } = createHarness();
 

@@ -240,3 +240,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: Clearing two Focus boards then pressing Quit run returned to `EYE LV 1 · 0 clears · 0 runs`. Only the finished-result path updated profile runs, clears and bestStreak, so quitting erased the attempt and its cleared boards.
 - **Decision**: Add pure `abandonedTotals` and a `quitRun` handler: a quit during play/pause/reveal adds one run, adds the run's cleared boards, keeps the maximum run streak, saves the versioned profile, then opens the menu. Change mode and the finished-result path remain unchanged, so a completed run is not double-counted. Bump the service-worker cache to `afterimage-v25`.
 - **Consequences**: 82 tests pass (81 prior + 1 failing-first test). A two-clear quit stores `{runs:1, clears:2, bestStreak:2, version:1}`; a following Focus run with one clear then a loss adds exactly one run and one clear. Evidence is under `shots/afterimage/cycle21/`; `python aikit.py check afterimage` green.
+
+### ADR-035: Never claim a best that a blocked save cannot persist
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: With a future-format `afterimage.bests`, a full Focus win mutated the in-memory best to 5,580 and showed `NEW BEST` while the raw file stayed version 2. After reload the best was gone, so the result screen had celebrated unpersisted data.
+- **Decision**: `saveBest` returns false when `afterimage.bests` is blocked, before it mutates `state.bests` or writes. No result badge is shown for a best that cannot persist, and the future save remains byte-identical. Bump the service-worker cache to `afterimage-v26`.
+- **Consequences**: 83 tests pass (82 prior + 1 failing-first test). The deterministic Focus win at 5,580 hides `NEW BEST`, leaves `state.bests.focus` at 0, keeps the version-2 raw file intact, and reloads to `CLEARED` only. Evidence is under `shots/afterimage/cycle22/`; `python aikit.py check afterimage` green.

@@ -1,38 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle21-quit-stats",
+    "task_id": "afterimage-cycle22-blocked-best",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794095594.1027625,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794096098.1576989,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": [],
-    "completed_at": 1794095634.7493386
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle15-result-focus",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Result-card focus, dialog label swap, loss/win focus logs, focus-glow screenshots, cache v19 and gates verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794089191.3744924,
-      "timestamp_str": "2026-11-08 01:06:31",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle15-result-focus",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle15-result-focus' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794089234.2233043,
-      "timestamp_str": "2026-11-08 01:07:14",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle16-wrong-focus",
       "phase": "phase 2",
@@ -265,6 +243,35 @@
       "status": "completed",
       "timestamp": 1794095634.7493417,
       "timestamp_str": "2026-11-08 02:53:54",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle22-blocked-best",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Stop claiming NEW BEST when the bests save is a blocked future format",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794095864.155986,
+      "timestamp_str": "2026-11-08 02:57:44",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "With a version-2 afterimage.bests, a full Focus win updated the in-memory best to 5,580, showed NEW BEST, and left the raw file untouched; after reload the best was gone",
+        "benefits": "The result screen never celebrates a best that cannot be persisted; a future-format save stays byte-identical while the current session continues",
+        "risks": "contract: saveBest returns false on a blocked key, no save schema changes; dependency: none; concurrency: none; state: in-memory bests no longer update for blocked keys",
+        "mitigation": "Failing blocked-saveBest test; same future-bests full Focus win before/after screenshots; reload check; full gates"
+      },
+      "plan_digest": "7432a7c677b1953e89785113d2efdf80eef1cd5713a7eb65c0ca80602c6151f3"
+    },
+    {
+      "task_id": "afterimage-cycle22-blocked-best",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Blocked saveBest guard, future-bests full Focus win, reload check, cache v26 and gates verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794096098.1576989,
+      "timestamp_str": "2026-11-08 03:01:38",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

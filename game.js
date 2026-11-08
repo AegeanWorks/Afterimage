@@ -1386,6 +1386,7 @@ function bestEligible(won, timed, best) {
 
 function saveBest(mode, score) {
   if (!MODES[mode] || !MODES[mode].best) return false;
+  if (isStorageBlocked(BESTS_KEY)) return false;
   if (score <= (state.bests[mode] || 0)) return false;
   state.bests[mode] = score;
   store.set(BESTS_KEY, JSON.stringify({ ...state.bests, version: SAVE_VERSION }));
