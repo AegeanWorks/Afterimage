@@ -1040,4 +1040,8 @@ input sequence from the HEAD build (before) and the working-tree build (after).
 - **Played run**: the same scripted Focus run under normal storage keeps every award, so the fix
   only removes claims whose write failed. Logs `before-quota-log.json` / `after-quota-log.json` /
   `after-normal-log.json`; zero console errors on both builds.
+- **PWA verification (after four cache bumps)**: `node "$env:TEMP\afterimage-tools\pwa-offline-check.mjs"`
+  on the committed build installs `afterimage-v37`, then a daily loaded with the network offline
+  (`phase: play`, `timer: 15s`) and cleared its first board (270, streak 1). Log:
+  `final-pwa-log.json`; frame `final-offline-play.png`.
 - **Gate results**: `node --test tests` 100/100 pass; `python aikit.py check afterimage` 5/5 pass.
