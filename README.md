@@ -7,6 +7,8 @@
 
 A visual perception gauntlet with a daily challenge: one tile in every grid is a shade, a size, or an angle off. Installable, offline-capable PWA.
 
+> **Archived**: Superseded and retired; kept for reference. Development has moved to other AegeanWorks projects. (archived 2026-11-08). This project is read-only; its GitHub repository is archived.
+
 ## ⚡ 30-Second Cold-Start Quick Reference
 
 - **Runtime Prerequisites**: Node.js 20 or newer for test runner and tools; modern browser with HTML5 Canvas and WebAudio for playing.
