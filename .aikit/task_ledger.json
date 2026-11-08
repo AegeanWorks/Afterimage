@@ -3,32 +3,15 @@
   "active_task": {
     "task_id": "afterimage-cycle22-blocked-best",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794096098.1576989,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794096139.3322294
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle16-wrong-focus",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Restore grid focus after a nonfatal wrong pick so keyboard play can continue",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794090125.01591,
-      "timestamp_str": "2026-11-08 01:22:05",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "A wrong pick hides the focused cell (BODY receives focus) and the play reset never restores it; the keyboard user cannot arrow to the odd tile without tabbing from the page start. Offline cold/warm deep links were probed and already work, so that lead is a recorded dead end.",
-        "benefits": "A miss leaves the keyboard exactly where it was; arrows and Enter resume immediately; the focused cell shows a visible ring",
-        "risks": "contract: focus-only change in the nonfatal wrong branch, no scoring/state changes; dependency: none; concurrency: none; state: none",
-        "mitigation": "Failing shell contract first; same Daily wrong-pick before/after screenshots; keyboard-only recovery run to the odd tile and board clear; full gates"
-      },
-      "plan_digest": "9ebdd5e78e76e3abf7f8f7cfa9da5cee5f18edd64733dc1060326ff14bc46906"
-    },
     {
       "task_id": "afterimage-cycle16-wrong-focus",
       "phase": "phase 4",
@@ -272,6 +255,16 @@
       "status": "in_progress",
       "timestamp": 1794096098.1576989,
       "timestamp_str": "2026-11-08 03:01:38",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle22-blocked-best",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle22-blocked-best' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794096139.3322313,
+      "timestamp_str": "2026-11-08 03:02:19",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]
