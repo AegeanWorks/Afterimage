@@ -147,6 +147,16 @@ test('surge boards keep a persistent stage badge', () => {
   assert.ok(hides.length >= 2, 'start/menu/finish paths must clear the badge');
 });
 
+test('narrow HUD keeps the focus lives label visible', () => {
+  const cssText = css();
+  const mobile = /@media \(max-width: 640px\) \{([\s\S]*?)\n\}/.exec(cssText);
+  assert.ok(mobile, 'styles.css must keep a 640px breakpoint');
+  assert.ok(
+    !/\.hud-item\.lives \.k\s*\{[^}]*display:\s*none/.test(cssText),
+    'the Focus lives label must not be hidden on narrow screens'
+  );
+});
+
 test('narrow HUD keeps the streak label visible', () => {
   const cssText = css();
   const mobile = /@media \(max-width: 640px\) \{([\s\S]*?)\n\}/.exec(cssText);

@@ -282,3 +282,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: At 390x844 the HUD hid the Streak label, leaving a bare trailing `0` after the new lives count. Players could not tell which value the number represented.
 - **Decision**: Remove the narrow-screen rule that hides `.hud-item.streak .k`, so all five HUD values retain their labels on phones. No HUD logic or state changes; bump the service-worker cache to `afterimage-v31`.
 - **Consequences**: 90 tests pass (89 prior + 1 failing-first mobile label contract). The 390px normal and stressed (`12,345` / `12 BLAZE`) HUDs both stay at `scrollWidth: 390`; a played Focus clear shows `Streak 1` with no horizontal scroll. Evidence is under `shots/afterimage/cycle27/`; `python aikit.py check afterimage` green.
+
+### ADR-041: Keep the Focus label on narrow HUDs
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: At 390x844 the lives block was dots + `3` with no Focus label, while Mode, Level, Score and Streak kept labels. The last unlabeled HUD value was ambiguous after the lives count was added.
+- **Decision**: Remove the <=440px rule that hid `.hud-item.lives .k`. The dots + count are wider than the label, so the item width does not grow; only the missing label row is restored. Bump the service-worker cache to `afterimage-v32`.
+- **Consequences**: 91 tests pass (90 prior + 1 failing-first mobile label contract). Normal and stressed HUDs at 390px and 320px stay within the viewport; a played Focus clear shows both `Focus 3` and `Streak 1` with no horizontal scroll. Evidence is under `shots/afterimage/cycle28/`; `python aikit.py check afterimage` green.

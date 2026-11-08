@@ -805,3 +805,32 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   moves to level 02, 270 points, streak 1; the HUD reads `Streak 1` and the 390px view still
   has no horizontal scroll. Log: `play.json`; zero console errors.
 - **Gate results**: `node --test tests` 90/90 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 28 — Mobile HUD: the last unlabeled value
+
+- **Area**: HUD readability / narrow-screen labels (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics, blocked-best honesty, blocked-daily honesty,
+  blocked-profile honesty, timer readability, lives readability, mobile streak label, mobile
+  Focus label).
+- **Defect (reproduced)**: at 390x844 the lives block was dots + `3` with no Focus label,
+  while Mode, Level, Score and Streak all kept labels. The before crop shows the unlabeled
+  dot/count block between Score and Streak.
+- **Files**: `styles.css` (remove the <=440px `.hud-item.lives .k` hide),
+  `tests/web-shell.test.js` (failing-first mobile label contract), `sw.js` +
+  `tests/pwa.test.js` (cache v32).
+- **Fix**: the Focus lives label remains visible on narrow screens. The dots + count already
+  occupy more width than the label, so the HUD keeps the same item width and only gains the
+  missing label row.
+- **Visual proof** (same Focus start, same 390x844 viewport):
+  - before: `shots/afterimage/cycle28/before-hud-390.png` (sha256 6DF221859E21D881…)
+    shows the unlabeled dots + `3`.
+  - after: `shots/afterimage/cycle28/after-hud-390.png` (sha256 EAA4CD8689F6F510…)
+    shows `Focus` above the dots + `3`, with `scrollWidth: 390`.
+- **Fit/played run**: normal and stressed 390px HUDs stay at `scrollWidth: 390`; 320px normal
+  and stressed also stay at 320 (`after320-log.json`). A played Focus clear reaches level 02,
+  270 points, streak 1 with `Focus` and `Streak` both labelled and no horizontal scroll.
+  Log: `play.json`; zero console errors.
+- **Gate results**: `node --test tests` 91/91 pass; `python aikit.py check afterimage` 5/5 pass.
