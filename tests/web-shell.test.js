@@ -53,6 +53,14 @@ test('first load focuses the menu daily card', () => {
   assert.ok(jsText.slice(bootStart, bootEnd).includes('ui.dailyBtn.focus'), 'boot must focus the primary Daily action');
 });
 
+test('the timer exposes a second-by-second readout and value', () => {
+  const cssText = css();
+  const jsText = js();
+  assert.ok(cssText.includes('attr(data-time)'), 'styles.css must render the timer readout');
+  assert.ok(jsText.includes('timerLabel'), 'game.js must format the remaining seconds');
+  assert.ok(jsText.includes('setAttribute("aria-label"'), 'the timer must expose its current value to assistive tech');
+});
+
 test('a nonfatal wrong pick restores grid focus', () => {
   const jsText = js();
   const pickBody = jsText.slice(jsText.indexOf('function pick('), jsText.indexOf('function timeout('));

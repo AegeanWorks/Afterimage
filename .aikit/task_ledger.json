@@ -1,38 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle24-blocked-profile",
+    "task_id": "afterimage-cycle25-timer-label",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794097367.9418073,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794098335.8915448,
     "owner": "opencode:deepseek-v4.1-flash",
     "started_by": "opencode:deepseek-v4.1-flash",
-    "continuations": [],
-    "completed_at": 1794097415.9773514
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle18-modal-trap",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Dialog Tab trap, focus-wrap screenshots, keyboard menu/result run, cache v22 and gates verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794092896.0425029,
-      "timestamp_str": "2026-11-08 02:08:16",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle18-modal-trap",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle18-modal-trap' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794092948.8619854,
-      "timestamp_str": "2026-11-08 02:09:08",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
     {
       "task_id": "afterimage-cycle19-mode-best",
       "phase": "phase 2",
@@ -265,6 +243,35 @@
       "status": "completed",
       "timestamp": 1794097415.977354,
       "timestamp_str": "2026-11-08 03:23:35",
+      "agent": "opencode:deepseek-v4.1-flash"
+    },
+    {
+      "task_id": "afterimage-cycle25-timer-label",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Add a visible seconds readout and live accessible value to the timer bar",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794097929.472896,
+      "timestamp_str": "2026-11-08 03:32:09",
+      "agent": "opencode:deepseek-v4.1-flash",
+      "impact_assessment": {
+        "why": "The only clock is a 3px bar with aria-label 'Time remaining' and no value; players cannot read exact seconds and screen readers cannot hear the remaining time",
+        "benefits": "A right-aligned 12s-style readout updates once per second, and the timer's aria-label carries the current value for assistive tech",
+        "risks": "contract: timer visual/ARIA only, no timing/score changes; dependency: none; concurrency: none; state: data-time updated only when the whole second changes",
+        "mitigation": "Failing timerLabel and shell contract tests; same Focus 12s crop before/after; played run checks 12s-to-11s and a wrong-pick life loss; full gates"
+      },
+      "plan_digest": "ff5ac383b812e1c46e61fb9a35e367c5aa779262d6e174a1a746160d2740f5ef"
+    },
+    {
+      "task_id": "afterimage-cycle25-timer-label",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[3/3] Timer readout/ARIA, same-12s crop pair, 12-to-11s played check, cache v29 and gates verified (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794098335.8915448,
+      "timestamp_str": "2026-11-08 03:38:55",
       "agent": "opencode:deepseek-v4.1-flash"
     }
   ]

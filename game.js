@@ -487,6 +487,7 @@ const state = {
 let raf = 0;
 let audio = null;
 let saveStatusTimer = 0;
+let timerText = "";
 
 /* ------------------------------------------------------------------ audio */
 
@@ -887,7 +888,23 @@ function renderHud() {
 function updateTimer() {
   if (!state.timed) {
     ui.timerFill.style.transform = "scaleX(0)";
+    if (timerText !== "") {
+      timerText = "";
+      if (ui.timer) {
+        ui.timer.setAttribute("data-time", "");
+        ui.timer.setAttribute("aria-label", "Time remaining");
+      }
+    }
     return;
+  }
+  const label = timerLabel(state.remaining);
+  if (label !== timerText) {
+    timerText = label;
+    if (ui.timer) {
+      const seconds = Number(label.slice(0, -1));
+      ui.timer.setAttribute("data-time", label);
+      ui.timer.setAttribute("aria-label", `Time remaining: ${seconds} ${seconds === 1 ? "second" : "seconds"}`);
+    }
   }
   const ratio = Math.max(0, Math.min(1, state.remaining / state.timeLimit));
   ui.timerFill.style.transform = `scaleX(${ratio})`;
@@ -1309,6 +1326,12 @@ function onBestPace(score, boardsDone, total, best) {
   if (!(best > 0) || !(score > 0)) return false;
   if (!(total > 0) || !(boardsDone >= 0) || boardsDone > total) return false;
   return score >= best * (boardsDone / total);
+}
+
+function timerLabel(remaining) {
+  const value = Number(remaining);
+  const seconds = Number.isFinite(value) && value > 0 ? Math.ceil(value / 1000) : 0;
+  return `${seconds}s`;
 }
 
 function hiddenPenalty(remaining, hiddenMs) {

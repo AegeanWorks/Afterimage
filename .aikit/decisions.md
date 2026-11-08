@@ -261,3 +261,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: With a future-format `afterimage.profile`, a perfect daily win added “Streak freeze earned” and “First Daily clear!” and mutated in-memory freezes/runs/wins while the raw profile stayed version 2. Reloading lost the claims. The freeze earn/consume end-to-end audit itself was a dead end; the defect was the blocked-profile claim.
 - **Decision**: Gate profile mutations on the key being writable: `finish` skips runs/clears/bestStreak/wins updates and the save, `quitRun` skips abandoned-run totals, `useHint` skips hintsUsed, and `earnFreeze` refuses before arming. The daily and bests saves remain independent. Bump the service-worker cache to `afterimage-v28`.
 - **Consequences**: 85 tests pass (84 prior + 1 failing-first blocked-freeze test). With a version-2 profile, the perfect daily win hides the freeze and first-clear sentences, leaves the profile at defaults, keeps the raw profile byte-identical, and still records the valid daily result and 3-day streak. Evidence is under `shots/afterimage/cycle24/`; `python aikit.py check afterimage` green.
+
+### ADR-038: Show whole seconds on the clock bar
+- **Date**: 2026-11-08
+- **Status**: Accepted
+- **Context**: The only clock was a 3px bar with `aria-label="Time remaining"` and no value. Players could only estimate the remaining slice, and assistive technology had no current value.
+- **Decision**: Add pure `timerLabel` and update a right-edge `data-time` readout plus `aria-label` only when the whole second changes. Untimed Zen clears both; the fill gets a radius so the bar can stop clipping the readout. Bump the service-worker cache to `afterimage-v29`.
+- **Consequences**: 87 tests pass (85 prior + 2 failing-first tests: label formatting and shell/value contract). At 12,000ms the timer shows `12s` and an ARIA value of 12 seconds, then `11s` after a second; a wrong pick drops lives while the clock stays live. Evidence is under `shots/afterimage/cycle25/`; `python aikit.py check afterimage` green.

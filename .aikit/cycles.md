@@ -715,3 +715,32 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   result: 5580}`. Reloaded menu showed the 3-day streak without a freeze. Logs:
   `before-log.json` / `after-log.json`; zero console errors.
 - **Gate results**: `node --test tests` 85/85 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 25 — HUD readability: a readable clock
+
+- **Area**: HUD readability / timer accessibility (covered: progression/saves, UI readability,
+  graphics/effects, responsive layout, levels, save resilience, failure feedback, audio cues,
+  debrief copy, boss presentation, daily-best results, save-card fallback, copy fallback,
+  menu focus, result focus, in-grid wrong-pick focus, initial modal focus, modal containment,
+  mode bests, save versioning, quit statistics, blocked-best honesty, blocked-daily honesty,
+  blocked-profile honesty, timer readability).
+- **Defect (reproduced)**: the only clock was a 3px bar with `aria-label="Time remaining"` and
+  no value. The before log shows no `data-time`, an empty text node, and no second-level value
+  for assistive tech; at a glance players could only estimate the slice of bar left.
+- **Files**: `game.js` (pure `timerLabel`, per-second `data-time`/ARIA update),
+  `styles.css` (right-edge timer readout), `tests/game.test.js` (failing-first label test),
+  `tests/web-shell.test.js` (readout/value contract), `sw.js` + `tests/pwa.test.js` (cache
+  v29), `README.md` (timer note).
+- **Fix**: the timer bar now renders `12s` at its right edge and updates its
+  `aria-label` to `Time remaining: 12 seconds` only when the whole second changes. Untimed Zen
+  clears both. The fill gets its own radius so the bar can stop clipping the readout.
+- **Visual proof** (same deterministic Focus board, same 12,000ms remaining, same 1440x900
+  viewport, timer crop):
+  - before: `shots/afterimage/cycle25/before-timer.png` (sha256 E701F987CA356450…)
+    shows the bare bar.
+  - after: `shots/afterimage/cycle25/after-timer.png` (sha256 D1F4824A09A8D43C…)
+    shows `12S` above the right end.
+- **Played run**: set to 12,000ms → readout `12s` / ARIA 12 seconds; after 1.1s → `11s` /
+  11 seconds; a wrong pick drops Focus to 2 while the readout stays live. Logs:
+  `before-log.json` / `after-log.json`; zero console errors.
+- **Gate results**: `node --test tests` 87/87 pass; `python aikit.py check afterimage` 5/5 pass.

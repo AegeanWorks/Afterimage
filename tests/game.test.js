@@ -137,6 +137,18 @@ test('timeout, win and lose cues are distinct from the wrong buzz', () => {
   assert.ok(lose[0] > lose[lose.length - 1], 'lose cue descends');
 });
 
+test('timerLabel rounds up and clamps the remaining clock', () => {
+  const { timerLabel } = createHarness();
+
+  assert.strictEqual(timerLabel(15000), '15s');
+  assert.strictEqual(timerLabel(14999), '15s');
+  assert.strictEqual(timerLabel(1000), '1s');
+  assert.strictEqual(timerLabel(1), '1s');
+  assert.strictEqual(timerLabel(0), '0s');
+  assert.strictEqual(timerLabel(-5), '0s');
+  assert.strictEqual(timerLabel(NaN), '0s');
+});
+
 test('hiddenPenalty charges wall-clock hidden time', () => {
   const { hiddenPenalty } = createHarness();
 
