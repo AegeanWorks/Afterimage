@@ -194,6 +194,42 @@ test('a decided run is recognised inside its closing beat', () => {
   assert.strictEqual(decidedOutcome(undefined, undefined), '');
 });
 
+test('a rejected write is not claimed as persisted', () => {
+  let deny = false;
+  const storage = {
+    map: new Map(),
+    getItem(k) { return this.map.has(k) ? this.map.get(k) : null; },
+    setItem(k, v) {
+      if (deny) throw new DOMException('QuotaExceededError', 'QuotaExceededError');
+      this.map.set(k, String(v));
+    },
+    removeItem(k) { this.map.delete(k); },
+    clear() { this.map.clear(); }
+  };
+  const { store, saveBest, saveProfile, saveDaily, state } = createHarness({ storage });
+
+  assert.strictEqual(store.set('probe.key', 'ok'), true, 'a landing write reports success');
+  assert.strictEqual(storage.getItem('probe.key'), 'ok');
+
+  deny = true;
+  assert.strictEqual(store.set('probe.key', 'nope'), false, 'a rejected write reports failure');
+  assert.strictEqual(storage.getItem('probe.key'), 'ok', 'a rejected write leaves the old value');
+
+  const before = JSON.parse(JSON.stringify(state.bests));
+  assert.strictEqual(saveBest('focus', 5580), false, 'a best that cannot persist is not claimed');
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(state.bests)), before, 'the in-memory best is reverted');
+
+  const dailyBefore = JSON.parse(JSON.stringify(state.daily));
+  state.daily.streak = 4;
+  assert.strictEqual(saveDaily(dailyBefore), false, 'a daily that cannot persist reports failure');
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(state.daily)), dailyBefore, 'the in-memory daily is reverted');
+
+  const profileBefore = JSON.parse(JSON.stringify(state.profile));
+  state.profile.clears = 10;
+  assert.strictEqual(saveProfile(profileBefore), false, 'a profile that cannot persist reports failure');
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(state.profile)), profileBefore, 'the in-memory profile is reverted');
+});
+
 test('a rebuilt grid keeps the focused cell', () => {
   const { focusedCellIndex } = createHarness();
 

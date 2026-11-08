@@ -157,11 +157,13 @@ const store = {
     }
   },
   set(key, value) {
-    if (blockedKeys.has(key)) return;
+    if (blockedKeys.has(key)) return false;
     try {
       localStorage.setItem(key, value);
+      return true;
     } catch {
-      /* private mode — the game still runs */
+      /* private mode or a full quota — the game still runs, but nothing landed */
+      return false;
     }
   }
 };
@@ -299,8 +301,10 @@ function loadDaily() {
   };
 }
 
-function saveDaily() {
-  store.set(DAILY_KEY, JSON.stringify({ ...state.daily, version: SAVE_VERSION }));
+function saveDaily(snapshot) {
+  const wrote = store.set(DAILY_KEY, JSON.stringify({ ...state.daily, version: SAVE_VERSION }));
+  if (!wrote && snapshot) state.daily = snapshot;
+  return wrote;
 }
 
 function loadProfile() {
@@ -320,8 +324,10 @@ function loadProfile() {
   };
 }
 
-function saveProfile() {
-  store.set(PROFILE_KEY, JSON.stringify({ ...state.profile, version: SAVE_VERSION }));
+function saveProfile(snapshot) {
+  const wrote = store.set(PROFILE_KEY, JSON.stringify({ ...state.profile, version: SAVE_VERSION }));
+  if (!wrote && snapshot) state.profile = snapshot;
+  return wrote;
 }
 
 function eyeLevel(clears) {
@@ -1498,8 +1504,12 @@ function saveBest(mode, score) {
   if (!MODES[mode] || !MODES[mode].best) return false;
   if (isStorageBlocked(BESTS_KEY)) return false;
   if (score <= (state.bests[mode] || 0)) return false;
+  const previous = state.bests[mode];
   state.bests[mode] = score;
-  store.set(BESTS_KEY, JSON.stringify({ ...state.bests, version: SAVE_VERSION }));
+  if (!store.set(BESTS_KEY, JSON.stringify({ ...state.bests, version: SAVE_VERSION }))) {
+    state.bests[mode] = previous;
+    return false;
+  }
   return true;
 }
 
@@ -1517,10 +1527,12 @@ function recordDaily(won, accuracy, rating) {
     return { isBest: false, streak: state.daily.streak };
   }
   const day = state.dailyKey || localDateKey();
+  const snapshot = { ...state.daily };
   const next = dailyStreakAfter(state.daily.last, state.daily.streak, state.profile.freezes, day, won);
   if (next.freezes < state.profile.freezes) {
+    const profileSnapshot = { ...state.profile, wins: { ...state.profile.wins } };
     state.profile.freezes = next.freezes;
-    saveProfile();
+    saveProfile(profileSnapshot);
   }
   state.daily.last = next.last;
   state.daily.streak = next.streak;
@@ -1539,16 +1551,16 @@ function recordDaily(won, accuracy, rating) {
     };
   }
 
-  saveDaily();
+  if (!saveDaily(snapshot)) return { isBest: false, streak: snapshot.streak };
   return { isBest, streak: state.daily.streak };
 }
 
 function earnFreeze(won, accuracy) {
   if (isStorageBlocked(PROFILE_KEY)) return false;
   if (!won || accuracy < 100 || state.profile.freezes > 0) return false;
+  const snapshot = { ...state.profile, wins: { ...state.profile.wins } };
   state.profile.freezes = 1;
-  saveProfile();
-  return true;
+  return saveProfile(snapshot);
 }
 
 function useHint() {
@@ -1561,8 +1573,9 @@ function useHint() {
   state.levelMistakes += 1;
   state.streak = 0;
   if (!isStorageBlocked(PROFILE_KEY)) {
+    const snapshot = { ...state.profile, wins: { ...state.profile.wins } };
     state.profile.hintsUsed += 1;
-    saveProfile();
+    saveProfile(snapshot);
   }
   soundHint();
   say("Hint — follow the pulse. Streak reset, but the board is still scorable.");
@@ -1592,6 +1605,7 @@ function finish(won) {
 
   let firstClear = false;
   if (!isStorageBlocked(PROFILE_KEY)) {
+    const snapshot = { ...state.profile, wins: { ...state.profile.wins } };
     state.profile.runs += 1;
     state.profile.clears += state.cleared;
     state.profile.bestStreak = Math.max(state.profile.bestStreak, state.bestStreak);
@@ -1599,7 +1613,8 @@ function finish(won) {
       state.profile.wins[state.mode] = (state.profile.wins[state.mode] || 0) + 1;
       firstClear = state.profile.wins[state.mode] === 1;
     }
-    saveProfile();
+    // A failed write drops the lifetime claim along with the attempt.
+    firstClear = saveProfile(snapshot) && firstClear;
   }
 
   const total = state.levels.length;
@@ -1717,6 +1732,7 @@ function quitRun() {
     return;
   }
   if (!isStorageBlocked(PROFILE_KEY) && (state.phase === "play" || state.phase === "pause" || state.phase === "reveal")) {
+    const snapshot = { ...state.profile, wins: { ...state.profile.wins } };
     const totals = abandonedTotals(
       state.profile.runs,
       state.profile.clears,
@@ -1727,7 +1743,7 @@ function quitRun() {
     state.profile.runs = totals.runs;
     state.profile.clears = totals.clears;
     state.profile.bestStreak = totals.bestStreak;
-    saveProfile();
+    saveProfile(snapshot);
   }
   showMenu();
 }

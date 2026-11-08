@@ -1,56 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "afterimage-cycle33-resize-focus",
+    "task_id": "afterimage-cycle34-write-honesty",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794157231.8006563,
+    "updated_at": 1794158185.1662045,
     "owner": "commandcode:goal",
     "started_by": "commandcode:goal",
     "continuations": [],
-    "completed_at": 1794157232.4187312
+    "completed_at": 1794158185.504508
   },
   "checkpoints": [
-    {
-      "task_id": "afterimage-cycle27-streak-label",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[3/3] Mobile streak label, 390/320 fit stress, Focus clear played run, cache v31 and gates verified (checklists: passed)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794099806.4715652,
-      "timestamp_str": "2026-11-08 04:03:26",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle27-streak-label",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'afterimage-cycle27-streak-label' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794099842.3067334,
-      "timestamp_str": "2026-11-08 04:04:02",
-      "agent": "opencode:deepseek-v4.1-flash"
-    },
-    {
-      "task_id": "afterimage-cycle28-focus-label",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Restore the Focus lives label on narrow HUDs so every value is labelled",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794100056.316197,
-      "timestamp_str": "2026-11-08 04:07:36",
-      "agent": "opencode:deepseek-v4.1-flash",
-      "impact_assessment": {
-        "why": "At 390x844 the lives block is dots + 3 with no Focus label, while Mode, Level, Score and Streak all keep labels; the last unlabeled HUD value is ambiguous",
-        "benefits": "All five HUD values are labelled at 390/320; removing the hide adds no horizontal width because the dots+count already exceed the label",
-        "risks": "contract: one narrow-screen CSS rule, no HUD logic/state changes; dependency: none; concurrency: none; state: none",
-        "mitigation": "Failing mobile CSS contract; same 390 HUD before/after; 320/390 stress fit; played Focus clear; full gates"
-      },
-      "plan_digest": "edfd6ee8f394c39b110f169b0d3b69e3118d791676bb73e7f4acef877fc9525c"
-    },
     {
       "task_id": "afterimage-cycle28-focus-label",
       "phase": "phase 4",
@@ -265,6 +226,45 @@
       "status": "completed",
       "timestamp": 1794157232.418734,
       "timestamp_str": "2026-11-08 20:00:32",
+      "agent": "commandcode:goal"
+    },
+    {
+      "task_id": "afterimage-cycle34-write-honesty",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/2] Never claim a best, daily or profile change that a failed write did not persist",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794157566.1367197,
+      "timestamp_str": "2026-11-08 20:06:06",
+      "agent": "commandcode:goal",
+      "impact_assessment": {
+        "why": "store.set swallows localStorage failures, so saveBest/saveDaily/saveProfile report success while nothing is stored. With quota-denied writes a full Focus win showed NEW BEST and state.bests.focus 5580; after reload the menu had no best and EYE LV 1 - 0 clears - 0 runs. Reduced-motion and 320x568 layouts were probed and are clean dead ends.",
+        "benefits": "Result badges, daily records, freezes, first-clear callouts and lifetime stats are only claimed when the write actually lands, matching the blocked-key guarantees from ADR-035/036/037.",
+        "risks": "contract: persistence honesty only, no scoring/script/schema changes; dependency: none; concurrency: none; state: rejected writes revert in-memory values to their prior shape.",
+        "mitigation": "Failing-first harness tests with a throwing storage for best/daily/profile; real Chromium quota probe before/after; full gates."
+      },
+      "plan_digest": "bafac350de0d2d897e3f34cd03b8a8fd6dc3c63d41b503e7177f24eadb6fe869"
+    },
+    {
+      "task_id": "afterimage-cycle34-write-honesty",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[2/2] Write-result persistence, quota before/after, normal-path parity, cache v37 and 5/5 gates (checklists: passed)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794158185.1662045,
+      "timestamp_str": "2026-11-08 20:16:25",
+      "agent": "commandcode:goal"
+    },
+    {
+      "task_id": "afterimage-cycle34-write-honesty",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'afterimage-cycle34-write-honesty' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794158185.5045094,
+      "timestamp_str": "2026-11-08 20:16:25",
       "agent": "commandcode:goal"
     }
   ]

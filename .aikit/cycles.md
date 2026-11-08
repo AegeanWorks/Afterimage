@@ -311,6 +311,9 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   - `node "$env:TEMP\afterimage-tools\resize-focus-probe.mjs" before` / `after` (cycle 33)
     and `node "$env:TEMP\afterimage-tools\keyboard-run-probe.mjs" after`; both use
     `Emulation.setFocusEmulationEnabled` so the programmatic focus ring is visible.
+  - `node "$env:TEMP\afterimage-tools\write-honesty-probe.mjs" before` / `after` (cycle 34),
+    plus `node "$env:TEMP\afterimage-tools\write-honesty-normal.mjs" after`; the denied mode
+    replaces `localStorage.setItem` with a `QuotaExceededError` throw.
 - Gate commands after every cycle: `node --test tests` from the project and
   `python aikit.py check afterimage` from the AIKit root. Results are listed per cycle above.
 - The PNG/JSON proof files live under `shots/afterimage/cycleN/` at the AIKit root; that tree
@@ -1002,3 +1005,39 @@ input sequence from the HEAD build (before) and the working-tree build (after).
   with focus intact across every board transition. Log: `after-keyboard-log.json`; frames
   `after-keyboard-board1.png` / `after-keyboard-cleared.png`; zero console errors.
 - **Gate results**: `node --test tests` 99/99 pass; `python aikit.py check afterimage` 5/5 pass.
+
+## Cycle 34 — Persistence honesty: a rejected write is never claimed
+
+- **Dead end (recorded, no change)**: `prefers-reduced-motion` and the 320x568 form factor. With
+  reduced motion emulated, `REDUCED` is true, a correct pick advances after 394ms and a wrong pick
+  after 420ms with zero particles or pops; at 320x568 the menu (`scrollWidth` 320, card 18..302),
+  play (`stageWidth` 288, HUD bottom 79) and result (`scrollWidth` 320, card 18..315) all fit
+  with no overflowing node. Evidence: `shots/afterimage/cycle34/before-reduced-board.png`,
+  `before-menu-320.png`, `before-play-320.png`, `before-result-320.png` and `before-log.json`.
+- **Area**: persistence honesty / rejected writes (covered: all prior areas plus failed writes).
+- **Defect (reproduced)**: `store.set` swallowed every `localStorage` exception, so the savers
+  reported success while nothing was stored. With `setItem` throwing `QuotaExceededError`, a full
+  Focus win showed `NEW BEST`, `First Focus run clear!` and in-memory `bests.focus: 5580`; after a
+  reload the menu had no best and read `EYE LV 1 · 0 clears · 0 runs`.
+- **Files**: `game.js` (`store.set` returns whether the write landed; `saveBest`/`saveDaily`/
+  `saveProfile` accept a snapshot and revert on failure; `finish`, `quitRun`, `useHint`,
+  `earnFreeze` and `recordDaily` pass snapshots and gate their callouts), `tests/game.test.js`
+  (failing-first denied-write test), `sw.js` + `tests/pwa.test.js` (cache v37), `README.md`
+  (failed-write note).
+- **Fix**: a rejected write restores the previous `bests[mode]`, the whole `state.daily`, or the
+  whole `state.profile`, so no banner, first-clear line or streak is claimed for data that could
+  not persist. `recordDaily` returns `{isBest:false}` when its write fails, and `earnFreeze`
+  returns the write result so the freeze sentence only appears when the freeze was stored.
+- **Visual proof** (same 1440x900 viewport, same quota-denied storage, same full Focus win):
+  - before: `shots/afterimage/cycle34/before-quota-new-best.png` (sha256 9D842DDD72C3E2CD…)
+    reads `EAGLE EYE · NEW BEST` with `First Focus run clear!` in the blurb.
+  - after: `shots/afterimage/cycle34/after-quota-new-best.png` (sha256 BFB3A9D7BC3099A1…) shows
+    the same 5,580 / 10/10 / 100% result with only `EAGLE EYE`; `bests.focus` stays 0 and the
+    reloaded menu is `EYE LV 1 · 0 clears · 0 runs`.
+  - normal path: `after-normal-result.png` still shows `NEW BEST`, `rawBests` stores
+    `{"focus":5580,...,"version":1}`, and the reload reads `BEST 5,580 · CLEARED` with
+    `EYE LV 2 · 10 clears · 1 run`.
+- **Played run**: the same scripted Focus run under normal storage keeps every award, so the fix
+  only removes claims whose write failed. Logs `before-quota-log.json` / `after-quota-log.json` /
+  `after-normal-log.json`; zero console errors on both builds.
+- **Gate results**: `node --test tests` 100/100 pass; `python aikit.py check afterimage` 5/5 pass.
